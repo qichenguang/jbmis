@@ -1,0 +1,20 @@
+<script src="__PUBLIC__/js/project.js"></script>
+</head>
+<body>
+
+<div id="projectMain">
+    <FORM id="projectSearchForm" method="post" action="/index.php/Home/Project/search">
+        <div id="projectSearch" >
+            项目名称：<INPUT type="text" id="search" name="search" value="{$search}" >
+            <br/>
+        </div>
+        <INPUT type="submit" value="提交">
+    </FORM>
+</div>
+
+<div id="projectListAndAjaxPage">
+    <include file="ajaxlist" />
+</div>
+
+
+

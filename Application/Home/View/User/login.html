@@ -1,0 +1,19 @@
+<script src="__PUBLIC__/js/user.js"></script>
+</head>
+<body>
+
+<div id="userLoginMain">
+    <FORM id="userLoginForm" method="post" action="__URL__/logon">
+        Email 作为登录用户名：<em>*</em><input type="text"  id="email" name="email"  /><br/>
+        登录密码：<em>*</em><input type="password"  id="password" name="password"  /><br/>
+        部门：
+        <select name="department" id="department">
+            <foreach name="department_array" item="vo" >
+                <option value="{$vo.id}">{$vo.name}</option>
+            </foreach>
+        </select>
+        <br/>
+        <INPUT type="submit" value="提交">
+    </FORM>
+</div>
+
