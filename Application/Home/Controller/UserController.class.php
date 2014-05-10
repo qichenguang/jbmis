@@ -46,6 +46,84 @@ class UserController extends Controller {
         }
     }
 
+    public function _before_ajaxSave(){
+        $userflag = $_SESSION['userflag'];
+        if(2 != $userflag){
+            $this->error("没有权限!");
+        }
+    }
+    public function ajaxSave(){
+        $Data = M('user'); // 实例化Data数据模型
+
+        $oper = I('oper');
+        $id = I('id');
+        $user_name = I('user_name');
+        $email = I('email');
+        $department = I('department');
+
+        $Data = M('user'); // 实例化Data数据模型
+        switch ($oper) {
+            case "add"://
+                if( empty($user_name) || empty($email) || empty($department)){
+                    $this->ajaxReturn(array('state' => false, 'msg' => "字段不能为空"));
+                }
+                $condition["email"] = $email;
+                $condition["department"] = $department;
+                $list  = $Data->where($condition)->find();
+                $dep = USER_FUN_GET_DEPARTMENT_NAME();
+                $dep_name = $dep[$department];
+                if(!empty($list)){
+                    $this->ajaxReturn(array('state' => false, 'msg' => "$dep_name 内已经有相同 EMAIL 存在"));
+                }
+                $condition['user_name'] = $user_name;
+                //$condition['password'] = md5($email);
+                $condition['password'] = "111111";
+                $result  = $Data->add($condition);
+                if(false === $result){
+                    $this->ajaxReturn(array('state' => false, 'msg' => "存盘失败,请检查数据库连接设置"));
+                }else{
+                    $this->ajaxReturn(array('state' => true, 'msg' => "存盘成功", 'id' => $result));
+                }
+                break;
+            case "edit"://
+                if(empty($id) || empty($user_name) || empty($email) || empty($department)){
+                    $this->ajaxReturn(array('state' => false, 'msg' => "字段不能为空", 'id' => $id));
+                }
+                $condition['user_name'] = $user_name;
+                $condition["email"] = $email;
+                $condition["department"] = $department;
+                $condition['id'] = $id;
+                $result  = $Data->save($condition);
+                if(false === $result){
+                    $this->ajaxReturn(array('state' => false, 'msg' => "存盘失败,请检查数据库连接设置", 'id' => $id));
+                }elseif(0 == $result){
+                    $this->ajaxReturn(array('state' => false, 'msg' => "相同的记录,请修改用户信息", 'id' => $id));
+                }else{
+                    $this->ajaxReturn(array('state' => true, 'msg' => "存盘成功", 'id' => $id));
+                }
+                break;
+            case "del":
+                if(empty($id)){
+                    $this->ajaxReturn(array('state' => false, 'msg' => "字段不能为空", 'id' => $id));
+                }
+                $condition['id'] = $id;
+                $condition['status'] = 2;
+                $result  = $Data->save($condition);
+                if(false === $result){
+                    $this->ajaxReturn(array('state' => false, 'msg' => "存盘失败,请检查数据库连接设置", 'id' => $id));
+                }elseif(0 == $result){
+                    $this->ajaxReturn(array('state' => false, 'msg' => "相同的记录,请修改用户信息", 'id' => $id));
+                }else{
+                    $this->ajaxReturn(array('state' => true, 'msg' => "存盘成功", 'id' => $id));
+                }
+                break;
+            default:
+                break;
+        }
+
+
+    }
+
     public function _before_search(){
         $userflag = $_SESSION['userflag'];
         if(2 != $userflag){
@@ -55,86 +133,96 @@ class UserController extends Controller {
 
     public function search(){
         $examp = I("q"); //query number
-        $page = I('page',1); // get the requested page
-        $limit = I('rows',20); // get how many rows we want to have into the grid
-        $sidx = I('sidx',1); // get index row - i.e. user click to sort
-        $sord = I('sord','asc'); // get the direction
-        if(!$sidx) $sidx =1;
+        $pagenum = I('page',1); // get the requested page
+        $limitnum = I('rows',20); // get how many rows we want to have into the grid
+        $sidx = I('sidx','id'); // get index row - i.e. user click to sort
+        $sord = I('sord','desc'); // get the direction
+        if($sidx == ""){
+            $sidx = 'id';
+        }
 
-        $wh = "";
-        //$searchOn = Strip($_REQUEST['_search']);
+        //手动查询标志
         $searchOn = I('_search');
+
+        //正常项目
+        $cond['status'] = 1;
+
+        //多条件查询
         if('true' == $searchOn) {
-            //$sarr = Strip($_REQUEST);
             $sarr = I('param.');
             foreach( $sarr as $k=>$v) {
                 switch ($k) {
                     case 'user_name':
                     case 'email':
                     case 'department':
-                        $wh .= " AND " . $k . " LIKE '%" . $v . "%'";
+                    $cond[$k] = array('LIKE', "%$v%");
                         break;
                     case 'id':
-                        $wh .= " AND ".$k." = ".$v;
+                        $cond[$k] = $v;
                         break;
                 }
             }
         }
-        //echo $wh;
+        //单条件 find
+        if(FALSE && 'true' == $searchOn){
+            $searchField = I('searchField');
+            $searchString = I('searchString');
+            $searchOper = I('searchOper');
+            $cond[$searchField] = array('LIKE', "%$searchString%");
+        }
+
         // connect to the database
         switch ($examp) {
-            case 1:
-                $result = mysql_query("SELECT COUNT(*) AS count FROM invheader a, clients b WHERE a.client_id=b.client_id".$wh);
-                $row = mysql_fetch_array($result,MYSQL_ASSOC);
-                $count = $row['count'];
+            case 1://liset show
+                $User = M('User'); // 实例化User对象
+                $count = $User->where($cond)->order(array($sidx => $sord))->count();// 查询满足要求的总记录数
+                $list =  $User->where($cond)->order(array($sidx => $sord))->page($pagenum,$limitnum)->select();
 
+                $total_pages = 0;
                 if( $count >0 ) {
-                    $total_pages = ceil($count/$limit);
-                } else {
-                    $total_pages = 0;
+                    $total_pages = ceil($count/$limitnum);
                 }
-                if ($page > $total_pages) $page=$total_pages;
-                $start = $limit*$page - $limit; // do not put $limit*($page - 1)
-                if ($start<0) $start = 0;
-                $SQL = "SELECT a.id, a.invdate, b.name, a.amount,a.tax,a.total,a.note FROM invheader a, clients b WHERE a.client_id=b.client_id".$wh." ORDER BY ".$sidx." ".$sord. " LIMIT ".$start." , ".$limit;
-                $result = mysql_query( $SQL ) or die("Could not execute query.".mysql_error());
-                $responce->page = $page;
-                $responce->total = $total_pages;
-                $responce->records = $count;
+                $responce["page"] = $pagenum;
+                $responce["total"] = $total_pages;
+                $responce["records"] = $count;
                 $i=0;
-                while($row = mysql_fetch_array($result,MYSQL_ASSOC)) {
-                    $responce->rows[$i]['id']=$row[id];
-                    $responce->rows[$i]['cell']=array($row[id],$row[invdate],$row[name],$row[amount],$row[tax],$row[total],$row[note]);
+
+                $dep = USER_FUN_GET_DEPARTMENT_NAME();
+                foreach($list as $item){
+                    $responce["rows"][$i]['id']=$item["id"];
+                    $responce["rows"][$i]['cell'] = array($item['id'],
+                        $item['user_name'],$item['email'],$dep[$item['department']]);
                     $i++;
                 }
-                //echo $json->encode($responce); // coment if php 5
-                echo json_encode($responce);
-
+                //$this->ajaxReturn(json_encode($responce));
+                //dump($responce);
+                $this->ajaxReturn($responce);
                 break;
-            case 3:
+            case 2:
+                break;
         }
     }
 
     public function usemng(){
+        //显示用户列表
         $this->display();
     }
-
 
     public function add(){
         $this->department_array = USER_FUN_GET_DEPARTMENT_ARRAY(); // 进行模板变量赋值
         $this->display();
     }
     public function insert(){
-        $Form   =   D('user');
-        if($Form->create()) {
-            $result =   $Form->add();
+        $Data   =   D('user');
+        if($Data->create()) {
+            $result =   $Data->add();
             if($result) {
-                $this->success('操作成功!',"User/index");
+                $this->success('操作成功!',"login");
             }else{
                 $this->error('写入错误!');
             }
         }else{
-            $this->error($Form->getError());
+            $this->error($Data->getError());
         }
     }
 }

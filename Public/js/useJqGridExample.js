@@ -1,6 +1,6 @@
 $(document).ready(function() {
 jQuery("#userJqGrid").jqGrid({
-   	url:'http://editing.php?q=1',
+   	url:'/index.php/Home/User/',
 	datatype: "xml",
    	colNames:['Inv No','Date', 'Client', 'Amount','Tax','Total','Closed','Ship via','Notes'],
    	colModel:[
@@ -58,3 +58,17 @@ jQuery("#userJqGrid").jqGrid('navGrid','#pageNavUserJqGrid',
 
 
 });
+
+
+
+function customFmatter(cellvalue, options, rowObject){
+    console.log(cellvalue);
+    console.log(options);
+    console.log(rowObject);
+    return "["+cellvalue+"]";
+};
+//formatter: 'link',
+//formatter:'showlink',
+//formoptions:{ rowpos:1, label: "用户姓名", elmprefix:"(*)",
+//    baseLinkUrl:'http://a.n.c/index.php', showAction:'abc',addParam: ''}
+//formatter:'customFmatter',

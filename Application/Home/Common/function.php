@@ -1,4 +1,22 @@
 <?php
+
+function USER_FUN_GET_DEPARTMENT_NAME(){
+    $dep = array(
+        'cg' => "采购管理部",
+        'sh' => "售后服务部",
+        'hr' => "行政人事部",
+        'gc' => "工程管理部",
+        'jd' => "机电管理部",
+        'sj' => "设计管理部",
+        'sc' => "市场管理部",
+        'ys' => "预算管理部",
+        /*        管理部
+                分公司负责人
+                部门负责人（含财务部）
+                合同管理*/
+    );
+    return $dep;
+}
 function USER_FUN_GET_DEPARTMENT_ARRAY(){
     $dep = array(
         0 => array('id' =>'cg', 'name'=> "采购管理部"),

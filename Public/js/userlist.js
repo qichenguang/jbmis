@@ -1,0 +1,154 @@
+$(document).ready(function() {
+
+    var userListGrid = jQuery("#userlist").jqGrid({
+        url:'/index.php/Home/User/search/q/1',
+        datatype: "json",
+        //mtype: 'POST',
+        colNames:['ID','用户名称', '邮件地址', '部门'],
+        colModel:[
+            {name:'id',index:'id',
+                width:100,align:"right",
+                sortable:true,
+                editable:false,
+                editoptions:{readonly:true,size:100}
+            },
+            {name:'user_name',index:'user_name',
+                width:150,align:"right",
+                sortable:true,
+                editable:true, edittype:"text",editrules:{required:true},
+                editoptions:{size:"20"},
+                formoptions:{rowpos:1, label: "用户姓名", elmprefix:"(*)"}
+            },
+            {name:'email',index:'email',
+                width:150, align:"right",
+                sortable:true,
+                editable:true, edittype:"text", editrules:{email:true},
+                editoptions:{size:"20",maxlength:"150"},
+                formoptions:{ rowpos:2,label: "邮箱地址",elmprefix:"(*)"}
+            },
+            {name:'department',index:'department',
+                width:150, align:"center",
+                sortable:true,
+                stype:'select',//查询类型
+                editable:true,edittype:"select",
+                //editoptions:{value:"sc:市场部;IN:计划表;TN:TNT",defaultValue:"IN"},
+                //editoptions:{dataUrl : '/index.php/Home/User/search/q/2',defaultValue:"IN"},
+                editoptions:{value:{
+                    '':"全部",
+                    'cg':"采购管理部",
+                    'sh':"售后服务部",
+                    'hr':"行政人事部",
+                    'gc':"工程管理部",
+                    'jd':"机电管理部",
+                    'sj':"设计管理部",
+                    'sc':"市场管理部",
+                    'ys':"预算管理部"},defaultValue:"sc"},
+                editrules:{required:true},
+                formoptions:{ rowpos:3,label: "所属部门",elmprefix:"(*)"}
+            }
+        ],
+        hiddengrid: false,
+        rownumbers: true,
+        rowNum:10,
+        rowList:[10,20,30],
+        pager: '#puserlist',
+        //sortname: 'id',
+        viewrecords: true,
+        sortorder: "desc",
+        forceFit : true,
+        //cellEdit: true,
+        //cellsubmit: 'clientArray',
+        //cellurl : '/url/to/handling/the/changed/cell/value'
+        editurl: '/index.php/Home/User/ajaxSave', // this is dummy existing url
+        caption:"用户管理"
+    });
+
+    //导航栏配置和CRUD函数
+    jQuery("#userlist").jqGrid('navGrid','#puserlist',
+        {view:false,search:false}, //导航栏 按钮 是否显示 options
+        {   // edit options begin
+            mtype:'GET',
+            height:290,
+            modal: true, //模态显示
+            drag: true,  //窗体是否可以拖动
+            //addCaption: "新建公司简介",
+            //bSubmit: "保存",
+            //bCancel: "取消",
+            topinfo:"(*) 为必填字段",
+            bottominfo:"带 (*) 表示是必填字段",
+            processData: "数据保存中...",
+            jqModal:true,
+            reloadAfterSubmit:false,
+            closeOnEscape:true,
+            closeAfterEdit:true,
+            onclickSubmit: function(params, postdata) {//fires after the submit button is clicked and the postdata is constructed
+                //alert('onclickSubmit!');
+                postdata.id = jQuery("#userlist").jqGrid('getGridParam','selrow'); //opt.actRowid;    // 确保能取到master grid的rowid!
+                return postdata;
+            },
+            afterSubmit: function(xhr, postdata) {//fires after response has been received from server
+                //alert('afterSubmit!');
+                //[success, message, new_id];
+                var result = eval('(' + xhr.responseText + ')');//动态页返回json格式的字符串，如{success:true/false}之类的，为false添加err属性什么的，成功则返回new_id
+                //console.log(xhr);
+                //console.log(result);
+                //console.log(result.state);
+                //console.log(result.msg);
+                return [result.state,result.msg];
+            },
+            afterComplete: function(response, postdata, formid) {//This event fires immediately after all actions and events are completed and the row is inserted or updated in the grid.
+                //alert('afterComplete!');
+                //jQuery("#userlist").trigger('reloadGrid');
+            }
+
+        }, // edit options end
+        {  // add options begin
+            mtype:'GET',
+            height:290,
+            modal: true, //模态显示
+            drag: true,  //窗体是否可以拖动
+            //addCaption: "新建公司简介",
+            //bSubmit: "保存",
+            //bCancel: "取消",
+            topinfo:"(*) 为必填字段",
+            bottominfo:"带 (*) 表示是必填字段",
+            processData: "数据保存中...",
+            jqModal:true,
+            reloadAfterSubmit:false,
+            closeOnEscape:true,
+            clearAfterAdd:true,
+            closeAfterAdd:true,
+            onclickSubmit: function(params, postdata) {//fires after the submit button is clicked and the postdata is constructed
+                //alert('onclickSubmit!');
+                return postdata;
+            },
+            afterSubmit: function(xhr, postdata) {//fires after response has been received from server
+                //alert('afterSubmit!');
+                var result = eval('(' + xhr.responseText + ')');//动态页返回json格式的字符串，如{success:true/false}之类的，为false添加err属性什么的，成功则返回new_id
+                //console.log(xhr);
+                //console.log(result);
+                //console.log(result.state);
+                //console.log(result.msg);
+                return [result.state,result.msg,result.id];
+            },
+            afterComplete: function(response, postdata, formid) {//This event fires immediately after all actions and events are completed and the row is inserted or updated in the grid.
+                //alert('afterComplete!');
+                //jQuery("#userlist").trigger('reloadGrid');
+            }
+
+        }, // add options end
+        {mtype:'GET',reloadAfterSubmit:false,jqModal:false, closeOnEscape:true}, // del options
+        {closeOnEscape:true}, // search options
+        {height:250,jqModal:false,closeOnEscape:true} // view options
+    );
+
+    //其他配置
+    jQuery("#userlist").jqGrid('gridResize',{minWidth:350,maxWidth:1000,minHeight:80, maxHeight:350});
+    jQuery("#userlist").jqGrid('sortableRows');
+    jQuery("#userlist").jqGrid('filterToolbar');
+    jQuery("#userlist").jqGrid('navButtonAdd',"#puserlist",{caption:"Toggle",title:"Toggle Search Toolbar", buttonicon :'ui-icon-pin-s',
+        onClickButton:function(){
+            userListGrid[0].toggleToolbar();
+        }
+    });
+});

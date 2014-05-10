@@ -3,7 +3,6 @@ $(document).ready(function() {
     var mygrid = jQuery("#crud").jqGrid({
         url:'http://127.0.0.1:8088/Application/Jqgrid/search.php?q=1',
         datatype: "json",
-
         colNames:[' ','Inv No','Date', 'Client', 'Amount','Tax','Total','Notes'],
         colModel:[
             {name: 'myac', width:80, fixed:true, sortable:false, resize:false, formatter:'actions',formatoptions:{keys:true}},
