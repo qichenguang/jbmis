@@ -1,0 +1,57 @@
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('body').layout({ applyDemoStyles: true });
+
+        var i=2;
+        $("#add_pro_tab").button().click(function(event){
+            //alert("afadf");
+            maintab.tabs('add',"#tabs-" + i, "test");
+            i++;
+            //$(st,"#tabs").load(treedata.url);
+        });
+        var maintab =jQuery('#tabs','#RightPane').tabs({
+             add: function(e, ui) {
+                // append close thingy
+                 $(ui .tab).parents('li:first')
+                     .append('<span class="ui-tabs-close ui-icon ui-icon-close" title="Close Tab"></span>')
+                     .find('span.ui-tabs-close')
+                     .click(function() {
+                        maintab.tabs('remove', $('li', maintab).index($(this).parents('li:first')[0]));
+                 });
+                 // select just added tab
+                maintab.tabs('select', '#' + ui.panel.id);
+             }
+         });
+    });
+
+
+
+
+
+
+
+</script>
+</head>
+<body>
+
+<div id="RightPane" class="ui-layout-center ui-helper-reset ui-widget-content">Center
+    <div id="tabs" class="jqgtabs">
+        <ul>
+            <li><a href="#tabs-1">jqGrid 3.6</a></li>
+        </ul>
+        <div id="tabs-1" style="font-size:12px;"> Many Thanks to Mark Williams which do the most of the new things added in 3.6<br/>
+            <br/>
+            Enjoy
+        </div>
+    </div>
+</div>
+<div class="ui-layout-north">North</div>
+<div class="ui-layout-south">South</div>
+<div class="ui-layout-east">East</div>
+<div class="ui-layout-west">
+    West
+    <span id="add_pro_tab">add pro tab</span>
+</div>
+
+
+
