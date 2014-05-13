@@ -107,7 +107,7 @@ class UserController extends Controller {
                     $this->ajaxReturn(array('state' => false, 'msg' => "字段不能为空", 'id' => $id));
                 }
                 $condition['id'] = $id;
-                $condition['status'] = 2;
+                $condition['status'] = 3;
                 $result  = $Data->save($condition);
                 if(false === $result){
                     $this->ajaxReturn(array('state' => false, 'msg' => "存盘失败,请检查数据库连接设置", 'id' => $id));
