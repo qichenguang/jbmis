@@ -4,7 +4,7 @@ $(document).ready(function() {
         url:'/index.php/Home/User/search/q/1',
         datatype: "json",
         //mtype: 'POST',
-        colNames:['ID','用户名称', '邮件地址', '部门'],
+        colNames:['ID','用户名称', '邮件地址', '部门','用户状态'],
         colModel:[
             {name:'id',index:'id',
                 width:100,align:"right",
@@ -34,7 +34,7 @@ $(document).ready(function() {
                 //editoptions:{value:"sc:市场部;IN:计划表;TN:TNT",defaultValue:"IN"},
                 //editoptions:{dataUrl : '/index.php/Home/User/search/q/2',defaultValue:"IN"},
                 editoptions:{value:{
-                    '':"全部",
+                    'all':"全部",
                     'cg':"采购管理部",
                     'sh':"售后服务部",
                     'hr':"行政人事部",
@@ -42,9 +42,24 @@ $(document).ready(function() {
                     'jd':"机电管理部",
                     'sj':"设计管理部",
                     'sc':"市场管理部",
-                    'ys':"预算管理部"},defaultValue:"sc"},
+                    'ys':"预算管理部"},defaultValue:"all"},
                 editrules:{required:true},
                 formoptions:{ rowpos:3,label: "所属部门",elmprefix:"(*)"}
+            },
+            {name:'status',index:'status',
+                width:150, align:"center",
+                sortable:true,
+                stype:'select',//查询类型
+                editable:true,edittype:"select",
+                //editoptions:{value:"sc:市场部;IN:计划表;TN:TNT",defaultValue:"IN"},
+                //editoptions:{dataUrl : '/index.php/Home/User/search/q/2',defaultValue:"IN"},
+                editoptions:{value:{
+                    '0':"全部",
+                    '1':"新增(待审核)",
+                    '2':"正常(已审核)",
+                    '3':"注销(已删除)"},defaultValue:"0"},
+                editrules:{required:true},
+                formoptions:{ rowpos:4,label: "用户状态",elmprefix:"(*)"}
             }
         ],
         hiddengrid: false,
@@ -78,7 +93,7 @@ $(document).ready(function() {
             bottominfo:"带 (*) 表示是必填字段",
             processData: "数据保存中...",
             jqModal:true,
-            reloadAfterSubmit:false,
+            reloadAfterSubmit:true,
             closeOnEscape:true,
             closeAfterEdit:true,
             onclickSubmit: function(params, postdata) {//fires after the submit button is clicked and the postdata is constructed
@@ -114,7 +129,7 @@ $(document).ready(function() {
             bottominfo:"带 (*) 表示是必填字段",
             processData: "数据保存中...",
             jqModal:true,
-            reloadAfterSubmit:false,
+            reloadAfterSubmit:true,
             closeOnEscape:true,
             clearAfterAdd:true,
             closeAfterAdd:true,

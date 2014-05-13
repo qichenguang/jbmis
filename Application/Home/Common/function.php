@@ -1,5 +1,13 @@
 <?php
 
+function USER_FUN_GET_USER_STATUS_NAME(){
+    $st = array(
+        '1' => "新增(待审核)",
+        '2' => "正常(已审核)",
+        '3' => "注销(已删除)",
+    );
+    return $st;
+}
 function USER_FUN_GET_DEPARTMENT_NAME(){
     $dep = array(
         'cg' => "采购管理部",

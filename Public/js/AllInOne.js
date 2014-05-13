@@ -1,6 +1,6 @@
 $(document).ready(function() {
     //
-    //function hide_all_module(){
+    function hide_all_module(){
         $("#module_xmjbxx").accordion({ collapsible: true, autoHeight: true });
         $("#module_xmscfx").accordion({ collapsible: true, autoHeight: true });
         $("#module_khbyd").accordion({ collapsible: true, autoHeight: true });
@@ -14,10 +14,9 @@ $(document).ready(function() {
         $("#module_dxmgl").accordion({ collapsible: true, autoHeight: true });
         //1.first hide all.
         $(".module").hide();
-   // };
+    };
     //
-
-    //function allInOne_init(){
+    function allInOne_init(){
         //2.second show can use model.
         var dep_mod_arr = $("#dep_module").val().split(",");
         $.each(dep_mod_arr, function(key, val) {
@@ -62,8 +61,8 @@ $(document).ready(function() {
                 }
             }
         );
-    //};
+    };
     //1.
-    //hide_all_module();
-    //allInOne_init();
+    hide_all_module();
+    allInOne_init();
 });

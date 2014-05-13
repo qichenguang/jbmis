@@ -5,6 +5,7 @@ class AllInOneController extends Controller {
     public function allInOne(){
         $this->user_id = $_SESSION["user_id"];
         $this->department = $_SESSION["department"];
+        $this->userflag = $_SESSION['userflag'];
         //
         $dep_sx = USER_FUN_GET_DEPARTMENT_SX();
         $this->dep_sx = implode($dep_sx,",");
@@ -47,7 +48,7 @@ class AllInOneController extends Controller {
         $this->dep_module = implode(array_keys($dep_module_name),",");
         //dump($this->dep_module);
         //
-        $pro_id = $_GET['pro_id'];
+        $pro_id = I('pro_id');
         $this->pro_id = $pro_id; // 进行模板变量赋值
         $data['pro_id'] = $pro_id;
         $dep = USER_FUN_GET_DEPARTMENT_SX();

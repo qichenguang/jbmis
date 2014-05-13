@@ -26,6 +26,7 @@ class UserController extends Controller {
         $department = I('department','');
         $userflag = I('userflag',1);
 
+        $condition["status"] = 1;
         $condition["email"] = $email;
         $condition["password"] = $password;
         $condition["department"] = $department;
@@ -38,11 +39,8 @@ class UserController extends Controller {
             $_SESSION['user_id'] = $list['id'];
             $_SESSION['department'] = $list['department'];
             $_SESSION['userflag'] = $list['userflag'];
-            if(1 == $list['userflag']){
-                $this->success('登录成功!',U('Project/index'));
-            }elseif (2 == $list['userflag']){
-                $this->success('登录成功!',U('User/usermng'));
-            }
+
+            $this->success('登录成功!',U('AllInOne/AllInOne'));
         }
     }
 
@@ -60,6 +58,7 @@ class UserController extends Controller {
         $user_name = I('user_name');
         $email = I('email');
         $department = I('department');
+        $status = I('status');
 
         $Data = M('user'); // 实例化Data数据模型
         switch ($oper) {
@@ -86,12 +85,13 @@ class UserController extends Controller {
                 }
                 break;
             case "edit"://
-                if(empty($id) || empty($user_name) || empty($email) || empty($department)){
+                if(empty($id) || empty($user_name) || empty($email) || empty($department) || empty($status)){
                     $this->ajaxReturn(array('state' => false, 'msg' => "字段不能为空", 'id' => $id));
                 }
                 $condition['user_name'] = $user_name;
                 $condition["email"] = $email;
                 $condition["department"] = $department;
+                $condition['status'] = $status;
                 $condition['id'] = $id;
                 $result  = $Data->save($condition);
                 if(false === $result){
@@ -144,9 +144,6 @@ class UserController extends Controller {
         //手动查询标志
         $searchOn = I('_search');
 
-        //正常项目
-        $cond['status'] = 1;
-
         //多条件查询
         if('true' == $searchOn) {
             $sarr = I('param.');
@@ -154,11 +151,18 @@ class UserController extends Controller {
                 switch ($k) {
                     case 'user_name':
                     case 'email':
+                        $cond[$k] = array('LIKE', "%$v%");
+                        break;
                     case 'department':
-                    $cond[$k] = array('LIKE', "%$v%");
+                        if("all" != $v){
+                            $cond[$k] = array('LIKE', "%$v%");
+                        }
                         break;
                     case 'id':
-                        $cond[$k] = $v;
+                    case 'status':
+                        if("0" != $v){
+                            $cond[$k] = $v;
+                        }
                         break;
                 }
             }
@@ -188,10 +192,11 @@ class UserController extends Controller {
                 $i=0;
 
                 $dep = USER_FUN_GET_DEPARTMENT_NAME();
+                $st = USER_FUN_GET_USER_STATUS_NAME();
                 foreach($list as $item){
                     $responce["rows"][$i]['id']=$item["id"];
                     $responce["rows"][$i]['cell'] = array($item['id'],
-                        $item['user_name'],$item['email'],$dep[$item['department']]);
+                        $item['user_name'],$item['email'],$dep[$item['department']],$st[$item['status']]);
                     $i++;
                 }
                 //$this->ajaxReturn(json_encode($responce));
@@ -203,12 +208,14 @@ class UserController extends Controller {
         }
     }
 
-    public function usemng(){
+    public function usermng(){
+        layout(false);
         //显示用户列表
         $this->display();
     }
 
     public function add(){
+        layout(false);
         $this->department_array = USER_FUN_GET_DEPARTMENT_ARRAY(); // 进行模板变量赋值
         $this->display();
     }
