@@ -189,6 +189,7 @@ class UserController extends Controller {
                 $responce["page"] = $pagenum;
                 $responce["total"] = $total_pages;
                 $responce["records"] = $count;
+
                 $i=0;
 
                 $dep = USER_FUN_GET_DEPARTMENT_NAME();
