@@ -3,161 +3,307 @@ namespace Home\Controller;
 use Think\Controller;
 //use Think\Page;
 class ProjectController extends Controller {
-/*    public function index(){
-        $this->user_id = $_SESSION['user_id'];
-        $this->department = $_SESSION['department'];
-        $this->display();
-    }*/
-/*    public function search(){
-        $Data = M('sc'); // 实例化Data数据对象
-        $search = $_POST['search'];
 
+    public function ajaxSave(){
+        $Data = M('sc'); // 实例化Data数据模型
 
-        //$where = "pro_id like '%$search%' or sc_pro_name like '%$search%'";
-        $map['pro_id'] = array('like',"%$search%");
-        $map['sc_pro_name'] = array('like',"%$search%");
-        $map['_logic'] = 'or';
-        $count      = $Data->where($map)->count();// 查询满足要求的总记录数
-        $Page       = new Page($count,3);// 实例化分页类 传入总记录数
-        foreach($map as $key=>$val) {
-            $Page->parameter   .=   "$key=".urlencode($val).'&';
+        $oper = I('oper');
+        $id = I('id');
+        $pro_id = I('pro_id');
+        $sc_pro_name = I('sc_pro_name');
+        $status = I('status');
+
+        switch ($oper) {
+            case "add"://
+                if( empty($pro_id) || empty($sc_pro_name) ){
+                    $this->ajaxReturn(array('state' => false, 'msg' => "字段不能为空"));
+                }
+                $condition["pro_id"] = $pro_id;
+                $list  = $Data->where($condition)->find();
+                if(!empty($list)){
+                    $this->ajaxReturn(array('state' => false, 'msg' => "$pro_id 已经有相同 项目ID 存在"));
+                }
+                $condition['sc_pro_name'] = $sc_pro_name;
+                $result  = $Data->add($condition);
+                if(false === $result){
+                    $this->ajaxReturn(array('state' => false, 'msg' => "存盘失败,请检查数据库连接设置"));
+                }else{
+                    $this->ajaxReturn(array('state' => true, 'msg' => "存盘成功", 'id' => $result));
+                }
+                break;
+            case "edit"://
+                if(empty($id) || empty($pro_id) || empty($sc_pro_name) || empty($status)){
+                    $this->ajaxReturn(array('state' => false, 'msg' => "字段不能为空", 'id' => $id));
+                }
+                $condition['sc_pro_name'] = $sc_pro_name;
+                $condition['status'] = $status;
+                $condition['id'] = $id;
+                $result  = $Data->save($condition);
+                if(false === $result){
+                    $this->ajaxReturn(array('state' => false, 'msg' => "存盘失败,请检查数据库连接设置", 'id' => $id));
+                }elseif(0 == $result){
+                    $this->ajaxReturn(array('state' => false, 'msg' => "项目ID信息不允许修改", 'id' => $id));
+                }else{
+                    $this->ajaxReturn(array('state' => true, 'msg' => "存盘成功", 'id' => $id));
+                }
+                break;
+            case "del":
+                if(empty($id)){
+                    $this->ajaxReturn(array('state' => false, 'msg' => "字段不能为空", 'id' => $id));
+                }
+                $condition['id'] = $id;
+                $condition['status'] = 3;
+                $result  = $Data->save($condition);
+                if(false === $result){
+                    $this->ajaxReturn(array('state' => false, 'msg' => "存盘失败,请检查数据库连接设置", 'id' => $id));
+                }elseif(0 == $result){
+                    $this->ajaxReturn(array('state' => false, 'msg' => "项目ID信息不允许修改", 'id' => $id));
+                }else{
+                    $this->ajaxReturn(array('state' => true, 'msg' => "存盘成功", 'id' => $id));
+                }
+                break;
+            default:
+                break;
         }
-        //$Page->parameter   =   array_map('urlencode',$map);
-        //$Page->parameter   .=   "search=".urlencode($search).'&';
-        // 进行分页数据查询 注意page方法的参数的前面部分是当前的页数使用 $_GET[p]获取
-        $nowPage = isset($_GET['p'])?$_GET['p']:1;
-        $list = $Data->where($map)->order('pro_id')->page($nowPage.','.$Page->listRows)->select();
 
-        $Page->setConfig('header','个会员');
-        $Page->setConfig('header','会员');
-        $Page->setConfig('prefv','上一组会员');
-        $Page->setConfig('next','下一组会员');
-        $Page->setconfig('first','首页');
-        $Page->setconfig('last','尾页');
-        //$Page->setConfig('theme','<div style="font-weight:bold;">总共：%totalRow% %header% %nowPage%/%totalPage%页  %first% %upPage%  %prePage% %linkPage% %nextPage% %downPage% %end%</div>');
-        $show       = $Page->show();// 分页显示输出
-        $this->assign('page',$show);// 赋值分页输出
-        $this->assign('list',$list);// 赋值数据集
-        $this->display(); // 输出模板
-    }*/
-    public function index() {
-        $this->user_id = I('session.user_id','');
-        $this->department = I('session.department','');
-        $this->search = I('search','');
+
+    }
+
+    public function _before_search(){
+        $department = $_SESSION['department'];
+        if("sc" != $department){
+            $this->error("没有权限!");
+        }
+    }
+
+    public function search(){
+        $examp = I("q"); //query number
+        $pagenum = I('page',1); // get the requested page
+        $limitnum = I('rows',20); // get how many rows we want to have into the grid
+        $sidx = I('sidx','id'); // get index row - i.e. user click to sort
+        $sord = I('sord','desc'); // get the direction
+        if($sidx == ""){
+            $sidx = 'id';
+        }
+
+        //手动查询标志
+        $searchOn = I('_search');
+
+        //多条件查询
+        if('true' == $searchOn) {
+            $sarr = I('param.');
+            foreach( $sarr as $k=>$v) {
+                switch ($k) {
+                    case 'pro_id':
+                    case 'sc_pro_name':
+                        $cond[$k] = array('LIKE', "%$v%");
+                        break;
+                    case 'id':
+                    case 'status':
+                        if("0" != $v){
+                            $cond[$k] = $v;
+                        }
+                        break;
+                }
+            }
+        }
+        //单条件 find
+        if(FALSE && 'true' == $searchOn){
+            $searchField = I('searchField');
+            $searchString = I('searchString');
+            $searchOper = I('searchOper');
+            $cond[$searchField] = array('LIKE', "%$searchString%");
+        }
+
+        // connect to the database
+        switch ($examp) {
+            case 1://liset show
+                $User = M('sc'); // 实例化User对象
+                $count = $User->where($cond)->order(array($sidx => $sord))->count();// 查询满足要求的总记录数
+                $list =  $User->where($cond)->order(array($sidx => $sord))->page($pagenum,$limitnum)->select();
+
+                $total_pages = 0;
+                if( $count >0 ) {
+                    $total_pages = ceil($count/$limitnum);
+                }
+                $responce["page"] = $pagenum;
+                $responce["total"] = $total_pages;
+                $responce["records"] = $count;
+
+                $i=0;
+
+                $st = USER_FUN_GET_PROJECT_STATUS_NAME();
+                foreach($list as $item){
+                    $responce["rows"][$i]['id']=$item["id"];
+                    $responce["rows"][$i]['cell'] = array($item['id'],
+                        $item['pro_id'],$item['sc_pro_name'],$st[$item['status']]);
+                    $i++;
+                }
+                //$this->ajaxReturn(json_encode($responce));
+                //dump($responce);
+                $this->ajaxReturn($responce);
+                break;
+            case 2:
+                break;
+        }
+    }
+
+    public function _before_projectmng(){
+        $department = $_SESSION['department'];
+        if("sc" != $department){
+            $this->error("没有权限!");
+        }
+    }
+    public function projectmng(){
+        layout(false);
+        //显示用户列表
         $this->display();
     }
 
-    public function search() {
-        $this->user_id = I('session.user_id','');
-        $this->department =  I('session.department','');
-        $this->search = I('search','');
 
-        $Form   =   M('sc');
-        $conditon["sc_pro_name"] = $this->search;
-        $List = $Form->where("sc_pro_name like '%" . $this->search . "%'")->select();
-        // $list = range(2,51);
-        $param = array(
-            'result'=>$List,			//分页用的数组或sql
-            'listvar'=>'list',			//分页循环变量
-            'listRows'=>1,			    //每页记录数
-            'parameter'=>"search=" . $this->search,     //url分页后继续带的参数
-            'target'=>'projectListAndAjaxPage',	    //ajax更新内容的容器id，不带#
-            'pagesId'=>'projectAjaxPage',		    //分页后页的容器id不带# target和pagesId同时定义才Ajax分页
-            //template'=>'Index:ajaxlist',//ajax更新模板
-            'template'=>'ajaxlist',//ajax更新模板
-        );
-        $this->getAjaxPage($param);
-/*        //dump($this->listvar);
-        $ret_json = array();
-        foreach($voList as &$item){
+    public function ajaxPrivilegeSave(){
+        $search_pro_id = I('pro_id');
+        $pro2user_all_str = I("pro2user_all_str");
+        //得到所有用户列表
+        $Pro2user = M('pro2user'); // 实例化Data数据模型
+        $cond["pro_id"] = $search_pro_id;
+        $result =  $Pro2user->where($cond)->delete();
+        if(false === $result){
+            $this->ajaxReturn(array('state' => false, 'msg' => "存盘失败,请检查数据库连接设置", 'pro_id' => $search_pro_id));
+        }
+        //
+        trace($search_pro_id);
+        trace($pro2user_all_str);
+        $rec_arr = explode("|",$pro2user_all_str);
+        trace($rec_arr);
+        if(empty($rec_arr)){
+            $this->ajaxReturn(array('state' => false, 'msg' => "存盘失败,没有需要存储的记录", 'pro_id' => $search_pro_id));
+        }
+
+        $i=0;
+        foreach($rec_arr as $rec){
+            $field_arr = explode(",",$rec);
+            if(empty($field_arr) || count($field_arr) < 3){
+               continue;
+            }
+            $cond["department"]=$field_arr[1];
+            $cond["user_id"]=$field_arr[2];
+            $result  = $Pro2user->add($cond);
+            if(false === $result){
+                $this->ajaxReturn(array('state' => false, 'msg' => "存盘失败,请检查数据库连接设置"));
+            }
+            $i++;
+        }
+        $this->ajaxReturn(array('state' => true, 'msg' => "存盘成功", 'pro_id' => $i));
+    }
+
+    public function ajaxGetPrivilege(){
+        $search_pro_id = I('pro_id');
+        //得到所有用户列表
+        $User = M('user'); // 实例化Data数据模型
+        $condition['status'] = 1;
+        $list =  $User->where($condition)->select();
+        $dep = USER_FUN_GET_DEPARTMENT_NAME();
+        $all_user_arr = array();
+
+        //department
+        $i=1;
+        $dep_node = array();
+        foreach($dep as $key => $value){
             $tmp = array();
-            $qx = $item['sc_pro_qx']?$item['sc_pro_qx']:'{}';
-            $qx_arr = json_decode($qx,true);
-            //dump($qx_arr);
-            $user_id = $_SESSION['user_id'];
-            $dep = $_SESSION['department'];
-            if(in_array(intval($user_id),$qx_arr[$dep])){
-                $item['hasLink'] = 1;
-                //dump($item['hasLink']);
-                $tmp['hasLink'] = 1;
-            }
-            $tmp['pro_id'] = $item['pro_id'];
-            $ret_json[] = $tmp;
+            $tmp["pId"] = 0;
+            $tmp["id"] = $i++;
+            $tmp["name"] = $value;
+            $tmp["isParent"] = true;
+            $all_user_arr[] = $tmp;
+            $dep_node[$key] = $tmp["id"];
+        }
+        //user
+        $i=101;
+        foreach($list as $item){
+            $tmp = array();
+            $tmp["pId"] = $dep_node[$item['department']];
+            $tmp["id"] = $i++;
+            $tmp["name"] = $item['user_name'];
+            $tmp["department"] = $item['department'];
+            $tmp["user_id"] = $item['id'];
+            $tmp["pro_id"] = $search_pro_id;
+            $all_user_arr[] = $tmp;
         }
 
-        //$this->ajaxReturn(json_encode($ret_json));
-        $this->ajaxReturn(($ret_json));*/
+        //得到项目相关用户列表
+        $Pro2user = M('pro2user'); // 实例化Data数据模型
+        $cond["pro_id"] = $search_pro_id;
+        $userlist =  $Pro2user->where($cond)->select();//->getField("id,user_name,department");
+        if(count($userlist) >=1){
+            foreach($userlist as $item){
+                foreach($all_user_arr as &$tmp){
+                    if($tmp["pro_id"] == $item['pro_id']
+                        && $tmp["department"] == $item['department']
+                        && $tmp["user_id"] == $item['user_id']){
+                        $tmp["checked"] = true;
+                    }
+                }
+            }
+        }
+
+        $this->ajaxReturn($all_user_arr);
     }
+    public function projectprivilege(){
+        //layout(false);
+        $search_pro_id = I('pro_id');
+        $search_pro_id = "pro_1";
+        //得到所有用户列表
+        $User = M('user'); // 实例化Data数据模型
+        $condition['status'] = 1;
+        $list =  $User->where($condition)->select();
+        $dep = USER_FUN_GET_DEPARTMENT_NAME();
+        $all_user_arr = array();
 
-    /**
-    +----------------------------------------------------------
-     * 分页函数 支持sql和数据集分页 sql请用 buildSelectSql()函数生成
-    +----------------------------------------------------------
-     * @access public
-    +----------------------------------------------------------
-     * @param array   $result 排好序的数据集或者查询的sql语句
-     * @param int       $totalRows  每页显示记录数 默认21
-     * @param string $listvar    赋给模板遍历的变量名 默认list
-     * @param string $parameter  分页跳转的参数
-     * @param string $target  分页后点链接显示的内容id名
-     * @param string $pagesId  分页后点链接元素外层id名
-     * @param string $template ajaxlist的模板名
-     * @param string $url ajax分页自定义的url
-    +----------------------------------------------------------
-     */
-    public function getAjaxPage($param) {
-        extract($param);
-        //import("Home.Lib.AjaxPage");
-        //总记录数
-        $flag = is_string($result);
-        $listvar = $listvar ? $listvar : 'list';
-        $listRows = $listRows? $listRows : 21;
-        if ($flag)
-            $totalRows = M()->table($result . ' a')->count();
-        else
-            $totalRows = ($result) ? count($result) : 1;
-        //创建分页对象
-        if ($target && $pagesId)
-            $p = new \Home\Lib\AjaxPage($totalRows, $listRows, $parameter, $url,$target, $pagesId);
-        else
-            $p = new \Home\Lib\AjaxPage($totalRows, $listRows, $parameter,$url);
-        //抽取数据
-        if ($flag) {
-            $result .= " LIMIT {$p->firstRow},{$p->listRows}";
-            $voList = M()->query($result);
-        } else {
-            $voList = array_slice($result, $p->firstRow, $p->listRows);
+        //department
+        $i=1;
+        $dep_node = array();
+        foreach($dep as $key => $value){
+            $tmp = array();
+            $tmp["pId"] = 0;
+            $tmp["id"] = $i++;
+            $tmp["name"] = $value;
+            $all_user_arr[] = $tmp;
+            $dep_node[$key] = $tmp["id"];
         }
-        //check sc_qx
-        foreach($voList as &$item){
-            $qx = $item['sc_pro_qx']?$item['sc_pro_qx']:'{}';
-            $qx_arr = json_decode($qx,true);
-            //dump($qx_arr);
-            $user_id = I('session.user_id','');
-            $dep = I('session.department','');
-            if(in_array(intval($user_id),$qx_arr[$dep])){
-                $item['hasLink'] = 1;
-                //dump($item['hasLink']);
+        //user
+        $i=101;
+        foreach($list as $item){
+            $tmp = array();
+            $tmp["pId"] = $dep_node[$item['department']];
+            $tmp["id"] = $i++;
+            $tmp["name"] = $item['user_name'];
+            $tmp["department"] = $item['department'];
+            $tmp["user_id"] = $item['id'];
+            $tmp["pro_id"] = $search_pro_id;
+            $all_user_arr[] = $tmp;
+        }
+
+        $this->all_user_str = json_encode($all_user_arr);
+
+
+
+        //得到项目相关用户列表
+        $Pro2user = M('pro2user'); // 实例化Data数据模型
+        $cond["pro_id"] = $search_pro_id;
+        $userlist =  $Pro2user->where($cond)->select();//->getField("id,user_name,department");
+        $pro_user_arr = array();
+        if(count($userlist) >=1){
+            foreach($userlist as $item){
+                $tmp = array();
+                $tmp["pro_id"] = $search_pro_id;
+                $tmp["department"] = $item['department'];
+                $tmp["user_id"] = $item['user_id'];
+                $pro_user_arr[] = $tmp;
             }
         }
+        $this->pro_user_str = json_encode($pro_user_arr);
 
-
-        $pages = C('PAGE');//要ajax分页配置PAGE中必须theme带%ajax%，其他字符串替换统一在配置文件中设置，
-        //可以使用该方法前用C临时改变配置
-        foreach ($pages as $key => $value) {
-            $p->setConfig($key, $value); // 'theme'=>'%upPage% %linkPage% %downPage% %ajax%'; 要带 %ajax%
-        }
-        //分页显示
-        $page = $p->show();
-        //模板赋值
-        $this->assign($listvar, $voList);
-        //dump($voList);
-        $this->assign("page", $page);
-        //if ($this->isAjax()) {//判断ajax请求
-            layout(false);
-            $template = (!$template) ? 'ajaxlist' : $template;
-            exit($this->fetch($template));
-        //}
-        return $voList;
+        $this->display();
     }
 }

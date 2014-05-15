@@ -2,18 +2,17 @@
 namespace Home\Controller;
 use Think\Controller;
 class UserController extends Controller {
-    public function index(){
-        $this->msg = I('session.department','');
 
-        $this->display();
-    }
     private function clearSession(){
         unset($_SESSION['user_id']);
         unset($_SESSION['department']);
         unset($_SESSION['userflag']);
+        session(null);
     }
 
     public function login(){
+        layout(false);
+
         $this->clearSession();
         $this->department_array = USER_FUN_GET_DEPARTMENT_ARRAY(); // 进行模板变量赋值
         $this->display();
@@ -40,7 +39,7 @@ class UserController extends Controller {
             $_SESSION['department'] = $list['department'];
             $_SESSION['userflag'] = $list['userflag'];
 
-            $this->success('登录成功!',U('AllInOne/AllInOne'));
+            $this->success('登录成功!',U('AllInOne/index'));
         }
     }
 
@@ -60,7 +59,6 @@ class UserController extends Controller {
         $department = I('department');
         $status = I('status');
 
-        $Data = M('user'); // 实例化Data数据模型
         switch ($oper) {
             case "add"://
                 if( empty($user_name) || empty($email) || empty($department)){

@@ -1,33 +1,80 @@
-<script src="__PUBLIC__/js/AllInOne.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('body').layout({ applyDemoStyles: true });
 
+        var maintab =jQuery('#tabs').tabs({
+            add: function(e, ui) {
+                // append close thingy
+                console.log(ui.tab);
+                console.log(ui.panel);
+                console.log(ui.index);
+                console.log(ui.panel.id);
+                console.log($(ui.tab).parents('li:first'));
+                console.log($(ui.tab).parents('li:first')[0]);
+                $(ui.tab).parents('li:first')
+                        .append('<span class="ui-tabs-close ui-icon ui-icon-close" title="Close Tab"></span>')
+                        .find('span.ui-tabs-close')
+                        .click(function() {
+                            maintab.tabs('remove', $('li', maintab).index($(this).parents('li:first')[0]));
+                        });
+                // select just added tab
+                maintab.tabs('select', '#' + ui.panel.id);
+            }
+        });
 
-<div id="AllInOneMain">
-    <INPUT type="text" id="user_id" name="user_id" value="{$user_id}" >
-    <br/>
-    <INPUT type="text" id="department" name="department" value="{$department}" >
-    <br/>
-    <INPUT type="text" id="dep_module" name="dep_module" value='{$dep_module}' >
-    <br/>
-    <INPUT type="text" id="pro_id" name="pro_id" value="{$pro_id}" >
-    <br/>
-    <textarea rows="10" cols="200" id="dep_rec_detail" name="dep_rec_detail">{$dep_rec_detail}</textarea>
-    <br/>
-    <INPUT type="text" id="dep_sx" name="dep_sx" value="{$dep_sx}" >
-    <br/>
+        if($("#west_usermng").length >= 1){
+            $("#west_usermng").button().click(function(event){
+                var st = "#t_west_usermng";
+                if($(st).html() != null ) {
+                    maintab.tabs('select',st);
+                }
+                else {
+                    maintab.tabs('add',st, "用户管理");
+                    $(st,"#tabs").load("/index.php/Home/User/usermng");
+                }
+            });
+        }
+        //west_createproject
+        if($("#west_project_mng").length >= 1){
+            $("#west_project_mng").button().click(function(event){
+                var st = "#t_west_project_mng";
+                if($(st).html() != null ) {
+                    maintab.tabs('select',st);
+                }
+                else {
+
+                    maintab.tabs('add',st, "项目管理");
+                    $(st,"#tabs").load("/index.php/Home/Project/projectmng");
+                }
+            });
+        }
+        if($("#west_userlogout").length >= 1){
+            $("#west_userlogout").button().click(function(event){
+                window.location.replace("/index.php");
+            });
+        }
+    });
+</script>
+</head>
+<body>
+
+<div id="RightPane" class="ui-layout-center ui-helper-reset ui-widget-content">Center
+    <div id="tabs" class="jqgtabs">
+        <ul>
+            <li><a href="#tabs-1">jqGrid 3.6</a></li>
+        </ul>
+        <div id="tabs-1" style="font-size:12px;"> Many Thanks to Mark Williams which do the most of the new things added in 3.6<br/>
+            <br/>
+            Enjoy
+        </div>
+    </div>
+</div>
+<div class="ui-layout-north">North</div>
+<div class="ui-layout-south">South</div>
+<div class="ui-layout-east">East</div>
+<div class="ui-layout-west">
+    <include file="west" />
 </div>
 
-<div id="AllInOneDetail">
-    <include file="AllInOne/module_xmjbxx" />
-    <include file="AllInOne/module_xmscfx" />
-    <include file="AllInOne/module_khbyd" />
-    <include file="AllInOne/module_xmrlzygl" />
-    <include file="AllInOne/module_xmsjgl" />
-    <include file="AllInOne/module_xmcbgl" />
-    <include file="AllInOne/module_xmzjlgl" />
-    <include file="AllInOne/module_gysgl" />
-    <include file="AllInOne/module_ygjxgl" />
-    <include file="AllInOne/module_gczcgl" />
-    <include file="AllInOne/module_dxmgl" />
-</div>
 
 
