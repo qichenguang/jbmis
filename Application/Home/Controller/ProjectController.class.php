@@ -4,7 +4,7 @@ use Think\Controller;
 //use Think\Page;
 class ProjectController extends Controller {
 
-    public function ajaxSave(){
+    public function ajaxProjectmngSave(){
         $Data = M('sc'); // 实例化Data数据模型
 
         $oper = I('oper');
@@ -65,19 +65,16 @@ class ProjectController extends Controller {
             default:
                 break;
         }
-
-
     }
 
-    public function _before_search(){
+    public function _before_ajaxProjectmngSearch(){
         $department = $_SESSION['department'];
         if("sc" != $department){
             $this->error("没有权限!");
         }
     }
 
-    public function search(){
-        $examp = I("q"); //query number
+    public function ajaxProjectmngSearch(){
         $pagenum = I('page',1); // get the requested page
         $limitnum = I('rows',20); // get how many rows we want to have into the grid
         $sidx = I('sidx','id'); // get index row - i.e. user click to sort
@@ -88,7 +85,6 @@ class ProjectController extends Controller {
 
         //手动查询标志
         $searchOn = I('_search');
-
         //多条件查询
         if('true' == $searchOn) {
             $sarr = I('param.');
@@ -114,38 +110,29 @@ class ProjectController extends Controller {
             $searchOper = I('searchOper');
             $cond[$searchField] = array('LIKE', "%$searchString%");
         }
+        //
+        $User = M('sc'); // 实例化User对象
+        $count = $User->where($cond)->order(array($sidx => $sord))->count();// 查询满足要求的总记录数
+        $list =  $User->where($cond)->order(array($sidx => $sord))->page($pagenum,$limitnum)->select();
 
-        // connect to the database
-        switch ($examp) {
-            case 1://liset show
-                $User = M('sc'); // 实例化User对象
-                $count = $User->where($cond)->order(array($sidx => $sord))->count();// 查询满足要求的总记录数
-                $list =  $User->where($cond)->order(array($sidx => $sord))->page($pagenum,$limitnum)->select();
-
-                $total_pages = 0;
-                if( $count >0 ) {
-                    $total_pages = ceil($count/$limitnum);
-                }
-                $responce["page"] = $pagenum;
-                $responce["total"] = $total_pages;
-                $responce["records"] = $count;
-
-                $i=0;
-
-                $st = USER_FUN_GET_PROJECT_STATUS_NAME();
-                foreach($list as $item){
-                    $responce["rows"][$i]['id']=$item["id"];
-                    $responce["rows"][$i]['cell'] = array($item['id'],
-                        $item['pro_id'],$item['sc_pro_name'],$st[$item['status']]);
-                    $i++;
-                }
-                //$this->ajaxReturn(json_encode($responce));
-                //dump($responce);
-                $this->ajaxReturn($responce);
-                break;
-            case 2:
-                break;
+        $total_pages = 0;
+        if( $count >0 ) {
+            $total_pages = ceil($count/$limitnum);
         }
+        $responce["page"] = $pagenum;
+        $responce["total"] = $total_pages;
+        $responce["records"] = $count;
+
+        $i=0;
+        $st = USER_FUN_GET_PROJECT_STATUS_NAME();
+        foreach($list as $item){
+            $responce["rows"][$i]['id']=$item["id"];
+            $responce["rows"][$i]['cell'] = array($item['id'],
+                $item['pro_id'],$item['sc_pro_name'],$st[$item['status']]);
+            $i++;
+        }
+        $this->ajaxReturn($responce);
+
     }
 
     public function _before_projectmng(){
@@ -160,11 +147,9 @@ class ProjectController extends Controller {
         $this->display();
     }
 
-
     public function ajaxPrivilegeSave(){
-        $search_pro_id = I('pro_id');
+        $search_pro_id = I('pro2user_pro_id');
         $pro2user_all_str = I("pro2user_all_str");
-        //得到所有用户列表
         $Pro2user = M('pro2user'); // 实例化Data数据模型
         $cond["pro_id"] = $search_pro_id;
         $result =  $Pro2user->where($cond)->delete();
@@ -197,16 +182,14 @@ class ProjectController extends Controller {
         $this->ajaxReturn(array('state' => true, 'msg' => "存盘成功", 'pro_id' => $i));
     }
 
-    public function ajaxGetPrivilege(){
+    public function ajaxPrivilegeGet(){
         $search_pro_id = I('pro_id');
-        //得到所有用户列表
         $User = M('user'); // 实例化Data数据模型
-        $condition['status'] = 1;
+        $condition['status'] = 2;//normal
         $list =  $User->where($condition)->select();
         $dep = USER_FUN_GET_DEPARTMENT_NAME();
         $all_user_arr = array();
 
-        //department
         $i=1;
         $dep_node = array();
         foreach($dep as $key => $value){
@@ -234,7 +217,7 @@ class ProjectController extends Controller {
         //得到项目相关用户列表
         $Pro2user = M('pro2user'); // 实例化Data数据模型
         $cond["pro_id"] = $search_pro_id;
-        $userlist =  $Pro2user->where($cond)->select();//->getField("id,user_name,department");
+        $userlist =  $Pro2user->where($cond)->select();
         if(count($userlist) >=1){
             foreach($userlist as $item){
                 foreach($all_user_arr as &$tmp){
@@ -246,64 +229,78 @@ class ProjectController extends Controller {
                 }
             }
         }
-
         $this->ajaxReturn($all_user_arr);
     }
-    public function projectprivilege(){
-        //layout(false);
-        $search_pro_id = I('pro_id');
-        $search_pro_id = "pro_1";
-        //得到所有用户列表
-        $User = M('user'); // 实例化Data数据模型
-        $condition['status'] = 1;
-        $list =  $User->where($condition)->select();
-        $dep = USER_FUN_GET_DEPARTMENT_NAME();
-        $all_user_arr = array();
 
-        //department
-        $i=1;
-        $dep_node = array();
-        foreach($dep as $key => $value){
-            $tmp = array();
-            $tmp["pId"] = 0;
-            $tmp["id"] = $i++;
-            $tmp["name"] = $value;
-            $all_user_arr[] = $tmp;
-            $dep_node[$key] = $tmp["id"];
-        }
-        //user
-        $i=101;
-        foreach($list as $item){
-            $tmp = array();
-            $tmp["pId"] = $dep_node[$item['department']];
-            $tmp["id"] = $i++;
-            $tmp["name"] = $item['user_name'];
-            $tmp["department"] = $item['department'];
-            $tmp["user_id"] = $item['id'];
-            $tmp["pro_id"] = $search_pro_id;
-            $all_user_arr[] = $tmp;
+    public function projectsearch(){
+        layout(false);
+        //显示用户列表
+        $this->display();
+    }
+    public function ajaxProjectSearchSearch(){
+        $pagenum = I('page',1); // get the requested page
+        $limitnum = I('rows',20); // get how many rows we want to have into the grid
+        $sidx = I('sidx','id'); // get index row - i.e. user click to sort
+        $sord = I('sord','desc'); // get the direction
+        if($sidx == ""){
+            $sidx = 'id';
         }
 
-        $this->all_user_str = json_encode($all_user_arr);
-
-
-
-        //得到项目相关用户列表
-        $Pro2user = M('pro2user'); // 实例化Data数据模型
-        $cond["pro_id"] = $search_pro_id;
-        $userlist =  $Pro2user->where($cond)->select();//->getField("id,user_name,department");
-        $pro_user_arr = array();
-        if(count($userlist) >=1){
-            foreach($userlist as $item){
-                $tmp = array();
-                $tmp["pro_id"] = $search_pro_id;
-                $tmp["department"] = $item['department'];
-                $tmp["user_id"] = $item['user_id'];
-                $pro_user_arr[] = $tmp;
+        //手动查询标志
+        $searchOn = I('_search');
+        //多条件查询
+        if('true' == $searchOn) {
+            $sarr = I('param.');
+            foreach( $sarr as $k=>$v) {
+                switch ($k) {
+                    case 'pro_id':
+                    case 'sc_pro_name':
+                        $cond[$k] = array('LIKE', "%$v%");
+                        break;
+                    case 'id':
+                    case 'status':
+                        if("0" != $v){
+                            $cond[$k] = $v;
+                        }
+                        break;
+                }
             }
         }
-        $this->pro_user_str = json_encode($pro_user_arr);
+        //强制为 1
+        $cond['jb_sc.status'] = 2;//normal
+        $sidx = "jb_sc." . $sidx;
+        //单条件 find
+        if(FALSE && 'true' == $searchOn){
+            $searchField = I('searchField');
+            $searchString = I('searchString');
+            $searchOper = I('searchOper');
+            $cond[$searchField] = array('LIKE', "%$searchString%");
+        }
+        //
+        $User = M('sc'); // 实例化User对象
+        $count = $User
+            ->join('jb_pro2user ON jb_sc.pro_id = jb_pro2user.pro_id and jb_pro2user.user_id = ' . session("user_id") . " and jb_pro2user.department = " . session("department") . "'")
+            ->where($cond)->order(array($sidx => $sord))->count();// 查询满足要求的总记录数
+        $list =  $User
+            ->join('jb_pro2user ON jb_sc.pro_id = jb_pro2user.pro_id and jb_pro2user.user_id = ' . session("user_id") . " and jb_pro2user.department ='" . session("department") . "'")
+            ->where($cond)->order(array($sidx => $sord))->page($pagenum,$limitnum)->select();
 
-        $this->display();
+        $total_pages = 0;
+        if( $count >0 ) {
+            $total_pages = ceil($count/$limitnum);
+        }
+        $responce["page"] = $pagenum;
+        $responce["total"] = $total_pages;
+        $responce["records"] = $count;
+
+        $i=0;
+        $st = USER_FUN_GET_PROJECT_STATUS_NAME();
+        foreach($list as $item){
+            $responce["rows"][$i]['id']=$item["id"];
+            $responce["rows"][$i]['cell'] = array($item['id'],
+                $item['pro_id'],$item['sc_pro_name'],$st[$item['status']]);
+            $i++;
+        }
+        $this->ajaxReturn($responce);
     }
 }

@@ -43,7 +43,6 @@ $(document).ready(function() {
                 minlength: 6
             }
         },
-
         errorElement: "em",				//用来创建错误提示信息标签
         success: function(label) {			//验证成功后的执行的回调函数
             //label指向上面那个错误提示信息标签em
@@ -51,7 +50,5 @@ $(document).ready(function() {
                 .addClass("success");	//加上自定义的success类
         }
     });
-
     //JqGrid
-
 });

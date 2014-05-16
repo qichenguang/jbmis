@@ -1,9 +1,9 @@
 $(document).ready(function() {
-
+    //
     var userListGrid = jQuery("#userlist").jqGrid({
-        url:'/index.php/Home/User/search/q/1',
+        url:'/index.php/Home/User/ajaxUserSearch',
         datatype: "json",
-        //mtype: 'POST',
+        mtype: 'POST',
         colNames:['ID','用户名称', '邮件地址', '部门','用户状态'],
         colModel:[
             {name:'id',index:'id',
@@ -31,8 +31,6 @@ $(document).ready(function() {
                 sortable:true,
                 stype:'select',//查询类型
                 editable:true,edittype:"select",
-                //editoptions:{value:"sc:市场部;IN:计划表;TN:TNT",defaultValue:"IN"},
-                //editoptions:{dataUrl : '/index.php/Home/User/search/q/2',defaultValue:"IN"},
                 editoptions:{value:{
                     'all':"全部",
                     'cg':"采购管理部",
@@ -51,8 +49,6 @@ $(document).ready(function() {
                 sortable:true,
                 stype:'select',//查询类型
                 editable:true,edittype:"select",
-                //editoptions:{value:"sc:市场部;IN:计划表;TN:TNT",defaultValue:"IN"},
-                //editoptions:{dataUrl : '/index.php/Home/User/search/q/2',defaultValue:"IN"},
                 editoptions:{value:{
                     '0':"全部",
                     '1':"新增(待审核)",
@@ -67,14 +63,10 @@ $(document).ready(function() {
         rowNum:10,
         rowList:[10,20,30],
         pager: '#puserlist',
-        //sortname: 'id',
         viewrecords: true,
         sortorder: "desc",
         forceFit : true,
-        //cellEdit: true,
-        //cellsubmit: 'clientArray',
-        //cellurl : '/url/to/handling/the/changed/cell/value'
-        editurl: '/index.php/Home/User/ajaxSave', // this is dummy existing url
+        editurl: '/index.php/Home/User/ajaxUserSave',
         caption:"用户管理"
     });
 
@@ -96,26 +88,22 @@ $(document).ready(function() {
             reloadAfterSubmit:true,
             closeOnEscape:true,
             closeAfterEdit:true,
-            onclickSubmit: function(params, postdata) {//fires after the submit button is clicked and the postdata is constructed
-                //alert('onclickSubmit!');
-                postdata.id = jQuery("#userlist").jqGrid('getGridParam','selrow'); //opt.actRowid;    // 确保能取到master grid的rowid!
+            onclickSubmit: function(params, postdata) {
+                //fires after the submit button is clicked and the postdata is constructed
+                postdata.id = jQuery("#userlist").jqGrid('getGridParam','selrow');
                 return postdata;
             },
-            afterSubmit: function(xhr, postdata) {//fires after response has been received from server
-                //alert('afterSubmit!');
+            afterSubmit: function(xhr, postdata) {
+                //fires after response has been received from server
                 //[success, message, new_id];
-                var result = eval('(' + xhr.responseText + ')');//动态页返回json格式的字符串，如{success:true/false}之类的，为false添加err属性什么的，成功则返回new_id
-                //console.log(xhr);
-                //console.log(result);
-                //console.log(result.state);
-                //console.log(result.msg);
+                //动态页返回json格式的字符串，如{success:true/false}之类的，为false添加err属性什么的，成功则返回new_id
+                var result = eval('(' + xhr.responseText + ')');
                 return [result.state,result.msg];
             },
-            afterComplete: function(response, postdata, formid) {//This event fires immediately after all actions and events are completed and the row is inserted or updated in the grid.
-                //alert('afterComplete!');
+            afterComplete: function(response, postdata, formid) {
+                //This event fires immediately after all actions and events are completed and the row is inserted or updated in the grid.
                 //jQuery("#userlist").trigger('reloadGrid');
             }
-
         }, // edit options end
         {  // add options begin
             mtype:'GET',
@@ -133,24 +121,20 @@ $(document).ready(function() {
             closeOnEscape:true,
             clearAfterAdd:true,
             closeAfterAdd:true,
-            onclickSubmit: function(params, postdata) {//fires after the submit button is clicked and the postdata is constructed
-                //alert('onclickSubmit!');
+            onclickSubmit: function(params, postdata) {
+                //fires after the submit button is clicked and the postdata is constructed
                 return postdata;
             },
-            afterSubmit: function(xhr, postdata) {//fires after response has been received from server
-                //alert('afterSubmit!');
-                var result = eval('(' + xhr.responseText + ')');//动态页返回json格式的字符串，如{success:true/false}之类的，为false添加err属性什么的，成功则返回new_id
-                //console.log(xhr);
-                //console.log(result);
-                //console.log(result.state);
-                //console.log(result.msg);
+            afterSubmit: function(xhr, postdata) {
+                //fires after response has been received from server
+                //动态页返回json格式的字符串，如{success:true/false}之类的，为false添加err属性什么的，成功则返回new_id
+                var result = eval('(' + xhr.responseText + ')');
                 return [result.state,result.msg,result.id];
             },
-            afterComplete: function(response, postdata, formid) {//This event fires immediately after all actions and events are completed and the row is inserted or updated in the grid.
-                //alert('afterComplete!');
+            afterComplete: function(response, postdata, formid) {
+                //This event fires immediately after all actions and events are completed and the row is inserted or updated in the grid.
                 //jQuery("#userlist").trigger('reloadGrid');
             }
-
         }, // add options end
         {mtype:'GET',reloadAfterSubmit:false,jqModal:false, closeOnEscape:true}, // del options
         {closeOnEscape:true}, // search options

@@ -24,8 +24,8 @@ class UserController extends Controller {
         $password = I('password','');
         $department = I('department','');
         $userflag = I('userflag',1);
-
-        $condition["status"] = 1;
+        //
+        $condition["status"] = 2;//normal
         $condition["email"] = $email;
         $condition["password"] = $password;
         $condition["department"] = $department;
@@ -43,13 +43,13 @@ class UserController extends Controller {
         }
     }
 
-    public function _before_ajaxSave(){
+    public function _before_ajaxUserSave(){
         $userflag = $_SESSION['userflag'];
         if(2 != $userflag){
             $this->error("没有权限!");
         }
     }
-    public function ajaxSave(){
+    public function ajaxUserSave(){
         $Data = M('user'); // 实例化Data数据模型
 
         $oper = I('oper');
@@ -118,19 +118,16 @@ class UserController extends Controller {
             default:
                 break;
         }
-
-
     }
 
-    public function _before_search(){
+    public function _before_ajaxUserSearch(){
         $userflag = $_SESSION['userflag'];
         if(2 != $userflag){
             $this->error("没有权限!");
         }
     }
 
-    public function search(){
-        $examp = I("q"); //query number
+    public function ajaxUserSearch(){
         $pagenum = I('page',1); // get the requested page
         $limitnum = I('rows',20); // get how many rows we want to have into the grid
         $sidx = I('sidx','id'); // get index row - i.e. user click to sort
@@ -138,10 +135,9 @@ class UserController extends Controller {
         if($sidx == ""){
             $sidx = 'id';
         }
-
         //手动查询标志
         $searchOn = I('_search');
-
+        $cond = array();
         //多条件查询
         if('true' == $searchOn) {
             $sarr = I('param.');
@@ -172,49 +168,38 @@ class UserController extends Controller {
             $searchOper = I('searchOper');
             $cond[$searchField] = array('LIKE', "%$searchString%");
         }
-
-        // connect to the database
-        switch ($examp) {
-            case 1://liset show
-                $User = M('User'); // 实例化User对象
-                $count = $User->where($cond)->order(array($sidx => $sord))->count();// 查询满足要求的总记录数
-                $list =  $User->where($cond)->order(array($sidx => $sord))->page($pagenum,$limitnum)->select();
-
-                $total_pages = 0;
-                if( $count >0 ) {
-                    $total_pages = ceil($count/$limitnum);
-                }
-                $responce["page"] = $pagenum;
-                $responce["total"] = $total_pages;
-                $responce["records"] = $count;
-
-                $i=0;
-
-                $dep = USER_FUN_GET_DEPARTMENT_NAME();
-                $st = USER_FUN_GET_USER_STATUS_NAME();
-                foreach($list as $item){
-                    $responce["rows"][$i]['id']=$item["id"];
-                    $responce["rows"][$i]['cell'] = array($item['id'],
-                        $item['user_name'],$item['email'],$dep[$item['department']],$st[$item['status']]);
-                    $i++;
-                }
-                //$this->ajaxReturn(json_encode($responce));
-                //dump($responce);
-                $this->ajaxReturn($responce);
-                break;
-            case 2:
-                break;
+        //
+        $User = M('User'); // 实例化User对象
+        $count = $User->where($cond)->order(array($sidx => $sord))->count();// 查询满足要求的总记录数
+        $list =  $User->where($cond)->order(array($sidx => $sord))->page($pagenum,$limitnum)->select();
+        $total_pages = 0;
+        if( $count >0 ) {
+            $total_pages = ceil($count/$limitnum);
         }
+        $responce["page"] = $pagenum;
+        $responce["total"] = $total_pages;
+        $responce["records"] = $count;
+        trace($count,"count=");
+        $i=0;
+        $dep = USER_FUN_GET_DEPARTMENT_NAME();
+        $st = USER_FUN_GET_USER_STATUS_NAME();
+        foreach($list as $item){
+            $responce["rows"][$i]['id']=$item["id"];
+            $responce["rows"][$i]['cell'] = array($item['id'],
+                $item['user_name'],$item['email'],$dep[$item['department']],$st[$item['status']]);
+            $i++;
+        }
+        $this->ajaxReturn($responce);
     }
 
     public function usermng(){
-        layout(false);
+        //layout(true);
         //显示用户列表
         $this->display();
     }
 
     public function add(){
-        layout(false);
+        //layout(false);
         $this->department_array = USER_FUN_GET_DEPARTMENT_ARRAY(); // 进行模板变量赋值
         $this->display();
     }

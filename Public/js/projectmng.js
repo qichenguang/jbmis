@@ -1,9 +1,98 @@
-$(document).ready(function() {
+$(document).ready(function(){
+    //zTree  设置开始 //////////////////////////////////////////////////////////////////////////////////////////////////
+    var ztree_setting = {
+        view: {
+            //禁止多点选中
+            selectedMulti: false
+        },
+        check: {
+            enable: true
+        },
+        data: {
+            simpleData: {
+                enable:true,
+                idKey: "id",
+                pIdKey: "pId",
+                rootPId: ""
+            }
+        },
+        callback: {
+            onCheck: ztree_onCheck
+        }
+    };
 
-    var projectListGrid = jQuery("#projectlist").jqGrid({
-        url:'/index.php/Home/Project/search/q/1',
+    function ztree_onCheck(){
+        var treeObj = $.fn.zTree.getZTreeObj("privilegeTree");
+        var nodes = treeObj.getCheckedNodes(true);
+        var v = "";
+        for(var i=0;i<nodes.length;i++){
+            if(nodes[i].id > 100){
+                v += nodes[i].pro_id + "," + nodes[i].department + "," + nodes[i].user_id + "|";
+            }
+        }
+        $("#pro2user_all_str").attr("value",v);
+    }
+
+    function initProIdZtree(pro_id){
+        $.ajax({
+            type: "POST",
+            dataType: "json",
+            url: '/index.php/Home/Project/ajaxPrivilegeGet',
+            data: {pro_id:pro_id},
+            success: function(data) {
+                var treeObj = $.fn.zTree.init($("#privilegeTree"), ztree_setting, data);
+                var nodes = treeObj.getCheckedNodes();
+                for (var i = 0; i < nodes.length; i++) {
+                    treeObj.checkNode(nodes[i], true, true);
+                }
+                //
+                $("#privilegeDiv #pro2user_pro_id").val(pro_id);
+                $("#privilegeDiv").show();
+            }
+        });
+    }
+    $("#privilegeDiv").hide();
+    ////zTree  设置结束/////////////////////////////////////////////////////////////////////////////////////////////////
+
+    //Form 设置 开始  //////////////////////////////////////////////////////////////////////////////////////////////////
+    function beforePrivilegeRequest(formData, jqForm, options){
+        //生成权限字符串，并设置
+        ztree_onCheck();
+        return true;
+    }
+    //提交后
+    function afterPrivilegeResponse(responseText, statusText , xhr , $form){
+        //清空权限字符串，并设置
+        $("#privilegeDiv #pro2user_pro_id").val("");
+        $("#privilegeDiv #pro2user_all_str").val("");
+        var result = eval('(' + xhr.responseText + ')');
+        alert(result.msg);
+        $("#privilegeDiv").hide();
+    }
+
+    var privilegeOptions = {
+        target:        '#privilegeResult',   // 用服务器返回的数据 更新 id为 result 的内容.
+        beforeSubmit:  beforePrivilegeRequest,  // 提交前
+        success:       afterPrivilegeResponse,  // 提交后
+        //另外的一些属性:
+        //url:       url         // 默认是form的action，如果写的话，会覆盖from的action.
+        //type:      type        // 默认是form的method，如果写的话，会覆盖from的method.('get' or 'post').
+        //dataType:  null        // 'xml', 'script', or 'json' (接受服务端返回的类型.)
+        //clearForm: true        // 成功提交后，清除所有的表单元素的值.
+        resetForm: true,        // 成功提交后，重置所有的表单元素的值.
+        //由于某种原因,提交陷入无限等待之中,timeout参数就是用来限制请求的时间,
+        //当请求大于3秒后，跳出请求.
+        timeout:   3000
+    };
+    //'ajaxForm' 方式的表单 .
+    $('#privilegeAddForm').ajaxForm(privilegeOptions);
+    //Form 设置 结束  //////////////////////////////////////////////////////////////////////////////////////////////////
+
+    //jqGrid setting 开始.//////////////////////////////////////////////////////////////////////////////////////////////
+    var projectmngListGrid = jQuery("#projectmnglist").jqGrid({
+        url:'/index.php/Home/Project/ajaxProjectmngSearch',
         datatype: "json",
-        //mtype: 'POST',
+        mtype: 'POST',
         colNames:['ID','项目ID', '项目名称','项目状态'],
         colModel:[
             {name:'id',index:'id',
@@ -31,8 +120,6 @@ $(document).ready(function() {
                 sortable:true,
                 stype:'select',//查询类型
                 editable:true,edittype:"select",
-                //editoptions:{value:"sc:市场部;IN:计划表;TN:TNT",defaultValue:"IN"},
-                //editoptions:{dataUrl : '/index.php/Home/User/search/q/2',defaultValue:"IN"},
                 editoptions:{value:{
                     '0':"全部",
                     '1':"新增(待审核)",
@@ -47,29 +134,25 @@ $(document).ready(function() {
         rownumbers: true,
         rowNum:10,
         rowList:[10,20,30],
-        pager: '#pprojectlist',
-        //sortname: 'id',
+        pager: '#pprojectmnglist',
         viewrecords: true,
         sortorder: "desc",
         forceFit : true,
-        //cellEdit: true,
-        //cellsubmit: 'clientArray',
-        //cellurl : '/url/to/handling/the/changed/cell/value'
-        editurl: '/index.php/Home/Project/ajaxSave', // this is dummy existing url
-        caption:"项目管理"
+        editurl: '/index.php/Home/Project/ajaxProjectmngSave',
+        caption:"项目管理",
+        onSelectRow: function(id){
+            $("#privilegeDiv").hide();
+        }
     });
 
     //导航栏配置和CRUD函数
-    jQuery("#projectlist").jqGrid('navGrid','#pprojectlist',
+    jQuery("#projectmnglist").jqGrid('navGrid','#pprojectmnglist',
         {view:false,search:false}, //导航栏 按钮 是否显示 options
         {   // edit options begin
-            mtype:'GET',
+            mtype:'POST',
             height:290,
             modal: true, //模态显示
             drag: true,  //窗体是否可以拖动
-            //addCaption: "新建公司简介",
-            //bSubmit: "保存",
-            //bCancel: "取消",
             topinfo:"(*) 为必填字段",
             bottominfo:"带 (*) 表示是必填字段",
             processData: "数据保存中...",
@@ -77,35 +160,29 @@ $(document).ready(function() {
             reloadAfterSubmit:true,
             closeOnEscape:true,
             closeAfterEdit:true,
-            onclickSubmit: function(params, postdata) {//fires after the submit button is clicked and the postdata is constructed
-                //alert('onclickSubmit!');
-                postdata.id = jQuery("#projectlist").jqGrid('getGridParam','selrow'); //opt.actRowid;    // 确保能取到master grid的rowid!
+            onclickSubmit: function(params, postdata) {
+                //fires after the submit button is clicked and the postdata is constructed
+                postdata.id = jQuery("#projectmnglist").jqGrid('getGridParam','selrow');
                 return postdata;
             },
-            afterSubmit: function(xhr, postdata) {//fires after response has been received from server
-                //alert('afterSubmit!');
+            afterSubmit: function(xhr, postdata) {
+                //fires after response has been received from server
+                //动态页返回json格式的字符串，如{success:true/false}之类的，为false添加err属性什么的，成功则返回new_id
                 //[success, message, new_id];
-                var result = eval('(' + xhr.responseText + ')');//动态页返回json格式的字符串，如{success:true/false}之类的，为false添加err属性什么的，成功则返回new_id
-                //console.log(xhr);
-                //console.log(result);
-                //console.log(result.state);
-                //console.log(result.msg);
+                var result = eval('(' + xhr.responseText + ')');
                 return [result.state,result.msg];
             },
-            afterComplete: function(response, postdata, formid) {//This event fires immediately after all actions and events are completed and the row is inserted or updated in the grid.
-                //alert('afterComplete!');
+            afterComplete: function(response, postdata, formid) {
+                //This event fires immediately after all actions and events are completed and the row is inserted or updated in the grid.
                 //jQuery("#userlist").trigger('reloadGrid');
             }
 
         }, // edit options end
         {  // add options begin
-            mtype:'GET',
+            mtype:'POST',
             height:290,
             modal: true, //模态显示
             drag: true,  //窗体是否可以拖动
-            //addCaption: "新建公司简介",
-            //bSubmit: "保存",
-            //bCancel: "取消",
             topinfo:"(*) 为必填字段",
             bottominfo:"带 (*) 表示是必填字段",
             processData: "数据保存中...",
@@ -114,51 +191,49 @@ $(document).ready(function() {
             closeOnEscape:true,
             clearAfterAdd:true,
             closeAfterAdd:true,
-            onclickSubmit: function(params, postdata) {//fires after the submit button is clicked and the postdata is constructed
-                //alert('onclickSubmit!');
+            onclickSubmit: function(params, postdata) {
+                //fires after the submit button is clicked and the postdata is constructed
                 return postdata;
             },
-            afterSubmit: function(xhr, postdata) {//fires after response has been received from server
-                //alert('afterSubmit!');
-                var result = eval('(' + xhr.responseText + ')');//动态页返回json格式的字符串，如{success:true/false}之类的，为false添加err属性什么的，成功则返回new_id
-                //console.log(xhr);
-                //console.log(result);
-                //console.log(result.state);
-                //console.log(result.msg);
+            afterSubmit: function(xhr, postdata) {
+                //fires after response has been received from server
+                //动态页返回json格式的字符串，如{success:true/false}之类的，为false添加err属性什么的，成功则返回new_id
+                var result = eval('(' + xhr.responseText + ')');
                 return [result.state,result.msg,result.id];
             },
-            afterComplete: function(response, postdata, formid) {//This event fires immediately after all actions and events are completed and the row is inserted or updated in the grid.
-                //alert('afterComplete!');
+            afterComplete: function(response, postdata, formid) {
+                //This event fires immediately after all actions and events are completed and the row is inserted or updated in the grid.
                 //jQuery("#userlist").trigger('reloadGrid');
             }
 
         }, // add options end
-        {mtype:'GET',reloadAfterSubmit:false,jqModal:false, closeOnEscape:true}, // del options
+        {mtype:'POST',reloadAfterSubmit:false,jqModal:false, closeOnEscape:true}, // del options
         {closeOnEscape:true}, // search options
         {height:250,jqModal:false,closeOnEscape:true} // view options
     );
 
     //其他配置
-    jQuery("#projectlist").jqGrid('gridResize',{minWidth:350,maxWidth:1000,minHeight:80, maxHeight:350});
-    jQuery("#projectlist").jqGrid('sortableRows');
-    jQuery("#projectlist").jqGrid('filterToolbar');
-    jQuery("#projectlist").jqGrid('navButtonAdd',"#pprojectlist",{caption:"Toggle",title:"Toggle Search Toolbar", buttonicon :'ui-icon-pin-s',
+    jQuery("#projectmnglist").jqGrid('gridResize',{minWidth:350,maxWidth:1000,minHeight:80, maxHeight:350});
+    jQuery("#projectmnglist").jqGrid('sortableRows');
+    jQuery("#projectmnglist").jqGrid('filterToolbar');
+    jQuery("#projectmnglist").jqGrid('navButtonAdd',"#pprojectmnglist",{caption:"Toggle",title:"Toggle Search Toolbar", buttonicon :'ui-icon-pin-s',
         onClickButton:function(){
-            projectListGrid[0].toggleToolbar();
+            projectmngListGrid[0].toggleToolbar();
         }
     });
-    jQuery("#projectlist").jqGrid('navButtonAdd',"#pprojectlist",{caption:"授权",title:"项目授权",
+    jQuery("#projectmnglist").jqGrid('navButtonAdd',"#pprojectmnglist",{caption:"授权",title:"项目授权",
         onClickButton: function(){
-            var gsr = jQuery("#projectlist").jqGrid('getGridParam','selrow');
-            if(gsr){
-                alert('您选择了第'+gsr+'行数据');
-                var rowData = $("#projectlist").jqGrid('getRowData',gsr);
-                alert(rowData.pro_id);//显示选中行的电子邮件列
-                initMyZtree(rowData.pro_id);
+            var rowid = jQuery("#projectmnglist").jqGrid('getGridParam','selrow');
+            if(rowid){
+                var rowData = $("#projectmnglist").jqGrid('getRowData',rowid);
+                initProIdZtree(rowData.pro_id);
             }else{
                 alert("请选择一行数据");
             }
         },
         position:"last"
     });
+    //jqGrid setting 结束///////////////////////////////////////////////////////////////////////////////////////////////
+
+
 });

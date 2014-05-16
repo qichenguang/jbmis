@@ -1,184 +1,22 @@
 <script src="__PUBLIC__/js/projectmng.js"></script>
-<link rel="stylesheet" type="text/css" media="screen" href="__PUBLIC__/style/zTreeStyle/zTreeStyle.css" />
-<script src="__PUBLIC__/js/Lib/ztree/jquery.ztree.all-3.5.js" type="text/javascript"></script>
-<script type="text/javascript">
-    var zNodes="";
-    var ztree_setting = {
-        view: {
-            selectedMulti: false        //禁止多点选中
-        },
-        check: {
-            enable: true
-        },
-        data: {
-            simpleData: {
-                enable:true,
-                idKey: "id",
-                pIdKey: "pId",
-                rootPId: ""
-            }
-        },
-/*        async: {
-            enable: true,
-            url:"/index.php/Home/Project/ajaxGetPrivilege"
-            //autoParam:["id", "name"],
-            //otherParam:{"otherParam":"zTreeAsyncTest"},
-            // dataType: "text",//默认text
-            //type:"get"//默认post
-            //dataFilter: filter //异步返回后经过Filter
-        },*/
-        callback: {
-            onClick: function(treeId, treeNode) {
-                var treeObj = $.fn.zTree.getZTreeObj(treeNode);
-                var selectedNode = treeObj.getSelectedNodes()[0];
-                $("#txtId").val(selectedNode.id);
-                $("#txtAddress").val(selectedNode.name);
-            },
-            onCheck: ztree_onCheck
-        }
-    };
 
-    function ztree_onCheck(){
-        var treeObj=$.fn.zTree.getZTreeObj("treeDemo");
-        nodes=treeObj.getCheckedNodes(true);
-        v = "";
-        for(var i=0;i<nodes.length;i++){
-            if(nodes[i].id > 100){
-                v += nodes[i].pro_id + "," + nodes[i].department + "," + nodes[i].user_id + "|";
-            }
-        }
-        alert(v); //获取选中节点的值
-        $("#pro2user_all_str").attr("value",v);
-    }
 
-    function ztree_checkProUser(){
-        var pro_user_str = $("#pro_user_str").val();
-        console.log(pro_user_str);
-        var pro_user_arr = $.parseJSON(pro_user_str);
-        console.log(pro_user_arr);
-        console.log(pro_user_arr.length);
-        var zTreeObj=$.fn.zTree.getZTreeObj("treeDemo");//获得树对象
-        var nodes=zTreeObj.getNodes();                    //获得节点
-        var childNodes = zTreeObj.transformToArray(nodes); //getNodes()方法得到的只是父级节点，想要得到全部的，得转换为数组进行遍历
-        for(var i=0;i<childNodes.length;i++){
-            //console.log(childNodes[i].id);
-            if(childNodes[i].id > 100){
-                //console.log(childNodes[i].name);
-                for(var j=0;j<pro_user_arr.length;j++){
-                    //console.log( pro_user_arr[j].department);
-                    //console.log(childNodes[i].user_id);
-                    if(pro_user_arr[j].pro_id == childNodes[i].pro_id
-                            && pro_user_arr[j].department == childNodes[i].department
-                            && pro_user_arr[j].user_id == childNodes[i].user_id){
-                        console.log(childNodes[i].user_id);
-                        //childNodes[i].checked = true;
-                        zTreeObj.checkNode(childNodes[i], true, true);
-                    }
-                }
-            }
-        }
-    }
-
-    function initMyZtree(pro_id){
-        $.ajax({
-            type: "GET",
-            dataType: "json",
-            url: '/index.php/Home/Project/ajaxGetPrivilege',
-            data: {pro_id:pro_id},
-            success: function(data) {
-                zNodes = data;
-                $ztreeobj = $.fn.zTree.init($("#treeDemo"), ztree_setting, zNodes);
-                var nodes = $ztreeobj.getCheckedNodes();
-                for (var i = 0, l = nodes.length; i < l; i++) {
-                    $ztreeobj.checkNode(nodes[i], true, true);
-                }
-                $("#privilegeDiv #pro_id").val(pro_id);
-                $("#privilegeDiv").show();
-            }
-        });
-
-    }
-
-    $(document).ready(function(){
-        /*        var zNodeStr = $("#all_user_str").val();
-         //console.log(zNodeStr);
-         var zNodes = $.parseJSON(zNodeStr);
-         //console.log(zNodes);
-         $.fn.zTree.init($("#treeDemo"), setting, zNodes);
-         checkProUser();*/
-        $("#privilegeDiv").hide();
-
-    });
-
-    //提交前
-    function showRequest(formData, jqForm, options) {
-        // formdata是数组对象,在这里，我们使用$.param()方法把他转化为字符串.
-        var queryString = $.param(formData); //组装数据，插件会自动提交数据
-        alert(queryString); //类似 ： name=1&add=2
-        ztree_onCheck();
-        return true;
-    }
-    //提交后
-    function showResponse(responseText, statusText , xhr , $form)  {
-        //alert('状态: ' + statusText + '\n 返回的内容是: \n' + responseText);
-        /*        if($.isArray(responseText)){
-         alert('状态: ' + statusText + '\n 返回的内容是: \n' + "ok");
-         }
-         alert('状态: ' + statusText + '\n 返回的内容是: \n' + $.type(responseText));*/
-        /*        htmlstr = "<table>"
-         $.each(responseText,function(entryindex,entry){
-         htmlstr += '<tr><td>' + entry.pro_id + '</td></tr>';
-         });
-         htmlstr += "</table>";
-         $("#sub_list").html(htmlstr);*/
-        var result = eval('(' + xhr.responseText + ')');//动态页返回json格式的字符串，如{success:true/false}之类的，为false添加err属性什么的，成功则返回new_id
-        //console.log(xhr);
-        //console.log(result);
-        //console.log(result.state);
-        //console.log(result.msg);
-        alert(result.state);
-        alert(result.msg);
-        alert(result.pro_id);
-        //return [result.state,result.msg];
-        $("#privilegeDiv #pro_id").val("");
-        $("#privilegeDiv #pro2user_all_str").val("");
-        $("#privilegeDiv").hide();
-    }
-
-    var privilegeOptions = {
-        target:        '#privilegeResult',   // 用服务器返回的数据 更新 id为 result 的内容.
-        beforeSubmit:  showRequest,  // 提交前
-        success:       showResponse,  // 提交后
-        //另外的一些属性:
-        //url:       url         // 默认是form的action，如果写的话，会覆盖from的action.
-        //type:      type        // 默认是form的method，如果写的话，会覆盖from的method.('get' or 'post').
-        //dataType:  null        // 'xml', 'script', or 'json' (接受服务端返回的类型.)
-        //clearForm: true        // 成功提交后，清除所有的表单元素的值.
-        resetForm: true,        // 成功提交后，重置所有的表单元素的值.
-        //由于某种原因,提交陷入无限等待之中,timeout参数就是用来限制请求的时间,
-        //当请求大于3秒后，跳出请求.
-        timeout:   3000
-    };
-    //'ajaxForm' 方式的表单 .
-    $('#privilegeAddForm').ajaxForm(privilegeOptions);
-</script>
-
-<table id="projectlist"></table>
-<div id="pprojectlist"></div>
-
+<table id="projectmnglist"></table>
+<div id="pprojectmnglist"></div>
+<div id="privilegeResult" name="privilegeResult"></div>
 <div id="privilegeDiv">
-<div >
-    <ul id="treeDemo" class="ztree">
-    </ul>
-</div>
-<div>
     <FORM id="privilegeAddForm" method="post" action="__URL__/ajaxPrivilegeSave">
-        当前项目ID:<input id="pro_id" type="text" name="pro_id" value="" /><br />
-        <input id="pro2user_all_str" type="text" name="pro2user_all_str" value="" /><br />
-        <INPUT type="submit" value="提交"><INPUT type="reset" value="关闭" onclick='$("#privilegeDiv").hide();'>
+        <br />
+        当前项目ID:
+        <input id="pro2user_pro_id"  type="text" name="pro2user_pro_id"  value="" readOnly="true" /><br />
+        <input id="pro2user_all_str" type="text" name="pro2user_all_str" value="" style="display:none;" />
+
+    <ul id="privilegeTree" class="ztree">
+    </ul>
+
+    <INPUT type="submit" value="提交"><INPUT type="reset" value="关闭" onclick='$("#privilegeDiv").hide();'>
     </FORM>
-    <div id="privilegeResult" name="privilegeResult"></div>
 
 </div>
-</div>
+
 

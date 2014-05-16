@@ -4,11 +4,13 @@ use Think\Controller;
 class AllInOneController extends Controller {
     public function _before_index(){
         $user_id = $_SESSION['user_id'];
+        //trace($user_id,"user_id=");
         if("" == $user_id){
             $this->error("没有权限!");
         }
     }
     public function index(){
+        //trace($_SESSION["user_id"],"user_id=");
         $this->user_id = $_SESSION["user_id"];
         $this->department = $_SESSION["department"];
         $this->userflag = $_SESSION['userflag'];
@@ -43,12 +45,8 @@ class AllInOneController extends Controller {
             //dump($this->$dep_tb);
         }
         $this->dep_rec_detail = json_encode($dep_detail);
-
         //layout(flase);
         $this->display();
-        //$this->display("index");
-        //layout(fasle);
-        //exit($this->fetch(index));
     }
 
 }

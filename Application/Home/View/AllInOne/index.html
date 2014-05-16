@@ -48,6 +48,21 @@
                 }
             });
         }
+        //west_search project
+        if($("#west_project_search").length >= 1){
+            $("#west_project_search").button().click(function(event){
+                var st = "#t_west_project_search";
+                if($(st).html() != null ) {
+                    maintab.tabs('select',st);
+                }
+                else {
+
+                    maintab.tabs('add',st, "项目查询");
+                    $(st,"#tabs").load("/index.php/Home/Project/projectsearch");
+                }
+            });
+        }
+
         if($("#west_userlogout").length >= 1){
             $("#west_userlogout").button().click(function(event){
                 window.location.replace("/index.php");
