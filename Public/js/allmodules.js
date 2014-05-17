@@ -122,11 +122,27 @@ $(document).ready(function() {
         theme:'light',
         content:'存盘?',
         onYes:function(ctl){
-            alert(ctl.attr("id"));
+            //alert(ctl.attr("id"));
             var depcode = $("#department").val();
             var id = ctl.attr("id");
             if(id.substring(0,3) == (depcode + "_")){
-                alert(ctl.val());
+                //alert(ctl.val());
+                var requestData = {pro_id: $("#pro_id").val(),fieldname: ctl.attr("id"),fieldvalue:ctl.val()};
+                //console.log(requestData);
+                $.get('/index.php/Home/DbOpt/ajaxSingleFieldSave', requestData, function(data) {
+                    //alert("save ok");
+                    //alert(data);
+                    //alert(data.state + "," + data.msg);
+                    if(false == data.state){
+                        alert(data.msg);
+                        ctl.css("background","#ff0000");
+                    }else{
+                        ctl.css("background","#bbffaa");
+                    }
+                    //console.log(data);
+                }).fail(function(jqXHR) {
+                        alert("fail:" + jqXHR.status + jqXHR.responseText);
+                    });
             }
         }
     });
