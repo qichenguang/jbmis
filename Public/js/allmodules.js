@@ -1,6 +1,6 @@
 $(document).ready(function() {
     //
-    function hide_all_module(){
+    function hide_all_modules(){
         $("#module_xmjbxx").accordion({ collapsible: true, autoHeight: true });
         $("#module_xmscfx").accordion({ collapsible: true, autoHeight: true });
         $("#module_khbyd").accordion({ collapsible: true, autoHeight: true });
@@ -16,7 +16,7 @@ $(document).ready(function() {
         $(".module").hide();
     };
     //
-    function allInOne_init(){
+    function show_dep_modules(){
         //2.second show can use model.
         var dep_mod_arr = $("#dep_module").val().split(",");
         $.each(dep_mod_arr, function(key, val) {
@@ -26,7 +26,43 @@ $(document).ready(function() {
             // 如果想退出循环
             // return false;
         });
+    }
 
+    function froozen_all_modules(lock){
+        var dep_sx_arr = $("#dep_sx").val().split(",");
+        var rec_json_str = $("#dep_rec_detail").val();
+        //console.log(rec_json_str);
+        var rec_obj = $.parseJSON(rec_json_str);
+        var depcode = $("#department").val();
+        $(".module .jb_field").each(function() {
+            var id = $(this).attr('id');
+            //console.log($(this).attr('id'));
+            var cur_dep_code = id.substring(0,2);
+            //console.log(cur_dep_code,id);
+            var cur_pos_2 = id.substring(2,3);
+            //console.log(cur_dep_code,cur_pos_2);
+            if($.inArray(cur_dep_code, dep_sx_arr) && cur_pos_2 == "_"){
+                var curVal = "没有值";
+                if(rec_obj[cur_dep_code] === undefined || rec_obj[cur_dep_code] == null){
+                    //
+                }else if(rec_obj[cur_dep_code][id] === undefined || rec_obj[cur_dep_code][id] == null){
+                    //
+                }else{
+                    curVal = rec_obj[cur_dep_code][id];
+                    console.log(id,curVal);
+                }
+                $(this).val(curVal);
+                //judge dep and enable it.
+                $(this).attr("disabled",true);
+                if(false == lock){
+                    if(id.substring(0,3) == (depcode + "_")){
+                        $(this).attr("disabled",false);
+                    }
+                }
+            }
+        });
+    }
+    function allInOne_init(){
         var dep_sx_arr = $("#dep_sx").val().split(",");
         var rec_json_str = $("#dep_rec_detail").val();
         //console.log(rec_json_str);
@@ -63,6 +99,41 @@ $(document).ready(function() {
         );
     };
     //1.
-    hide_all_module();
-    allInOne_init();
+    hide_all_modules();
+    //2.
+    show_dep_modules();
+    //3.
+    froozen_all_modules(true);
+    //4.
+    if($("#lock").length >= 1){
+        $("#lock").button().click(function(event){
+            froozen_all_modules(true);
+        });
+    }
+    if($("#unlock").length >= 1){
+        $("#unlock").button().click(function(event){
+            froozen_all_modules(false);
+        });
+    }
+    $('.module .jb_field[jb_single_save]').darkTooltip({
+        animation:'flipIn',
+        gravity:'west',
+        confirm:true,
+        theme:'light',
+        content:'存盘?',
+        onYes:function(ctl){
+            alert(ctl.attr("id"));
+            var depcode = $("#department").val();
+            var id = ctl.attr("id");
+            if(id.substring(0,3) == (depcode + "_")){
+                alert(ctl.val());
+            }
+        }
+    });
+/*        $("#lock").button().toggle(function() {
+            $(this).click(function() { froozen_all_modules(true);$("#lock").text(" 解锁 "); });
+        }, function(event) {
+
+            $(this).click(function() { froozen_all_modules(false);$("#lock").text(" 锁定 ") });
+        });*/
 });

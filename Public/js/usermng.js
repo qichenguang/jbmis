@@ -74,7 +74,7 @@ $(document).ready(function() {
     jQuery("#userlist").jqGrid('navGrid','#puserlist',
         {view:false,search:false}, //导航栏 按钮 是否显示 options
         {   // edit options begin
-            mtype:'GET',
+            mtype:'POST',
             height:290,
             modal: true, //模态显示
             drag: true,  //窗体是否可以拖动
@@ -106,7 +106,7 @@ $(document).ready(function() {
             }
         }, // edit options end
         {  // add options begin
-            mtype:'GET',
+            mtype:'POST',
             height:290,
             modal: true, //模态显示
             drag: true,  //窗体是否可以拖动
@@ -136,7 +136,7 @@ $(document).ready(function() {
                 //jQuery("#userlist").trigger('reloadGrid');
             }
         }, // add options end
-        {mtype:'GET',reloadAfterSubmit:false,jqModal:false, closeOnEscape:true}, // del options
+        {mtype:'POST',reloadAfterSubmit:false,jqModal:false, closeOnEscape:true}, // del options
         {closeOnEscape:true}, // search options
         {height:250,jqModal:false,closeOnEscape:true} // view options
     );

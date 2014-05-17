@@ -2,63 +2,95 @@
     $(document).ready(function () {
         $('body').layout({ applyDemoStyles: true });
 
-        var maintab =jQuery('#tabs').tabs({
-            add: function(e, ui) {
-                // append close thingy
-                console.log(ui.tab);
-                console.log(ui.panel);
-                console.log(ui.index);
-                console.log(ui.panel.id);
-                console.log($(ui.tab).parents('li:first'));
-                console.log($(ui.tab).parents('li:first')[0]);
-                $(ui.tab).parents('li:first')
-                        .append('<span class="ui-tabs-close ui-icon ui-icon-close" title="Close Tab"></span>')
-                        .find('span.ui-tabs-close')
-                        .click(function() {
-                            maintab.tabs('remove', $('li', maintab).index($(this).parents('li:first')[0]));
-                        });
-                // select just added tab
-                maintab.tabs('select', '#' + ui.panel.id);
+        var tabTemplate = "<li><a href='#{href}'>#{label}</a> <span class='ui-icon ui-icon-close' role='presentation' title='Close Tab'>Close Tab</span></li>";
+        var tabCounter = 2;
+        var maintab = $( "#tabs" ).tabs();
+        function addTab(newTabObj,tabId,tabTitle,desturl,tabContent) {
+            var id = "tabs-" + tabCounter;
+            if(tabId != ""){
+                id = "tabs-" + tabId;
             }
+            if(desturl != ""){
+                id = desturl;
+            }
+            var label = tabTitle;
+            var li = "";
+            if(desturl != ""){
+                li = $( tabTemplate.replace( /#\{href\}/g, desturl ).replace( /#\{label\}/g, label ) );
+            }else{
+                li = $( tabTemplate.replace( /#\{href\}/g, "#" + id ).replace( /#\{label\}/g, label ) );
+            }
+
+            var tabContentHtml = tabContent;
+            newTabObj.find( ".ui-tabs-nav" ).append( li );
+            if(desturl == ""){
+                newTabObj.append( "<div id='" + id + "'><p>" + tabContentHtml + "</p></div>" );
+            }
+            newTabObj.tabs( "refresh" );
+            tabCounter++;
+        }
+        // 关闭图标：当点击时移除标签页
+        maintab.on( "click", "span.ui-icon-close", function() {
+            var panelId = $( this ).closest( "li" ).remove().attr( "aria-controls" );
+            $( "#" + panelId ).remove();
+            maintab.tabs( "refresh" );
         });
 
         if($("#west_usermng").length >= 1){
-            $("#west_usermng").button().click(function(event){
-                var st = "#t_west_usermng";
-                if($(st).html() != null ) {
-                    maintab.tabs('select',st);
-                }
-                else {
-                    maintab.tabs('add',st, "用户管理");
-                    $(st,"#tabs").load("/index.php/Home/User/usermng");
-                }
-            });
-        }
+             $("#west_usermng").button().click(function(event){
+                 var tab = $('#tabs li:contains("用户管理")');
+                 var curIndex = tab.index();
+                 if(tab.html() != null ) {
+                    maintab.tabs('option', 'active',curIndex);
+                    maintab.tabs( "refresh" );
+                 }
+                 else {
+                     addTab(maintab,"","用户管理","/index.php/Home/User/usermng","");
+                     //
+                     var tab = $('#tabs li:contains("用户管理")');
+                     var curIndex = tab.index();
+                     maintab.tabs('option', 'active', curIndex);
+                     maintab.tabs( "refresh" );
+                 }
+             });
+         }
+
         //west_createproject
         if($("#west_project_mng").length >= 1){
             $("#west_project_mng").button().click(function(event){
-                var st = "#t_west_project_mng";
-                if($(st).html() != null ) {
-                    maintab.tabs('select',st);
+                var tab = $('#tabs li:contains("项目管理")');
+                var curIndex = tab.index();
+                if(tab.html() != null ) {
+                    maintab.tabs('option', 'active',curIndex);
+                    maintab.tabs( "refresh" );
                 }
                 else {
-
-                    maintab.tabs('add',st, "项目管理");
-                    $(st,"#tabs").load("/index.php/Home/Project/projectmng");
+                    addTab(maintab,"","项目管理","/index.php/Home/Project/projectmng","");
+                    //
+                    var tab = $('#tabs li:contains("项目管理")');
+                    var curIndex = tab.index();
+                    maintab.tabs('option', 'active', curIndex);
+                    maintab.tabs( "refresh" );
                 }
             });
         }
+
         //west_search project
         if($("#west_project_search").length >= 1){
             $("#west_project_search").button().click(function(event){
-                var st = "#t_west_project_search";
-                if($(st).html() != null ) {
-                    maintab.tabs('select',st);
+                var tab = $('#tabs li:contains("项目查询")');
+                var curIndex = tab.index();
+                if(tab.html() != null ) {
+                    maintab.tabs('option', 'active',curIndex);
+                    maintab.tabs( "refresh" );
                 }
                 else {
-
-                    maintab.tabs('add',st, "项目查询");
-                    $(st,"#tabs").load("/index.php/Home/Project/projectsearch");
+                    addTab(maintab,"","项目查询","/index.php/Home/Project/projectsearch","");
+                    //
+                    var tab = $('#tabs li:contains("项目查询")');
+                    var curIndex = tab.index();
+                    maintab.tabs('option', 'active', curIndex);
+                    maintab.tabs( "refresh" );
                 }
             });
         }
