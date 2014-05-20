@@ -1,4 +1,16 @@
 $(document).ready(function(){
+
+    function getAllZtreeCheckToUL(){
+        var treeObj = $.fn.zTree.getZTreeObj("privilegeTree");
+        var nodes = treeObj.getCheckedNodes(true);
+        $("#privilegeCheckedShow li").remove();
+        for(var i=0;i<nodes.length;i++){
+            if(nodes[i].id > 100){
+                $("#privilegeCheckedShow").append("<li>[ " + nodes[i].getParentNode().name + " : " + nodes[i].name + " ]&nbsp;&nbsp;&nbsp;&nbsp;</li>");
+            }
+        }
+    }
+
     //zTree  设置开始 //////////////////////////////////////////////////////////////////////////////////////////////////
     var ztree_setting = {
         view: {
@@ -31,6 +43,8 @@ $(document).ready(function(){
             }
         }
         $("#pro2user_all_str").attr("value",v);
+        //
+        getAllZtreeCheckToUL();
     }
 
     function initProIdZtree(pro_id){
@@ -48,6 +62,8 @@ $(document).ready(function(){
                 //
                 $("#privilegeDiv #pro2user_pro_id").val(pro_id);
                 $("#privilegeDiv").show();
+                //
+                getAllZtreeCheckToUL();
             }
         });
     }
@@ -66,7 +82,7 @@ $(document).ready(function(){
         $("#privilegeDiv #pro2user_pro_id").val("");
         $("#privilegeDiv #pro2user_all_str").val("");
         var result = eval('(' + xhr.responseText + ')');
-        alert(result.msg);
+        jAlert(result.msg);
         $("#privilegeDiv").hide();
     }
 
@@ -228,7 +244,7 @@ $(document).ready(function(){
                 var rowData = $("#projectmnglist").jqGrid('getRowData',rowid);
                 initProIdZtree(rowData.pro_id);
             }else{
-                alert("请选择一行数据");
+                jAlert("请选择一行数据");
             }
         },
         position:"last"

@@ -24,6 +24,9 @@ class UserController extends Controller {
         $password = I('password','');
         $department = I('department','');
         $userflag = I('userflag',1);
+        $theme = I('theme','redmond');
+        //
+        $_SESSION['theme'] = $theme;
         //
         $condition["status"] = 2;//normal
         $condition["email"] = $email;
@@ -38,7 +41,6 @@ class UserController extends Controller {
             $_SESSION['user_id'] = $list['id'];
             $_SESSION['department'] = $list['department'];
             $_SESSION['userflag'] = $list['userflag'];
-
             $this->success('登录成功!',U('AllInOne/index'));
         }
     }
@@ -193,7 +195,7 @@ class UserController extends Controller {
     }
 
     public function usermng(){
-        //layout(true);
+        layout(false);
         //显示用户列表
         $this->display();
     }
@@ -216,4 +218,5 @@ class UserController extends Controller {
             $this->error($Data->getError());
         }
     }
+
 }

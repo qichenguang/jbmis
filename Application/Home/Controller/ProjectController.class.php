@@ -5,7 +5,7 @@ use Think\Controller;
 class ProjectController extends Controller {
 
     public function ajaxProjectmngSave(){
-        $Data = M('sc'); // 实例化Data数据模型
+        $Data = M('project'); // 实例化Data数据模型
 
         $oper = I('oper');
         $id = I('id');
@@ -111,7 +111,7 @@ class ProjectController extends Controller {
             $cond[$searchField] = array('LIKE', "%$searchString%");
         }
         //
-        $User = M('sc'); // 实例化User对象
+        $User = M('project'); // 实例化User对象
         $count = $User->where($cond)->order(array($sidx => $sord))->count();// 查询满足要求的总记录数
         $list =  $User->where($cond)->order(array($sidx => $sord))->page($pagenum,$limitnum)->select();
 
@@ -234,6 +234,7 @@ class ProjectController extends Controller {
 
     public function projectsearch(){
         layout(false);
+        layout(true);
         //显示用户列表
         $this->display();
     }
@@ -267,8 +268,8 @@ class ProjectController extends Controller {
             }
         }
         //强制为 1
-        $cond['jb_sc.status'] = 2;//normal
-        $sidx = "jb_sc." . $sidx;
+        $cond['jb_project.status'] = 2;//normal
+        $sidx = "jb_project." . $sidx;
         //单条件 find
         if(FALSE && 'true' == $searchOn){
             $searchField = I('searchField');
@@ -277,12 +278,12 @@ class ProjectController extends Controller {
             $cond[$searchField] = array('LIKE', "%$searchString%");
         }
         //
-        $User = M('sc'); // 实例化User对象
+        $User = M('project'); // 实例化User对象
         $count = $User
-            ->join('jb_pro2user ON jb_sc.pro_id = jb_pro2user.pro_id and jb_pro2user.user_id = ' . session("user_id") . " and jb_pro2user.department = " . session("department") . "'")
+            ->join('jb_pro2user ON jb_project.pro_id = jb_pro2user.pro_id and jb_pro2user.user_id = ' . session("user_id") . " and jb_pro2user.department = " . session("department") . "'")
             ->where($cond)->order(array($sidx => $sord))->count();// 查询满足要求的总记录数
         $list =  $User
-            ->join('jb_pro2user ON jb_sc.pro_id = jb_pro2user.pro_id and jb_pro2user.user_id = ' . session("user_id") . " and jb_pro2user.department ='" . session("department") . "'")
+            ->join('jb_pro2user ON jb_project.pro_id = jb_pro2user.pro_id and jb_pro2user.user_id = ' . session("user_id") . " and jb_pro2user.department ='" . session("department") . "'")
             ->where($cond)->order(array($sidx => $sord))->page($pagenum,$limitnum)->select();
 
         $total_pages = 0;

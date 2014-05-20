@@ -1,6 +1,8 @@
 <script src="__PUBLIC__/js/allmodules.js"></script>
 <script src="__PUBLIC__/js/Lib/darktooltip/jquery.darktooltip.min.js"></script>
 <link rel="stylesheet" type="text/css"  href="__PUBLIC__/style/darktooltip/darktooltip.css" />
+<script src="__PUBLIC__/js/Lib/simplemodal/jquery.simplemodal-1.4.4.js"></script>
+<link rel="stylesheet" type="text/css"  href="__PUBLIC__/style/simplemodal/basic.css" />
 
 
 <div id="AllInOneMain">
@@ -12,10 +14,16 @@
     <br/>
     <INPUT type="text" id="pro_id" name="pro_id" value="{$pro_id}" >
     <br/>
-    <textarea rows="10" cols="200" id="dep_rec_detail" name="dep_rec_detail">{$dep_rec_detail}</textarea>
+    <textarea rows="10" cols="200" id="project_rec_detail" name="project_rec_detail">{$project_rec_detail}</textarea>
     <br/>
     <INPUT type="text" id="dep_sx" name="dep_sx" value="{$dep_sx}" >
     <br/>
+</div>
+
+
+<div id="testdialog">
+<table id="testdq"></table>
+<div id="testpdq"></div>
 </div>
 
 <span id="lock">锁定</span><span id="unlock">解锁</span>

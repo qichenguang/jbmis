@@ -8,6 +8,9 @@ function USER_FUN_GET_USER_STATUS_NAME(){
     );
     return $st;
 }
+
+
+
 function USER_FUN_GET_PROJECT_STATUS_NAME(){
     $st = array(
         '1' => "新增(待审核)",
@@ -17,6 +20,31 @@ function USER_FUN_GET_PROJECT_STATUS_NAME(){
     return $st;
 }
 
+function USER_FUN_GET_VO_TYPE_NAME(){
+    $vo = array(
+        'zx'=> "装修",
+        'dq' => "电气",
+        'kt' => "空调",
+        'xf' => "消防",
+        'jps' => "给排水",
+        'it' => "IT",
+        'sec' => "SEC",
+        'av' => "AV",
+    );
+    return $vo;
+}
+function USER_FUN_GET_VO_RESON_NAME(){
+    $vo_reson = array(
+        'A' => "客户变更",
+        'B' => "范围变更",
+        'C' => "代客户采购",
+        'D' => "设计公司变更",
+        'E' => "大厦或消防要求",
+        'F' => "现场条件不符",
+        'G' => "其它",
+    );
+    return $vo_reson;
+}
 function USER_FUN_GET_DEPARTMENT_NAME(){
     $dep = array(
         'cg' => "采购管理部",

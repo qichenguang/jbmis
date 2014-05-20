@@ -1,6 +1,52 @@
 <script type="text/javascript">
     $(document).ready(function () {
-        $('body').layout({ applyDemoStyles: true });
+        $("#openAllPanes").button();
+        $("#closeAllPanes").button();
+        $("#themeMenu").menu({
+            select: function( event, ui ) {
+                var text = ui.item.context.innerText;
+                if(-1 == text.indexOf('背景')){
+                    var requestData = {theme: text};
+                    $.get('/index.php/Home/AllInOne/ajaxChengeTheme', requestData, function(data) {
+                        if(false == data.state){
+                            jAlert(data.msg);
+                        }else{
+                            jAlert(data.msg);
+                        }
+                    }).fail(function(jqXHR) {
+                                jAlert("fail:" + jqXHR.status + jqXHR.responseText);
+                            });
+                }
+            }
+        });
+        $("#changeTheme").button().click(function(event){
+            var requestData = {theme: $("#currentTheme").val()};
+            //console.log(requestData);
+            $.get('/index.php/Home/AllInOne/ajaxChengeTheme', requestData, function(data) {
+                if(false == data.state){
+                    jAlert(data.msg);
+                }else{
+                    jAlert(data.msg);
+                }
+            }).fail(function(jqXHR) {
+                        jAlert("fail:" + jqXHR.status + jqXHR.responseText);
+                    });
+        });
+        //
+        //
+        var myLayout = $('body').layout({ applyDemoStyles: true });
+        myLayout
+                // add MULTIPLE events to the 'Open All Panes' button in the Center pane dynamically...
+                .bindButton('#openAllPanes', 'open', 'north')
+                .bindButton('#openAllPanes', 'open', 'south')
+                .bindButton('#openAllPanes', 'open', 'west')
+                .bindButton('#openAllPanes', 'open', 'east')
+                // add MULTIPLE events to the 'Close All Panes' button in the Center pane dynamically...
+                .bindButton('#closeAllPanes', 'close', 'north')
+                .bindButton('#closeAllPanes', 'close', 'south')
+                .bindButton('#closeAllPanes', 'close', 'west')
+                .bindButton('#closeAllPanes', 'close', 'east');
+
 
         var tabTemplate = "<li><a href='#{href}'>#{label}</a> <span class='ui-icon ui-icon-close' role='presentation' title='Close Tab'>Close Tab</span></li>";
         var tabCounter = 2;
@@ -102,10 +148,61 @@
         }
     });
 </script>
+<style>
+    .ui-menu:after {
+        content: ".";
+        display: block;
+        clear: both;
+        visibility: hidden;
+        line-height: 0;
+        height: 0;
+    }
+    .ui-menu .ui-menu-item {
+        display: inline-block;
+        float: left;
+        margin: 0;
+        padding: 0;
+        width: auto;
+    }
+</style>
 </head>
 <body>
 
 <div id="RightPane" class="ui-layout-center ui-helper-reset ui-widget-content">Center
+    <table>
+        <tr>
+            <td>
+                <button id="openAllPanes">打开其它面版</button>
+                &nbsp;
+                <button id="closeAllPanes">关闭其它面板</button>
+                &nbsp;
+            </td>
+            <td>
+<!--                <select name="currentTheme" id="currentTheme">
+                    <option value="redmond">redmond</option>
+                    <option value="swanky-purse">swanky-purse</option>
+                    <option value="smoothness">smoothness</option>
+                    <option value="start">start</option>
+                    <option value="le-frog">le-frog</option>
+                </select>
+                <button id="changeTheme">更换背景</button>-->
+            </td>
+            <td>
+                <!--通过CSS控制排成一行-->
+                <ul id="themeMenu">
+                    <li><a href="#">更换背景</a>
+                        <ul>
+                            <li><a href="#">redmond</a></li>
+                            <li><a href="#">swanky-purse</a></li>
+                            <li><a href="#">smoothness</a></li>
+                            <li><a href="#">start</a></li>
+                            <li><a href="#">le-frog</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </td>
+        </tr>
+    </table>
     <div id="tabs" class="jqgtabs">
         <ul>
             <li><a href="#tabs-1">jqGrid 3.6</a></li>
