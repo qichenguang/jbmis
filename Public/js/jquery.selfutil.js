@@ -5,7 +5,7 @@
             var html = "<div title='" + options.title + "'><p>" + options.content + "</p></div>";
             var dialogOpts = {
                 buttons: {
-                    "Ok": function() {
+                    "OK": function() {
                         $(this).dialog('close');
                     }
                 }
