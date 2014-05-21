@@ -331,8 +331,10 @@ $(document).ready(function() {
                 {name:'vo_desc',index:'vo_desc',
                     width:150,align:"right",
                     sortable:true,
-                    editable:true, edittype:"textarea",editrules:{required:true},
-                    editoptions:{rows:"3",cols:"30"},
+                    editable:true, edittype:"text",editrules:{required:true},
+                    editoptions:{size:150},
+/*                    editable:true, edittype:"textarea",editrules:{required:true},
+                    editoptions:{rows:"3",cols:"30"},*/
                     formoptions:{rowpos:2, label: "描述", elmprefix:"(*)"}
                 },
                 {name:'vo_reson',index:'vo_reson',
