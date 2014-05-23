@@ -40,6 +40,7 @@ class AllInOneController extends Controller {
         $Data   =   M("project");
         $project_detail = $Data->where($cond)->find();
         $this->project_rec_detail = json_encode($project_detail);
+        $this->sc_pro_name = $project_detail["sc_pro_name"];
         //layout(flase);
         $this->display();
     }

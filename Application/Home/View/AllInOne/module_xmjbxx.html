@@ -1,7 +1,128 @@
+<script type="text/javascript">
+    $(document).ready(function() {
+        //
+        $("#sc_mag_company_for_choose").change(function(event){
+            $("#sc_mag_company").val($(this).val());
+        });
+        //
+        $( "#gc_jhkg_time" ).datepicker({
+            changeMonth: true,
+            changeYear: true,
+            dateFormat:"yy-mm-dd",
+            showButtonPanel: true
+        });
+        $( "#gc_jhjg_time" ).datepicker({
+            changeMonth: true,
+            changeYear: true,
+            dateFormat:"yy-mm-dd",
+            showButtonPanel: true
+        });
+
+    });
+</script>
 <div id="module_xmjbxx"  class="module">
     <h3><a href="#">项目基本信息</a></h3>
     <div>
-        管理公司：<INPUT type="text" id="sc_mag_company" name="sc_mag_company"  jb_field="jb_single_save" /><br/>
-        项目面积：<input type="text"  id="ys_xm_mj" name="ys_xm_mj"   jb_field="jb_single_save" /><br/>
+<!--    项目编号	来自市场部	项目名称	来自市场部
+        财务编号	来自合同管理	项目实施分公司	来自市场部
+        客户名称	来自市场部	客户类别2	来自市场部
+        管理公司	来自市场部	中标状态	来自市场部
+        项目类别	来自市场部	投标类别	来自市场部
+        项目城市	来自市场部	项目地点	来自市场部
+        开工日期	来自工程部	完工日期	来自工程部
+        项目面积	来自预算部	合同金额	来自预算部-->
+<!--        <fieldset>
+            <legend>health information</legend>-->
+        <table>
+            <tr>
+                <td>项目编号：{$pro_id}</td>
+                <td>项目名称: {$sc_pro_name}</td>
+            </tr>
+
+            <tr>
+                <td>财务编号：</td>
+                <td>项目实施分公司:
+                    <select id="sc_ss_fgs" name="sc_ss_fgs" jb_field="jb_select_save"  >
+                        <option value="0" selected="selected">请选择</option>
+                        <option value="A">北京公司</option>
+                        <option value="B">上海分公司</option>
+                        <option value="C">广深办事处</option>
+                        <option value="D">天津办事处</option>
+                        <option value="E">成都办事处</option>
+                        <option value="F">新加坡分公司</option>
+                        <option value="G">香港分公司</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>客户名称:<INPUT type="text" id="sc_cus_name" name="sc_cus_name"  jb_field="jb_single_save" /></td>
+                <td>客户类别2:
+                    <select id="sc_cus_t_2" name="sc_cus_t_2" jb_field="jb_single_save" >
+                        <option value="0" selected="selected">请选择</option>
+                        <option value="A">质量敏感性</option>
+                        <option value="B">成本敏感型</option>
+                        <option value="C">平衡性</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>管理公司:<INPUT type="text" id="sc_mag_company" name="sc_mag_company"  jb_field="jb_single_save" />
+                    可以选择:
+                    <select id="sc_mag_company_for_choose" name="sc_mag_company_for_choose" jb_field="" >
+                        <option value="None"  selected="selected">None</option>
+                        <option value="JLL">JLL</option>
+                        <option value="CBRE">CBRE</option>
+                        <option value="DTZ">DTZ</option>
+                        <option value="ECH">ECH</option>
+                        <option value="CUSHMAN">CUSHMAN</option>
+                    </select>
+                </td>
+                <td>中标状态:
+                    <select id="sc_zb_flag" name="sc_zb_flag"  jb_field="jb_select_save" >
+                        <option value="0" selected="selected">请选择</option>
+                        <option value="A">落标</option>
+                        <option value="B">中标</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>项目类别:
+                    <select id="sc_pro_type" name="sc_pro_type"  jb_field="jb_select_save" >
+                        <option value="0" selected="selected">请选择</option>
+                        <option value="A">设计</option>
+                        <option value="B">施工</option>
+                        <option value="C">设计施工</option>
+                        <option value="D">交钥匙工程</option>
+                        <option value="E">项目管理</option>
+                        <option value="F">EPC</option>
+                        <option value="G">BOT</option>
+                    </select>
+                </td>
+                <td>投标类别:
+                    <select id="sc_invest_type" name="sc_invest_type"  jb_field="jb_select_save" >
+                        <option value="0" selected="selected">请选择</option>
+                        <option value="A">框架协议</option>
+                        <option value="B">意向协商</option>
+                        <option value="C">投标</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>项目城市:<input type="text"  id="sc_pro_city" name="sc_pro_city"   jb_field="jb_single_save" /></td>
+                <td>项目地点:<input type="text"  id="sc_pro_address" name="sc_pro_address"   jb_field="jb_single_save" /></td>
+            </tr>
+
+            <tr>
+                <td>开工日期:<input type="text"  id="gc_jhkg_time" name="gc_jhkg_time"   jb_field="jb_single_save" /></td>
+                <td>完工日期:<input type="text"  id="gc_jhjg_time" name="gc_jhjg_time"   jb_field="jb_single_save" /></td>
+            </tr>
+            <tr>
+                <td>项目面积:<input type="text"  id="ys_xm_mj" name="ys_xm_mj"   jb_field="jb_single_save" /></td>
+                <td>合同金额:<input type="text"  id="ys_hetong_amt" name="ys_hetong_amt"   jb_field="jb_single_save" /></td>
+            </tr>
+        </table>
+<!--        </fieldset>-->
+        <br/>
+
     </div>
 </div>

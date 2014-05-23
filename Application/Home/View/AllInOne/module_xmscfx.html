@@ -1,7 +1,103 @@
+<script type="text/javascript">
+    $(document).ready(function() {
+        //
+        $("#sc_pro_trade_for_choose").change(function(event){
+            $("#sc_pro_trade").val($(this).val());
+        });
+        $("#sc_compety_company_for_choose").change(function(event){
+            $("#sc_compety_company").val($(this).val());
+        });
+        $("#sc_lb_reason_for_choose").change(function(event){
+            $("#sc_lb_reason").val($(this).val());
+        });
+        $("#sc_zb_reason_for_choose").change(function(event){
+            $("#sc_zb_reason").val($(this).val());
+        });
+        //
+    });
+</script>
 <div id="module_xmscfx"  class="module">
     <h3><a href="#">项目市场分析</a></h3>
     <div>
-        中标原因：<INPUT type="text" id="sc_zb_reason" name="sc_zb_reason" class="jb_field" /><br/>
-        落标原因：<input type="text"  id="sc_lb_reason" name="sc_lb_reason"  class="jb_field" /><br/>
+<!--    项目行业	来自市场部	客户类型	来自市场部
+        竞争对手	来自市场部	中标策略分析会	来自市场部
+        落标原因	来自市场部	中标原因	来自市场部-->
+        <table>
+            <tr>
+                <td>项目行业:<INPUT type="text" id="sc_pro_trade" name="sc_pro_trade"  jb_field="jb_single_save" />
+                    可以选择:
+                    <select id="sc_pro_trade_for_choose" name="sc_pro_trade_for_choose" jb_field="" >
+                        <option value="0"  selected="selected">请选择</option>
+                        <option value="IT">IT</option>
+                        <option value="金融">金融</option>
+                        <option value="医药">医药</option>
+                        <option value="食品">食品</option>
+                        <option value="工业">工业</option>
+                        <option value="物流">物流</option>
+                        <option value="汽车">汽车</option>
+                        <option value="能源">能源</option>
+                        <option value="零售">零售</option>
+                        <option value="日用品">日用品</option>
+                        <option value="咨询">咨询</option>
+                        <option value="其它">其它</option>
+                    </select>
+                </td>
+                <td>客户类别1:
+                    <select id="sc_cus_t_1" name="sc_cus_t_1" jb_field="jb_single_save" >
+                        <option value="0" selected="selected">请选择</option>
+                        <option value="A">单价：每平米小于2000</option>
+                        <option value="B">单价：每平米2000-4000</option>
+                        <option value="C">单价：每平米大于4000</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>竞争对手:<INPUT type="text" id="sc_compety_company" name="sc_compety_company"  jb_field="jb_single_save" />
+                    可以选择:
+                    <select id="sc_compety_company_for_choose" name="sc_compety_company_for_choose" multiple="multiple" jb_field="" >
+                        <option value="0"  selected="selected">请选择</option>
+                        <option value="EDG">EDG</option>
+                        <option value="MOSSER">MOSSER</option>
+                        <option value="大兴施">大兴施</option>
+                        <option value="KRA">KRA</option>
+                        <option value="C&C">C&C</option>
+                        <option value="格林贝斯">格林贝斯</option>
+                        <option value="其它">其它</option>
+                    </select>
+                </td>
+                <td>中标策略分析会:
+                    <select id="sc_tbcl_fxh" name="sc_tbcl_fxh"  jb_field="jb_select_save" >
+                        <option value="0" selected="selected">请选择</option>
+                        <option value="Y">Y</option>
+                        <option value="N">N</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>落标原因:<textarea id="sc_lb_reason" name="sc_lb_reason"  jb_field="jb_single_save" ></textarea>
+                    可以选择:
+                    <select id="sc_lb_reason_for_choose" name="sc_lb_reason_for_choose" multiple="multiple" jb_field="" >
+                        <option value="以前工程做的不好">以前工程做的不好</option>
+                        <option value="装饰设计原因">装饰设计原因</option>
+                        <option value="机电方案原因">机电方案原因</option>
+                        <option value="客户关系原因">客户关系原因</option>
+                        <option value="报价原因">报价原因</option>
+                        <option value="讲标原因">讲标原因</option>
+                        <option value="客户取消项目">客户取消项目</option>
+                    </select>
+                </td>
+                <td>中标原因:<textarea id="sc_zb_reason" name="sc_zb_reason"  row="2" col="100" jb_field="jb_single_save" ></textarea>
+                    可以选择:
+                    <select id="sc_zb_reason_for_choose" name="sc_zb_reason_for_choose" multiple="multiple" jb_field="" >
+                        <option value="以前工程客户满意度高">以前工程客户满意度高</option>
+                        <option value="装饰设计原因">装饰设计原因</option>
+                        <option value="机电方案原因">机电方案原因</option>
+                        <option value="客户关系原因">客户关系原因</option>
+                        <option value="报价原因">报价原因</option>
+                        <option value="讲标原因">讲标原因</option>
+                    </select>
+                </td>
+            </tr>
+        </table>
     </div>
 </div>
