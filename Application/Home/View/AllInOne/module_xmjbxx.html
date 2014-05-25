@@ -1,23 +1,5 @@
 <script type="text/javascript">
     $(document).ready(function() {
-        //
-        $("#sc_mag_company_for_choose").change(function(event){
-            $("#sc_mag_company").val($(this).val());
-        });
-        //
-        $( "#gc_jhkg_time" ).datepicker({
-            changeMonth: true,
-            changeYear: true,
-            dateFormat:"yy-mm-dd",
-            showButtonPanel: true
-        });
-        $( "#gc_jhjg_time" ).datepicker({
-            changeMonth: true,
-            changeYear: true,
-            dateFormat:"yy-mm-dd",
-            showButtonPanel: true
-        });
-
     });
 </script>
 <div id="module_xmjbxx"  class="module">
@@ -66,16 +48,18 @@
                 </td>
             </tr>
             <tr>
-                <td>管理公司:<INPUT type="text" id="sc_mag_company" name="sc_mag_company"  jb_field="jb_single_save" />
-                    可以选择:
-                    <select id="sc_mag_company_for_choose" name="sc_mag_company_for_choose" jb_field="" >
-                        <option value="None"  selected="selected">None</option>
-                        <option value="JLL">JLL</option>
-                        <option value="CBRE">CBRE</option>
-                        <option value="DTZ">DTZ</option>
-                        <option value="ECH">ECH</option>
-                        <option value="CUSHMAN">CUSHMAN</option>
+                <td>管理公司:
+                    <select id="sc_mag_company_base" name="sc_mag_company_base" jb_field="single" >
+                        <option value="A" >None</option>
+                        <option value="B">JLL</option>
+                        <option value="C">CBRE</option>
+                        <option value="D">DTZ</option>
+                        <option value="E">ECH</option>
+                        <option value="F">CUSHMAN</option>
                     </select>
+                    <br>
+                    其它:<INPUT type="text" id="sc_mag_company_ot" name="sc_mag_company_ot"  jb_field="" />
+                    <a id="sc_mag_company" jb_field="jb_select_save" >...</a>
                 </td>
                 <td>中标状态:
                     <select id="sc_zb_flag" name="sc_zb_flag"  jb_field="jb_select_save" >
@@ -113,8 +97,8 @@
             </tr>
 
             <tr>
-                <td>开工日期:<input type="text"  id="gc_jhkg_time" name="gc_jhkg_time"   jb_field="jb_single_save" /></td>
-                <td>完工日期:<input type="text"  id="gc_jhjg_time" name="gc_jhjg_time"   jb_field="jb_single_save" /></td>
+                <td>开工日期:<input type="text"  id="gc_jhkg_time" name="gc_jhkg_time"  jb_time_field="" jb_field="jb_single_save" /></td>
+                <td>完工日期:<input type="text"  id="gc_jhjg_time" name="gc_jhjg_time"  jb_time_field="" jb_field="jb_single_save" /></td>
             </tr>
             <tr>
                 <td>项目面积:<input type="text"  id="ys_xm_mj" name="ys_xm_mj"   jb_field="jb_single_save" /></td>

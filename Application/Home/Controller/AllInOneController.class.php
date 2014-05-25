@@ -49,12 +49,25 @@ class AllInOneController extends Controller {
         $pro_id = I('pro_id');
         $field_name = I('fieldname');
         $field_value = I('fieldvalue');
+        trace($field_value,"field_value");
         if(empty($field_name)){
             $this->ajaxReturn(array('state' => false, 'msg' => "没有字段名称"));
         }
         $Data = M('project'); // 实例化Data数据模型
         $condition['pro_id'] = $pro_id;
-        $update[$field_name] = $field_value;
+
+        //
+        $new_field = array();
+        if(is_array($field_value)){
+            foreach($field_value as $key => $value){
+                //trace($value,"value");
+                $new_field[] = '"' . $value . '"';
+            }
+            //trace($new_field,"new_field");
+            $update[$field_name] = "[" . implode(",",$new_field) . "]";
+        }else{
+            $update[$field_name] = $field_value;
+        }
         $result  = $Data->where($condition)->save($update);
         if(false === $result){
             $this->ajaxReturn(array('state' => false, 'msg' => "存盘失败,请检查数据库连接设置"));

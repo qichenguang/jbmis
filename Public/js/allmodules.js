@@ -51,13 +51,37 @@ $(document).ready(function() {
                     //console.log(id,curVal);
                 }
                 $(this).val(curVal);
+                if($(this).attr("jb_field") == "multiple" || $(this).attr("jb_field") == "single"){
+                    //alert(curVal);
+                    //var result = eval('[' + curVal + ']');
+                    if("没有值" == curVal){
+                        curVal = "[]";
+                    }
+                    //alert(curVal);
+                    //if it is single, add [" "]
+                    if(curVal.indexOf("[") == -1){
+                        curVal = "[\"" + curVal + "\"]";
+                    }
+                    var result = eval(curVal);
+                    //alert(result);
+                    $(this).val(result);
+                    $(this).multiselect("refresh");
+                }
                 //judge dep and enable it.
                 $(this).attr("disabled",true);
                 $(this).addClass("ui-state-disabled");
+                //
+                if($(this).attr("jb_field") == "multiple" || $(this).attr("jb_field") == "single"){
+                    $(this).multiselect("disable");
+                }
                 if(false == lock){
                     if(id.substring(0,3) == (depcode + "_")){
                         $(this).attr("disabled",false);
                         $(this).removeClass("ui-state-disabled");
+                        //
+                        if($(this).attr("jb_field") == "multiple" || $(this).attr("jb_field") == "single"){
+                            $(this).multiselect("enable");
+                        }
                     }
                 }
             }
@@ -68,10 +92,29 @@ $(document).ready(function() {
     hide_all_modules();
     //2.
     show_dep_modules();
-    //3.
+    //3.初始化控件
+    $('.module [jb_field=multiple]').multiselect({
+        multiple: true,
+        header: true,
+        noneSelectedText: "请选择一项",
+        selectedList: 8
+    });
+    $('.module [jb_field=single]').multiselect({
+        multiple: false,
+        header: "请选择一项",
+        noneSelectedText: "请选择一项",
+        selectedList: 8
+    });
+    $(".module [jb_time_field]" ).datepicker({
+        changeMonth: true,
+        changeYear: true,
+        dateFormat:"yy-mm-dd",
+        showButtonPanel: true
+    });
+    //4.
     froozen_all_modules(true);
     froozen_all_modules(false);
-    //4.
+    //5.
     if($("#lock").length >= 1){
         $("#lock").button().click(function(event){
             froozen_all_modules(true);
@@ -82,6 +125,7 @@ $(document).ready(function() {
             froozen_all_modules(false);
         });
     }
+    //6.
     $('.module [jb_field=jb_select_save]').darkTooltip({
         animation:'flipIn',
         gravity:'west',
@@ -95,21 +139,41 @@ $(document).ready(function() {
             var id = ctl.attr("id");
             if(id.substring(0,3) == (depcode + "_")){
                 //alert(ctl.val());
-                var requestData = {pro_id: $("#pro_id").val(),fieldname: ctl.attr("id"),fieldvalue:ctl.val()};
+                var ot_id = id + "_ot";
+                var $ot_ctl = $("#" + ot_id);
+                var ot_value = $ot_ctl.val();
+                var requestData = {pro_id: $("#pro_id").val(),fieldname: ot_id,fieldvalue:ot_value};
                 //console.log(requestData);
                 $.get('/index.php/Home/AllInOne/ajaxSingleFieldSave', requestData, function(data) {
                     //alert("save ok");
                     //alert(data);
                     //alert(data.state + "," + data.msg);
                     if(false == data.state){
-                        jAlert(data.msg);
-                        //$( "#testalert" ).dialog({ dialogClass: "alert",title: "标题" });
-                        //$( "#testalert" ).dialog({ dialogClass: "alert",title: "标题" });
-                        //ctl.css("background","#ff0000");
-                        ctl.addClass("ui-state-error");
+                        //jAlert(data.msg);
+                        $ot_ctl.addClass("ui-state-error");
                     }else{
-                        ctl.removeClass("ui-state-error");
-                        ctl.css("background","#bbffaa");
+                        $ot_ctl.removeClass("ui-state-error");
+                        $ot_ctl.css("background","#bbffaa");
+                    }
+                    //console.log(data);
+                }).fail(function(jqXHR) {
+                        jAlert("fail:" + jqXHR.status + jqXHR.responseText);
+                    });
+                //
+                var base_id = id + "_base";
+                var $base_ctl = $("#" + base_id);
+                var base_value = $base_ctl.val();
+                requestData = {pro_id: $("#pro_id").val(),fieldname: base_id,fieldvalue:base_value};
+                $.get('/index.php/Home/AllInOne/ajaxSingleFieldSave', requestData, function(data) {
+                    //alert("save ok");
+                    //alert(data);
+                    //alert(data.state + "," + data.msg);
+                    if(false == data.state){
+                        //jAlert(data.msg);
+                        $base_ctl.addClass("ui-state-error");
+                    }else{
+                        $base_ctl.removeClass("ui-state-error");
+                        $base_ctl.css("background","#bbffaa");
                     }
                     //console.log(data);
                 }).fail(function(jqXHR) {
@@ -139,9 +203,6 @@ $(document).ready(function() {
                     //alert(data.state + "," + data.msg);
                     if(false == data.state){
                         jAlert(data.msg);
-                        //$( "#testalert" ).dialog({ dialogClass: "alert",title: "标题" });
-                        //$( "#testalert" ).dialog({ dialogClass: "alert",title: "标题" });
-                        //ctl.css("background","#ff0000");
                         ctl.addClass("ui-state-error");
                     }else{
                         ctl.removeClass("ui-state-error");
