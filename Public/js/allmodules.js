@@ -4,7 +4,7 @@ $(document).ready(function() {
         $("#module_xmjbxx").accordion({ collapsible: true, autoHeight: true });
         $("#module_xmscfx").accordion({ collapsible: true, autoHeight: true });
         $("#module_khbyd").accordion({ collapsible: true, autoHeight: true });
-        $("#module_xmrlzygl").accordion({ collapsible: true, autoHeight: true });
+        $("#module_xmrlzygl").accordion({ collapsible: true, autoHeight:true});
         $("#module_xmsjgl").accordion({ collapsible: true, autoHeight: true });
         $("#module_xmcbgl").accordion({ collapsible: true, autoHeight: true });
         $("#module_xmzjlgl").accordion({ collapsible: true, autoHeight: true });
@@ -111,6 +111,38 @@ $(document).ready(function() {
         dateFormat:"yy-mm-dd",
         showButtonPanel: true
     });
+    //3.1 初始化控件 选择用户
+    $(".module select[jb_dep]").each(function(){
+        var dep = $(this).attr("jb_dep");
+        //alert(dep);
+        var all_dep_str = $("#all_dep_username").val();
+        var dep_obj = $.parseJSON(all_dep_str);
+        if(dep_obj[dep] === undefined || dep_obj[dep] == null){
+            //error dep
+        }else{
+            var $curSelectObj = $(this);
+            $(this).empty();
+            var head="请选择";
+            var ui = "<option value='0' selected='selected' >" + head + "</option>";
+            $(this).append(ui);
+            $.each(dep_obj[dep],function(i,item){
+                var ui="<option value='"+ item['id'] +"'>" + item['user_name'] + "</option>"
+                $curSelectObj.append(ui);
+            })
+        }
+    });
+    //3.2   初始化控件 textarea
+    var textareaOptions = {
+        'maxCharacterSize': 50,
+        'originalStyle': 'originalTextareaInfo',
+        'warningStyle' : 'warningTextareaInfo',
+        'warningNumber': 10,
+        'displayFormat' : '#left Left / #max'
+    };
+    $('.module textarea').each(function(){
+        $(this).textareaCount(textareaOptions);
+    });
+    $('.module textarea').elastic();
     //4.
     froozen_all_modules(true);
     froozen_all_modules(false);
@@ -295,7 +327,6 @@ $(document).ready(function() {
         });
 
         //导航栏配置和CRUD函数
-
         jQuery(domTableId).jqGrid('navGrid',domPageId,
             {view:false,search:false,edit:false,add:false,del:true}
         );

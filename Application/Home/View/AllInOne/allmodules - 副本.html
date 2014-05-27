@@ -8,11 +8,11 @@
 <script src="__PUBLIC__/js/Lib/jquery-ui-multiselect-widget/src/jquery.multiselect.js"></script>
 <script src="__PUBLIC__/js/Lib/jquery-ui-multiselect-widget/i18n/jquery.multiselect.zh-cn.js"></script>
 <link rel="stylesheet" type="text/css"  href="__PUBLIC__/js/Lib/jquery-ui-multiselect-widget/jquery.multiselect.css" />
-<!--<style>
+<style>
     .module table{border-collapse:collapse;border-spacing:0;border-left:1px solid #888;border-top:1px solid #888;background:#efefef;}
     .module th,td{border-right:1px solid #888;border-bottom:1px solid #888;padding:5px 15px;}
     .module th{font-weight:bold;background:#ccc;}
-</style>-->
+</style>
 
 <div id="AllInOneMain">
     <INPUT type="text" id="user_id" name="user_id" value="{$user_id}" >
@@ -27,8 +27,6 @@
     <br/>
     <INPUT type="text" id="dep_sx" name="dep_sx" value="{$dep_sx}" >
     <br/>
-    <textarea rows="10" cols="200" id="all_dep_username" name="all_dep_username">{$all_dep_username}</textarea>
-    <br/>
 </div>
 
 
@@ -40,9 +38,17 @@
 <span id="lock">锁定</span><span id="unlock">解锁</span>
 <br>
 <div id="AllInOneDetail">
-
+    <include file="AllInOne/module_xmjbxx" />
+    <include file="AllInOne/module_xmscfx" />
+    <include file="AllInOne/module_khbyd" />
     <include file="AllInOne/module_xmrlzygl" />
-
+    <include file="AllInOne/module_xmsjgl" />
+    <include file="AllInOne/module_xmcbgl" />
+    <include file="AllInOne/module_xmzjlgl" />
+    <include file="AllInOne/module_gysgl" />
+    <include file="AllInOne/module_ygjxgl" />
+    <include file="AllInOne/module_gczcgl" />
+    <include file="AllInOne/module_dxmgl" />
 </div>
 
 

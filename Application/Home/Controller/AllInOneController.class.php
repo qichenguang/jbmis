@@ -41,6 +41,20 @@ class AllInOneController extends Controller {
         $project_detail = $Data->where($cond)->find();
         $this->project_rec_detail = json_encode($project_detail);
         $this->sc_pro_name = $project_detail["sc_pro_name"];
+
+        $myd_list = USER_FUN_GET_MYD_LIST_NAME();
+        $this->myd_list = $myd_list;
+
+        //得到所有的用户部门和姓名信息
+        $Data = M('user'); // 实例化Data数据模型
+        $condition["status"] = 2;//normal
+        $list  = $Data->where($condition)->select();
+        $responce = array();
+        foreach($list as $item){
+            $responce[$item['department']][] = array('id' => $item["id"],'user_name' => $item['user_name']);
+        }
+        $this->all_dep_username = json_encode($responce);
+        //
         //layout(flase);
         $this->display();
     }

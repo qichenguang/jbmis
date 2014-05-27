@@ -1,5 +1,31 @@
 <?php
 
+function USER_FUN_GET_MYD_LIST_NAME(){
+    $st = array(
+        array(
+            'sx' => 'sj',
+            'name'=> "设计满意度",
+            item => array(
+                1=>"设计满意度1",
+                2=>"设计满意度2")
+        ),
+        array(
+            'sx' => 'sg',
+            'name'=>"施工满意度",item => array(
+                1=>"施工满意度1",
+                2=>"施工满意度2")
+        ),
+        array(
+            'sx' => 'sh',
+            'name'=>"售后满意度",
+            item => array(
+                1=>"售后满意度1",
+                2=>"售后满意度2")
+        ),
+    );
+    return $st;
+}
+
 function USER_FUN_GET_USER_STATUS_NAME(){
     $st = array(
         '1' => "新增(待审核)",

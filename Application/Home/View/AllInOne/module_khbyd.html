@@ -1,0 +1,107 @@
+<script type="text/javascript">
+
+    $(document).ready(function() {
+        function calcMydNum(name){
+            var all = 0;
+            var over_c = 0;
+            $(".module [jb_myd_select=" + name).each(function(){
+                var cur = $(this).val();
+                if(cur == "A" || cur == "B" || cur == "C"){
+                    over_c++;
+                }
+                all++;
+            });
+            //alert("all=" + all);
+            //alert("over_c=" + over_c);
+            var rate = (over_c/all)*100 + "%";
+            $("#" + name + "_rate_all").text(rate);
+        }
+
+        $(".module [jb_myd_select]").on('change',function(e){
+            var attr = $(this).attr("jb_myd_select");
+            calcMydNum(attr);
+        });
+
+        calcMydNum("sj");
+        calcMydNum("sg");
+        calcMydNum("sh");
+
+    });
+</script>
+<div id="module_khbyd"  class="module">
+    <h3><a href="#">客户满意度管理</a></h3>
+    <div>
+        <volist name="myd_list" id="vo" >
+        <table>
+            <thead>
+                <tr>
+                    <th>{$vo.name}平均值</th>
+                    <th><span id="{$vo.sx}_rate_all"></span></th>
+                    <th></th>
+                </tr>
+               <tr>
+                    <th>{$vo.name}子项</th>
+                    <th>满意度</th>
+                    <th>说明</th>
+                </tr>
+            </thead>
+            <volist name="vo['item']" id="sub">
+                <if condition="$vo.sx eq sj ">
+                    <tr>
+                        <td>{$sub}</td>
+                        <td>
+                            <select id="sc_sj_myd_{$key}" name="sc_sj_myd_{$key}"  jb_myd_select="sj" jb_field="jb_single_save" >
+                                <option value="0" selected="selected">请选择</option>
+                                <option value="A">非常满意</option>
+                                <option value="B">满意</option>
+                                <option value="C">基本满意</option>
+                                <option value="D">不太满意</option>
+                                <option value="E">不满意</option>
+                            </select>
+                        </td>
+                        <td>
+                            <textarea id="sc_sj_myd_{$key}_desc" name="sc_sj_myd_{$key}_desc"  jb_field="jb_single_save" ></textarea>
+                        </td>
+                    </tr>
+                </if>
+                <if condition="$vo.sx eq sg ">
+                    <tr>
+                        <td>{$sub}</td>
+                        <td>
+                            <select id="sc_sg_myd_{$key}" name="sc_sg_myd_{$key}"  jb_myd_select="sg" jb_field="jb_single_save" >
+                                <option value="0" selected="selected">请选择</option>
+                                <option value="A">非常满意</option>
+                                <option value="B">满意</option>
+                                <option value="C">基本满意</option>
+                                <option value="D">不太满意</option>
+                                <option value="E">不满意</option>
+                            </select>
+                        </td>
+                        <td>
+                            <textarea id="sc_sg_myd_{$key}_desc" name="sc_sg_myd_{$key}_desc"  jb_field="jb_single_save" ></textarea>
+                        </td>
+                    </tr>
+                </if>
+                <if condition="$vo.sx eq sh ">
+                    <tr>
+                        <td>{$sub}</td>
+                        <td>
+                            <select id="sh_sh_myd_{$key}" name="sh_sh_myd_{$key}"  jb_myd_select="sh" jb_field="jb_single_save" >
+                                <option value="0" selected="selected">请选择</option>
+                                <option value="A">非常满意</option>
+                                <option value="B">满意</option>
+                                <option value="C">基本满意</option>
+                                <option value="D">不太满意</option>
+                                <option value="E">不满意</option>
+                            </select>
+                        </td>
+                        <td>
+                            <textarea id="sh_sh_myd_{$key}_desc" name="sh_sh_myd_{$key}_desc"  jb_field="jb_single_save" ></textarea>
+                        </td>
+                    </tr>
+                </if>
+            </volist>
+        </table>
+        </volist>
+    </div>
+</div>

@@ -42,6 +42,10 @@ CREATE TABLE `jb_project` (
 #	`sh_zb_all_amt` double DEFAULT NULL COMMENT '项目质保总费用',
   `sh_zb_sub_detail` longtext COMMENT '质保子项-JSON格式: 包括: 项目明细名称, 项目质保子项明细内容,项目质保子项原因',
 #	`sh_myd_amt` double DEFAULT NULL COMMENT '售后满意度平均值',
+	`sh_sh_myd_1`      char(1) DEFAULT NULL COMMENT '客户满意度:售后1',
+	`sh_sh_myd_1_desc` char(50) DEFAULT NULL COMMENT '客户满意度:售后1 相关说明',
+	`sh_sh_myd_2`      char(1) DEFAULT NULL COMMENT '客户满意度:售后2',
+	`sh_sh_myd_2_desc` char(50) DEFAULT NULL COMMENT '客户满意度:售后2 相关说明',
 	`sh_myd_all` int(2) NOT NULL DEFAULT '0' COMMENT '售后总体满意度（用数值，方便换算）',
   `sh_myd_sub_detail` longtext COMMENT '售后满意度调查表子项-JSON格式: 包括: 名称,售后满意度调查表子项原因,售后满意度附加信息',
 	#'售后服务部表';
@@ -303,6 +307,21 @@ CREATE TABLE `jb_project` (
 	`sc_lb_reason_base` varchar(200) DEFAULT NULL COMMENT '落标原因:基本',
 	`sc_lb_reason_ot` varchar(200) DEFAULT NULL COMMENT '落标原因:其他',
 	`sc_ss_fgs` char(1) DEFAULT NULL COMMENT '项目实施分公司',
+	`sc_sj_myd_1`      char(1) DEFAULT NULL COMMENT '客户满意度:设计1',
+	`sc_sj_myd_1_desc` char(50) DEFAULT NULL COMMENT '客户满意度:设计1 相关说明',
+	`sc_sj_myd_2`      char(1) DEFAULT NULL COMMENT '客户满意度:设计2',
+	`sc_sj_myd_2_desc` char(50) DEFAULT NULL COMMENT '客户满意度:设计2 相关说明',
+	`sc_sg_myd_1`      char(1) DEFAULT NULL COMMENT '客户满意度:施工1',
+	`sc_sg_myd_1_desc` char(50) DEFAULT NULL COMMENT '客户满意度:施工1 相关说明',
+	`sc_sg_myd_2`      char(1) DEFAULT NULL COMMENT '客户满意度:施工2',
+	`sc_sg_myd_2_desc` char(50) DEFAULT NULL COMMENT '客户满意度:施工2 相关说明',
+	#
+	`sc_rlzy_scjl`    tinyint(4) DEFAULT NULL COMMENT '人力资源:市场经理',
+	`sc_rlzy_scjl_desc`    char(100) DEFAULT NULL COMMENT '人力资源:市场经理 相关说明',
+	`sc_rlzy_sczl`    tinyint(4) DEFAULT NULL COMMENT '人力资源:市场助理',
+	`sc_rlzy_sczl_desc`    char(100) DEFAULT NULL COMMENT '人力资源:市场助理  相关说明',
+	#
+	
 #	`sc_myd_all` tinyint(4) NOT NULL DEFAULT '0' COMMENT '客户满意度',
 	`sc_myd_sub_detail` longtext COMMENT '满意度详细信息-JSON格式: , 包括: 
 		1.设计满意度,满意度值,满意度附加信息,
@@ -367,6 +386,14 @@ CREATE TABLE `jb_project` (
   `ys_it_sub_detail` longtext COMMENT 'JSON格式: IT相关信息 结构和 zx_sub_detail 字段一致,',
   `ys_af_sub_detail` longtext COMMENT 'JSON格式: 安防相关信息 结构和 zx_sub_detail 字段一致,',
   `ys_av_sub_detail` longtext COMMENT 'JSON格式: AV相关信息 结构和 zx_sub_detail 字段一致,',
+  #
+  `ys_rlzy_ysy1`    tinyint(4) DEFAULT NULL COMMENT '人力资源:预算员1',
+	`ys_rlzy_ysy1_desc`    char(100) DEFAULT NULL COMMENT '人力资源:预算员1  相关说明',
+	`ys_rlzy_ysy2`    tinyint(4) DEFAULT NULL COMMENT '人力资源:预算员2',
+	`ys_rlzy_ysy2_desc`   char(100) DEFAULT NULL COMMENT '人力资源:预算员2  相关说明',
+	`ys_rlzy_ysy3`    tinyint(4) DEFAULT NULL COMMENT '人力资源:预算员3',
+	`ys_rlzy_ysy3_desc`    char(100) DEFAULT NULL COMMENT '人力资源:预算员3  相关说明',
+  #
   `ys_ysgl_detail` longtext COMMENT 'JSON格式: 预算管理部人员明细 包括6项：
 		1.预算总负责人,
 		2.预算负责人列表, 格式:JSON数组, 数组每项包括: 负责人序号,负责人占比(占比总和为100%),',
