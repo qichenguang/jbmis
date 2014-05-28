@@ -4,7 +4,7 @@ $(document).ready(function() {
         $("#module_xmjbxx").accordion({ collapsible: true, autoHeight: true });
         $("#module_xmscfx").accordion({ collapsible: true, autoHeight: true });
         $("#module_khbyd").accordion({ collapsible: true, autoHeight: true });
-        $("#module_xmrlzygl").accordion({ collapsible: true, autoHeight:true});
+        $("#module_xmrlzygl").accordion({ collapsible: true,  autoHeight: true ,clearStyle: true,fillSpace:true,heightStyle:"content" });
         $("#module_xmsjgl").accordion({ collapsible: true, autoHeight: true });
         $("#module_xmcbgl").accordion({ collapsible: true, autoHeight: true });
         $("#module_xmzjlgl").accordion({ collapsible: true, autoHeight: true });
