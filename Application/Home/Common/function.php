@@ -1,5 +1,47 @@
 <?php
 
+
+function USER_FUN_GET_GCZC_IN_TYPE_NAME(){
+    $in_type = array(
+        'A' => "管理",
+        'B' => "设计",
+        'C' => "施工",
+    );
+    return $in_type;
+}
+
+function USER_FUN_GET_GCZC_IN_SUB_TYPE_NAME(){
+    $in_sub_type = array(
+        //大厦；管理公司；客户；顾问；消防局；建委；客户设施维护FM;
+        //天花；地面；墙；门；五金；饰面；系统家具；固定家具；EL,HVAC,FS,PD,IT,SEC,AV，管理,平面,效果图
+        'A' => "大厦",
+        'B' => "管理公司",
+        'C' => "客户",
+        'D' => "顾问",
+        'E' => "消防局",
+        'F' => "建委",
+        'G' => "客户设施维护FM",
+        'H' => "天花",
+        'I' => "地面",
+        'J' => "墙",
+        'K' => "门",
+        'L' => "五金",
+        'M' => "饰面",
+        'N' => "系统家具",
+        'O' => "固定家具",
+        'P' => "EL",
+        'Q' => "HVAC",
+        'R' => "FS",
+        'S' => "PD",
+        'T' => "IT",
+        'U' => "SEC",
+        'V' => "AV",
+        'W' => "管理",
+        'X' => "平面",
+        'Y' => "效果图",
+    );
+    return $in_sub_type;
+}
 function USER_FUN_GET_MYD_LIST_NAME(){
     $st = array(
         array(

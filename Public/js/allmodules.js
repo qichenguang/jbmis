@@ -1,17 +1,17 @@
 $(document).ready(function() {
     //
     function hide_all_modules(){
-        $("#module_xmjbxx").accordion({ collapsible: true, autoHeight: true });
-        $("#module_xmscfx").accordion({ collapsible: true, autoHeight: true });
-        $("#module_khbyd").accordion({ collapsible: true, autoHeight: true });
-        $("#module_xmrlzygl").accordion({ collapsible: true,  autoHeight: true ,clearStyle: true,fillSpace:true,heightStyle:"content" });
-        $("#module_xmsjgl").accordion({ collapsible: true, autoHeight: true });
-        $("#module_xmcbgl").accordion({ collapsible: true, autoHeight: true });
-        $("#module_xmzjlgl").accordion({ collapsible: true, autoHeight: true });
-        $("#module_gysgl").accordion({ collapsible: true, autoHeight: true });
-        $("#module_ygjxgl").accordion({ collapsible: true, autoHeight: true });
-        $("#module_gczcgl").accordion({ collapsible: true, autoHeight: true });
-        $("#module_dxmgl").accordion({ collapsible: true, autoHeight: true });
+        $("#module_xmjbxx").accordion({ collapsible: true, autoHeight: true,clearStyle: true,fillSpace:true,heightStyle:"content"  });
+        $("#module_xmscfx").accordion({ collapsible: true, autoHeight: true,clearStyle: true,fillSpace:true,heightStyle:"content"  });
+        $("#module_khbyd").accordion({ collapsible: true, autoHeight: true,clearStyle: true,fillSpace:true,heightStyle:"content"  });
+        $("#module_xmrlzygl").accordion({ collapsible: true, autoHeight: true ,clearStyle: true,fillSpace:true,heightStyle:"content" });
+        $("#module_xmsjgl").accordion({ collapsible: true, autoHeight: true,clearStyle: true,fillSpace:true,heightStyle:"content"  });
+        $("#module_xmcbgl").accordion({ collapsible: true, autoHeight: true,clearStyle: true,fillSpace:true,heightStyle:"content"  });
+        $("#module_xmzjlgl").accordion({ collapsible: true, autoHeight: true,clearStyle: true,fillSpace:true,heightStyle:"content"  });
+        $("#module_gysgl").accordion({ collapsible: true, autoHeight: true,clearStyle: true,fillSpace:true,heightStyle:"content"  });
+        $("#module_ygjxgl").accordion({ collapsible: true, autoHeight: true,clearStyle: true,fillSpace:true,heightStyle:"content"  });
+        $("#module_gczcgl").accordion({ collapsible: true, autoHeight: true,clearStyle: true,fillSpace:true,heightStyle:"content"  });
+        $("#module_dxmgl").accordion({ collapsible: true, autoHeight: true,clearStyle: true,fillSpace:true,heightStyle:"content"  });
         //1.first hide all.
         $(".module").hide();
     };

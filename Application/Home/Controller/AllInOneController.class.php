@@ -232,4 +232,169 @@ class AllInOneController extends Controller {
         $_SESSION['theme'] = $theme;
         $this->ajaxReturn(array('state' => true, 'msg' => "更改成功,请按 F5 重新刷新页面"));
     }
+
+    public function ajaxGczcjlSearch(){
+        $pagenum = I('page',1); // get the requested page
+        $limitnum = I('rows',20); // get how many rows we want to have into the grid
+        $sidx = I('sidx','id'); // get index row - i.e. user click to sort
+        $sord = I('sord','desc'); // get the direction
+        if($sidx == ""){
+            $sidx = 'id';
+        }
+
+        //手动查询标志
+        $searchOn = I('_search');
+        //多条件查询
+        $cond = array();
+        if('true' == $searchOn) {
+            $sarr = I('param.');
+            foreach( $sarr as $k=>$v) {
+                switch ($k) {
+                    case 'jyzj':
+                    case 'ydwt':
+                    case 'jjfa':
+                    case 'ckwj':
+                        $cond[$k] = array('LIKE', "%$v%");
+                        break;
+                    case 'id':
+                    case 'pro_id':
+                    case 'department':
+                    case 'in_type':
+                    case 'in_sub_type':
+                        if("all" != $v){
+                            $cond[$k] = $v;
+                        }
+                        break;
+                }
+            }
+        }
+        //单条件 find
+        if(FALSE && 'true' == $searchOn){
+            $searchField = I('searchField');
+            $searchString = I('searchString');
+            $searchOper = I('searchOper');
+            $cond[$searchField] = array('LIKE', "%$searchString%");
+        }
+        //
+        $User = M('gczcjl'); // 实例化User对象
+        $count = $User->where($cond)->order(array($sidx => $sord))->count();// 查询满足要求的总记录数
+        $list =  $User->where($cond)->order(array($sidx => $sord))->page($pagenum,$limitnum)->select();
+
+        $total_pages = 0;
+        if( $count >0 ) {
+            $total_pages = ceil($count/$limitnum);
+        }
+        $responce["page"] = $pagenum;
+        $responce["total"] = $total_pages;
+        $responce["records"] = $count;
+
+        $in_type_name_arr = USER_FUN_GET_GCZC_IN_TYPE_NAME();
+        $dep_name_arr = USER_FUN_GET_DEPARTMENT_NAME();
+        $in_sub_type_name_arr = USER_FUN_GET_GCZC_IN_SUB_TYPE_NAME();
+        $i=0;
+        if(!empty($list)){
+            foreach($list as $item){
+                $responce["rows"][$i]['id']=$item["id"];
+                $responce["rows"][$i]['cell'] = array($item['id'],
+                    $dep_name_arr[$item['department']],
+                    $in_type_name_arr[$item['in_type']],
+                    $in_sub_type_name_arr[$item['in_sub_type']],
+                    $item['jyzj'],$item['ydwt'],$item['jjfa'],$item['ckwj']
+                );
+                $i++;
+            }
+        }
+        $this->ajaxReturn($responce);
+    }
+
+    public function ajaxGczcjlSave(){
+        $Data = M('gczcjl'); // 实例化Data数据模型
+
+        $oper = I('oper');
+        $id = I('id');
+        $pro_id = I('pro_id');
+
+        $user_id = I('user_id');
+        $department = I('department');
+        $in_type = I('in_type');
+        $in_sub_type = I('in_sub_type');
+/*        `jyzj` varchar(1024) NOT NULL COMMENT '经验总结',
+        `ydwt` varchar(1024) NOT NULL COMMENT '具体遇到的问题',
+        `jjfa` varchar(1024) NOT NULL COMMENT '具体的解决方案',
+        `ckwj` varchar(1024) NOT NULL COMMENT '参考查询文件',*/
+        $jyzj = I('jyzj');
+        $ydwt = I('ydwt');
+        $jjfa = I('jjfa');
+        $ckwj = I('ckwj');
+
+        trace($pro_id,"pro_id");
+        trace($jyzj,"jyzj");
+        trace($ydwt,"ydwt");
+        trace($jjfa,"jjfa");
+        trace($ckwj,"ckwj");
+        $condition = array();
+        switch ($oper) {
+            case "add"://
+                if( empty($pro_id) || empty($in_type) || empty($in_sub_type)){
+                    $this->ajaxReturn(array('state' => false, 'msg' => "字段不能为空"));
+                }
+                $condition["pro_id"] = $pro_id;
+                $condition["user_id"] = $user_id;
+                $condition["department"] = $department;
+                $condition['in_type'] = $in_type;
+                $condition['in_sub_type'] = $in_sub_type;
+                $condition['jyzj'] = $jyzj;
+                $condition['ydwt'] = $ydwt;
+                $condition['jjfa'] = $jjfa;
+                $condition['ckwj'] = $ckwj;
+
+                $result  = $Data->add($condition);
+                if(false === $result){
+                    $this->ajaxReturn(array('state' => false, 'msg' => "存盘失败,请检查数据库连接设置"));
+                }else{
+                    $this->ajaxReturn(array('state' => true, 'msg' => "存盘成功", 'id' => $result));
+                }
+                break;
+            case "edit"://
+                if(empty($id) || empty($pro_id) || empty($in_type) || empty($in_sub_type)){
+                    $this->ajaxReturn(array('state' => false, 'msg' => "字段不能为空", 'id' => $id));
+                }
+                $condition["pro_id"] = $pro_id;
+                $condition["user_id"] = $user_id;
+                $condition["department"] = $department;
+                $condition['in_type'] = $in_type;
+                $condition['in_sub_type'] = $in_sub_type;
+                $condition['jyzj'] = $jyzj;
+                $condition['ydwt'] = $ydwt;
+                $condition['jjfa'] = $jjfa;
+                $condition['ckwj'] = $ckwj;
+
+                $condition['id'] = $id;
+                $result  = $Data->save($condition);
+                if(false === $result){
+                    $this->ajaxReturn(array('state' => false, 'msg' => "存盘失败,请检查数据库连接设置", 'id' => $id));
+                }elseif(0 == $result){
+                    $this->ajaxReturn(array('state' => false, 'msg' => "信息没有修改", 'id' => $id));
+                }else{
+                    $this->ajaxReturn(array('state' => true, 'msg' => "存盘成功", 'id' => $id));
+                }
+                break;
+            case "del":
+                if(empty($id)){
+                    $this->ajaxReturn(array('state' => false, 'msg' => "字段不能为空", 'id' => $id));
+                }
+                $condition['id'] = $id;
+                $result  = $Data->where($condition)->delete();
+                if(false === $result){
+                    $this->ajaxReturn(array('state' => false, 'msg' => "存盘失败,请检查数据库连接设置", 'id' => $id));
+                }elseif(0 == $result){
+                    $this->ajaxReturn(array('state' => false, 'msg' => "信息没有修改", 'id' => $id));
+                }else{
+                    $this->ajaxReturn(array('state' => true, 'msg' => "存盘成功", 'id' => $id));
+                }
+                break;
+            default:
+                break;
+        }
+    }
 }
