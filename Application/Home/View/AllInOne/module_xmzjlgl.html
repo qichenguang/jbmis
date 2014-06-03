@@ -1,7 +1,328 @@
+<script>
+    $(".module [jb_field]").each(function() {
+        var id = $(this).attr('id');
+        var cur_dep_code = id.substring(0,2);
+        var cur_pos_2 = id.substring(2,3);
+        //console.log(cur_dep_code,cur_pos_2);
+        if($.inArray(cur_dep_code, dep_sx_arr) && cur_pos_2 == "_"){
+            var curVal = "";
+            if(rec_obj[id] === undefined || rec_obj[id] == null){
+
+            }else{
+                curVal = rec_obj[id];
+                console.log(id,curVal);
+            }
+            $(this).val(curVal);
+            $(this).attr("disabled",true);
+            $(this).addClass("ui-state-disabled");
+            if(false == lock){
+                if(id.substring(0,3) == (depcode + "_")){
+                    $(this).attr("disabled",false);
+                    $(this).removeClass("ui-state-disabled");
+                }
+            }
+        }
+    });
+</script>
 <div id="module_xmzjlgl"  class="module">
-    <h3><a href="#">项目资金流管理</a></h3>
-    <div>
-        项目ID：  <INPUT type="text" id="pro_id" name="pro_id" class="jb_field" ><br/>
-        项目名称：<input type="text"  id="sc_pro_name" name="sc_pro_name"  class="jb_field"  /><br/>
-    </div>
+<h3><a href="#">项目资金流管理</a></h3>
+<div>
+<table>
+    <tr>
+        <td>项目合同金额：</td>
+        <td><INPUT type="text" id="ys_hetong_amt" name="ys_hetong_amt" jb_field="jb_single_save" ></td>
+        <td>客户合同到账金额：</td>
+        <td><INPUT type="text" id="daozhang_amt" name="daozhang_amt" jb_field="jb_single_save" ></td>
+    </tr>
+    <tr>
+        <td>项目结算金额：</td>
+        <td><INPUT type="text" id="ys_jiesuan_amt" name="ys_jiesuan_amt" jb_field="jb_single_save" ></td>
+        <td>客户合同到账金额占结算金额比例：</td>
+        <td><INPUT type="text" id="daozhang_bl" name="daozhang_bl" jb_field="jb_single_save" ></td>
+    </tr>
+</table>
+
+<table>
+    <tr><td colspan="4">项目收款实计：</td></tr>
+    <tr><td colspan="4">月份</td></tr>
+    <tr>
+        <td>首付款：</td>
+        <td><INPUT type="text" id="ht_sksj_1" name="ht_sksj_1" jb_field="jb_single_save" ></td>
+        <td>实际到账时间：</td>
+        <td><INPUT type="text" id="ht_sksj_1_time" name="ht_sksj_1_time" jb_time_field="" jb_field="jb_single_save" ></td>
+    </tr>
+    <tr>
+        <td>第2笔：</td>
+        <td><INPUT type="text" id="ht_sksj_2" name="ht_sksj_2" jb_field="jb_single_save" ></td>
+        <td>实际到账时间：</td>
+        <td><INPUT type="text" id="ht_sksj_2_time" name="ht_sksj_2_time" jb_field="jb_single_save" ></td>
+    </tr>
+    <tr>
+        <td>第3笔：</td>
+        <td><INPUT type="text" id="ht_sksj_3" name="ht_sksj_3" jb_field="jb_single_save" ></td>
+        <td>实际到账时间：</td>
+        <td><INPUT type="text" id="ht_sksj_3_time" name="ht_sksj_3_time" jb_field="jb_single_save" ></td>
+    </tr>
+    <tr>
+        <td>第4笔：</td>
+        <td><INPUT type="text" id="ht_sksj_4" name="ht_sksj_4" jb_field="jb_single_save" ></td>
+        <td>实际到账时间：</td>
+        <td><INPUT type="text" id="ht_sksj_4_time" name="ht_sksj_4_time" jb_field="jb_single_save" ></td>
+    </tr>
+    <tr>
+        <td>第5笔：</td>
+        <td><INPUT type="text" id="ht_sksj_5" name="ht_sksj_5" jb_field="jb_single_save" ></td>
+        <td>实际到账时间：</td>
+        <td><INPUT type="text" id="ht_sksj_5_time" name="ht_sksj_5_time" jb_field="jb_single_save" ></td>
+    </tr>
+    <tr>
+        <td>第6笔：</td>
+        <td><INPUT type="text" id="ht_sksj_6" name="ht_sksj_6" jb_field="jb_single_save" ></td>
+        <td>实际到账时间：</td>
+        <td><INPUT type="text" id="ht_sksj_6_time" name="ht_sksj_6_time" jb_field="jb_single_save" ></td>
+    </tr>
+    <tr>
+        <td>第7笔：</td>
+        <td><INPUT type="text" id="ht_sksj_7" name="ht_sksj_7" jb_field="jb_single_save" ></td>
+        <td>实际到账时间：</td>
+        <td><INPUT type="text" id="ht_sksj_7_time" name="ht_sksj_7_time" jb_field="jb_single_save" ></td>
+    </tr>
+    <tr>
+        <td>第8笔：</td>
+        <td><INPUT type="text" id="ht_sksj_8" name="ht_sksj_8" jb_field="jb_single_save" ></td>
+        <td>实际到账时间：</td>
+        <td><INPUT type="text" id="ht_sksj_8_time" name="ht_sksj_8_time" jb_field="jb_single_save" ></td>
+    </tr>
+    <tr>
+        <td>竣工款：</td>
+        <td><INPUT type="text" id="ht_sksj_9" name="ht_sksj_9" jb_field="jb_single_save" ></td>
+        <td>实际到账时间：</td>
+        <td><INPUT type="text" id="ht_sksj_9_time" name="ht_sksj_1_time" jb_field="jb_single_save" ></td>
+    </tr>
+    <tr>
+        <td>第10笔：</td>
+        <td><INPUT type="text" id="ht_sksj_10" name="ht_sksj_1" jb_field="jb_single_save" ></td>
+        <td>实际到账时间：</td>
+        <td><INPUT type="text" id="ht_sksj_10_time" name="ht_sksj_9_time" jb_field="jb_single_save" ></td>
+    </tr>
+    <tr>
+        <td>第11笔</td>
+        <td><INPUT type="text" id="ht_sksj_11" name="ht_sksj_11" jb_field="jb_single_save" ></td>
+        <td>实际到账时间</td>
+        <td><INPUT type="text" id="ht_sksj_11_time" name="ht_sksj_11_time" jb_field="jb_single_save" ></td>
+    </tr>
+    <tr>
+        <td>第12笔：</td>
+        <td><INPUT type="text" id="ht_sksj_12" name="ht_sksj_12" jb_field="jb_single_save" ></td>
+        <td>实际到账时间：</td>
+        <td><INPUT type="text" id="ht_sksj_12_time" name="ht_sksj_12_time" jb_field="jb_single_save" ></td>
+    </tr>
+    <tr>
+        <td>质保金：</td>
+        <td><INPUT type="text" id="ht_sksj_13" name="ht_sksj_13" jb_field="jb_single_save" ></td>
+        <td>实际到账时间：</td>
+        <td><INPUT type="text" id="ht_sksj_13_time" name="ht_sksj_13_time" jb_field="jb_single_save" ></td>
+    </tr>
+</table>
+<table>
+    <tr><td colspan="4">项目收款预计：</td></tr>
+    <tr>
+        <td>月份</td>
+        <td>比例</td>
+        <td>金额</td>
+        <td>收款时间</td>
+    </tr>
+    <tr>
+        <td>首付款：</td>
+        <td><INPUT type="text" id="gc_skyj_1_bl" name="gc_skyj_1_bl" jb_field="jb_single_save" ></td>
+        <td><INPUT type="text" id="gc_skyj_1_je" name="gc_skyj_1_je" jb_field="jb_single_save" ></td>
+        <td><INPUT type="text" id="gc_skyj_1_time" name="gc_skyj_1_time" jb_field="jb_single_save" ></td>
+    </tr>
+    <tr>
+        <td>进度款1：</td>
+        <td><INPUT type="text" id="gc_skyj_2_bl" name="gc_skyj_2_bl" jb_field="jb_single_save" ></td>
+        <td><INPUT type="text" id="gc_skyj_2_je" name="gc_skyj_2_je" jb_field="jb_single_save" ></td>
+        <td><INPUT type="text" id="gc_skyj_2_time" name="gc_skyj_2_time" jb_field="jb_single_save" ></td>
+    </tr>
+    <tr>
+        <td>进度款2：</td>
+        <td><INPUT type="text" id="gc_skyj_3_bl" name="gc_skyj_3_bl" jb_field="jb_single_save" ></td>
+        <td><INPUT type="text" id="gc_skyj_3_je" name="gc_skyj_3_je" jb_field="jb_single_save" ></td>
+        <td><INPUT type="text" id="gc_skyj_3_time" name="gc_skyj_3_time" jb_field="jb_single_save" ></td>
+    </tr>
+    <tr>
+        <td>进度款3：</td>
+        <td><INPUT type="text" id="gc_skyj_4_bl" name="gc_skyj_4_bl" jb_field="jb_single_save" ></td>
+        <td><INPUT type="text" id="gc_skyj_4_je" name="gc_skyj_4_je" jb_field="jb_single_save" ></td>
+        <td><INPUT type="text" id="gc_skyj_4_time" name="gc_skyj_4_time" jb_field="jb_single_save" ></td>
+    </tr>
+    <tr>
+        <td>进度款4：</td>
+        <td><INPUT type="text" id="gc_skyj_5_bl" name="gc_skyj_5_bl" jb_field="jb_single_save" ></td>
+        <td><INPUT type="text" id="gc_skyj_5_je" name="gc_skyj_5_je" jb_field="jb_single_save" ></td>
+        <td><INPUT type="text" id="gc_skyj_5_time" name="gc_skyj_5_time" jb_field="jb_single_save" ></td>
+    </tr>
+    <tr>
+        <td>进度款5：</td>
+        <td><INPUT type="text" id="gc_skyj_6_bl" name="gc_skyj_6_bl" jb_field="jb_single_save" ></td>
+        <td><INPUT type="text" id="gc_skyj_6_je" name="gc_skyj_6_je" jb_field="jb_single_save" ></td>
+        <td><INPUT type="text" id="gc_skyj_6_time" name="gc_skyj_6_time" jb_field="jb_single_save" ></td>
+    </tr>
+    <tr>
+        <td>进度款6：</td>
+        <td><INPUT type="text" id="gc_skyj_7_bl" name="gc_skyj_7_bl" jb_field="jb_single_save" ></td>
+        <td><INPUT type="text" id="gc_skyj_7_je" name="gc_skyj_7_je" jb_field="jb_single_save" ></td>
+        <td><INPUT type="text" id="gc_skyj_7_time" name="gc_skyj_7_time" jb_field="jb_single_save" ></td>
+    </tr>
+    <tr>
+        <td>进度款7：</td>
+        <td><INPUT type="text" id="gc_skyj_8_bl" name="gc_skyj_8_bl" jb_field="jb_single_save" ></td>
+        <td><INPUT type="text" id="gc_skyj_8_je" name="gc_skyj_8_je" jb_field="jb_single_save" ></td>
+        <td><INPUT type="text" id="gc_skyj_8_time" name="gc_skyj_8_time" jb_field="jb_single_save" ></td>
+    </tr>
+    <tr>
+        <td>进度款8：</td>
+        <td><INPUT type="text" id="gc_skyj_9_bl" name="gc_skyj_9_bl" jb_field="jb_single_save" ></td>
+        <td><INPUT type="text" id="gc_skyj_9_je" name="gc_skyj_9_je" jb_field="jb_single_save" ></td>
+        <td><INPUT type="text" id="gc_skyj_9_time" name="gc_skyj_9_time" jb_field="jb_single_save" ></td>
+    </tr>
+    <tr>
+        <td>竣工款：</td>
+        <td><INPUT type="text" id="gc_skyj_10_bl" name="gc_skyj_10_bl" jb_field="jb_single_save" ></td>
+        <td><INPUT type="text" id="gc_skyj_10_je" name="gc_skyj_10_je" jb_field="jb_single_save" ></td>
+        <td><INPUT type="text" id="gc_skyj_10_time" name="gc_skyj_10_time" jb_field="jb_single_save" ></td>
+    </tr>
+    <tr>
+        <td>结算款：</td>
+        <td>&nbsp;</td>
+        <td><INPUT type="text" id="gc_skyj_11_je" name="gc_skyj_11_je" jb_field="jb_single_save" ></td>
+        <td><INPUT type="text" id="gc_skyj_11_time" name="gc_skyj_11_time" jb_field="jb_single_save" ></td>
+    </tr>
+    <tr>
+        <td>质保金：</td>
+        <td><INPUT type="text" id="gc_skyj_12_bl" name="gc_skyj_12_bl" jb_field="jb_single_save" ></td>
+        <td><INPUT type="text" id="gc_skyj_12_je" name="gc_skyj_12_je" jb_field="jb_single_save" ></td>
+        <td><INPUT type="text" id="gc_skyj_12_time" name="gc_skyj_12_time" jb_field="jb_single_save" ></td>
+    </tr>
+    <tr>
+        <td colspan="2">预计收款总金额：</td>
+        <td colspan="2"><INPUT type="text" id="skyj" name="skyj" ></td>
+    </tr>
+</table>
+<table>
+    <tr><td colspan="6">项目付款预计：</td></tr>
+    <tr>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td>付款占分包合同总金额比例</td>
+        <td>分包付款金额</td>
+        <td>付款占材料合同总金额比例</td>
+        <td>采购付款金额</td>
+    </tr>
+    <tr>
+        <td>首付款</td>
+        <td><INPUT type="text" id="gc_fkyj_1_je" name="gc_fkyj_1_je" jb_field="jb_single_save" ></td>
+        <td><INPUT type="text" id="ys_fkyj_1_fbbl" name="ys_fkyj_1_fbbl" jb_field="jb_single_save" ></td>
+        <td><INPUT type="text" id="ys_fkyj_1_fbje" name="ys_fkyj_1_fbje" jb_field="jb_single_save" ></td>
+        <td><INPUT type="text" id="cg_fkyj_1_clbl" name="cg_fkyj_1_clbl" jb_field="jb_single_save" ></td>
+        <td><INPUT type="text" id="cg_fkyj_1_clje" name="cg_fkyj_1_clje" jb_field="jb_single_save" ></td>
+    </tr>
+    <tr>
+        <td>进度款1：开工第2月</td>
+        <td><INPUT type="text" id="gc_fkyj_2_je" name="gc_fkyj_2_je" jb_field="jb_single_save" ></td>
+        <td><INPUT type="text" id="ys_fkyj_2_fbbl" name="ys_fkyj_2_fbbl" jb_field="jb_single_save" ></td>
+        <td><INPUT type="text" id="ys_fkyj_2_fbje" name="ys_fkyj_2_fbje" jb_field="jb_single_save" ></td>
+        <td><INPUT type="text" id="cg_fkyj_2_clbl" name="cg_fkyj_2_clbl" jb_field="jb_single_save" ></td>
+        <td><INPUT type="text" id="cg_fkyj_2_clje" name="cg_fkyj_2_clje" jb_field="jb_single_save" ></td>
+    </tr>
+    <tr>
+        <td>进度款2：开工第3月</td>
+        <td><INPUT type="text" id="gc_fkyj_3_je" name="gc_fkyj_3_je" jb_field="jb_single_save" ></td>
+        <td><INPUT type="text" id="ys_fkyj_3_fbbl" name="ys_fkyj_3_fbbl" jb_field="jb_single_save" ></td>
+        <td><INPUT type="text" id="ys_fkyj_3_fbje" name="ys_fkyj_3_fbje" jb_field="jb_single_save" ></td>
+        <td><INPUT type="text" id="cg_fkyj_3_clbl" name="cg_fkyj_3_clbl" jb_field="jb_single_save" ></td>
+        <td><INPUT type="text" id="cg_fkyj_3_clje" name="cg_fkyj_3_clje" jb_field="jb_single_save" ></td>
+    </tr>
+    <tr>
+        <td>进度款3：开工第4月</td>
+        <td><INPUT type="text" id="gc_fkyj_4_je" name="gc_fkyj_4_je" jb_field="jb_single_save" ></td>
+        <td><INPUT type="text" id="ys_fkyj_4_fbbl" name="ys_fkyj_4_fbbl" jb_field="jb_single_save" ></td>
+        <td><INPUT type="text" id="ys_fkyj_4_fbje" name="ys_fkyj_4_fbje" jb_field="jb_single_save" ></td>
+        <td><INPUT type="text" id="cg_fkyj_4_clbl" name="cg_fkyj_4_clbl" jb_field="jb_single_save" ></td>
+        <td><INPUT type="text" id="cg_fkyj_4_clje" name="cg_fkyj_4_clje" jb_field="jb_single_save" ></td>
+    </tr>
+    <tr>
+        <td>进度款4：开工第5月</td>
+        <td><INPUT type="text" id="gc_fkyj_5_je" name="gc_fkyj_5_je" jb_field="jb_single_save" ></td>
+        <td><INPUT type="text" id="ys_fkyj_5_fbbl" name="ys_fkyj_5_fbbl" jb_field="jb_single_save" ></td>
+        <td><INPUT type="text" id="ys_fkyj_5_fbje" name="ys_fkyj_5_fbje" jb_field="jb_single_save" ></td>
+        <td><INPUT type="text" id="cg_fkyj_5_clbl" name="cg_fkyj_5_clbl" jb_field="jb_single_save" ></td>
+        <td><INPUT type="text" id="cg_fkyj_5_clje" name="cg_fkyj_5_clje" jb_field="jb_single_save" ></td>
+    </tr>
+    <tr>
+        <td>进度款5：开工第6月</td>
+        <td><INPUT type="text" id="gc_fkyj_6_je" name="gc_fkyj_6_je" jb_field="jb_single_save" ></td>
+        <td><INPUT type="text" id="ys_fkyj_6_fbbl" name="ys_fkyj_6_fbbl" jb_field="jb_single_save" ></td>
+        <td><INPUT type="text" id="ys_fkyj_6_fbje" name="ys_fkyj_6_fbje" jb_field="jb_single_save" ></td>
+        <td><INPUT type="text" id="cg_fkyj_6_clbl" name="cg_fkyj_6_clbl" jb_field="jb_single_save" ></td>
+        <td><INPUT type="text" id="cg_fkyj_6_clje" name="cg_fkyj_6_clje" jb_field="jb_single_save" ></td>
+    </tr>
+    <tr>
+        <td>进度款6：开工第7月</td>
+        <td><INPUT type="text" id="gc_fkyj_7_je" name="gc_fkyj_7_je" jb_field="jb_single_save" ></td>
+        <td><INPUT type="text" id="ys_fkyj_7_fbbl" name="ys_fkyj_7_fbbl" jb_field="jb_single_save" ></td>
+        <td><INPUT type="text" id="ys_fkyj_7_fbje" name="ys_fkyj_7_fbje" jb_field="jb_single_save" ></td>
+        <td><INPUT type="text" id="cg_fkyj_7_clbl" name="cg_fkyj_7_clbl" jb_field="jb_single_save" ></td>
+        <td><INPUT type="text" id="cg_fkyj_7_clje" name="cg_fkyj_7_clje" jb_field="jb_single_save" ></td>
+    </tr>
+    <tr>
+        <td>进度款7：开工第8月</td>
+        <td><INPUT type="text" id="gc_fkyj_8_je" name="gc_fkyj_8_je" jb_field="jb_single_save" ></td>
+        <td><INPUT type="text" id="ys_fkyj_8_fbbl" name="ys_fkyj_8_fbbl" jb_field="jb_single_save" ></td>
+        <td><INPUT type="text" id="ys_fkyj_8_fbje" name="ys_fkyj_8_fbje" jb_field="jb_single_save" ></td>
+        <td><INPUT type="text" id="cg_fkyj_8_clbl" name="cg_fkyj_8_clbl" jb_field="jb_single_save" ></td>
+        <td><INPUT type="text" id="cg_fkyj_8_clje" name="cg_fkyj_8_clje" jb_field="jb_single_save" ></td>
+    </tr>
+    <tr>
+        <td>进度款8：开工第9月</td>
+        <td><INPUT type="text" id="gc_fkyj_9_je" name="gc_fkyj_9_je" jb_field="jb_single_save" ></td>
+        <td><INPUT type="text" id="ys_fkyj_9_fbbl" name="ys_fkyj_9_fbbl" jb_field="jb_single_save" ></td>
+        <td><INPUT type="text" id="ys_fkyj_9_fbje" name="ys_fkyj_9_fbje" jb_field="jb_single_save" ></td>
+        <td><INPUT type="text" id="cg_fkyj_9_clbl" name="cg_fkyj_9_clbl" jb_field="jb_single_save" ></td>
+        <td><INPUT type="text" id="cg_fkyj_9_clje" name="cg_fkyj_9_clje" jb_field="jb_single_save" ></td>
+    </tr>
+    <tr>
+        <td>竣工结算款</td>
+        <td><INPUT type="text" id="gc_fkyj_10_je" name="gc_fkyj_10_je" jb_field="jb_single_save" ></td>
+        <td><INPUT type="text" id="ys_fkyj_10_fbbl" name="ys_fkyj_10_fbbl" jb_field="jb_single_save" ></td>
+        <td><INPUT type="text" id="ys_fkyj_10_fbje" name="ys_fkyj_10_fbje" jb_field="jb_single_save" ></td>
+        <td><INPUT type="text" id="cg_fkyj_10_clbl" name="cg_fkyj_10_clbl" jb_field="jb_single_save" ></td>
+        <td><INPUT type="text" id="cg_fkyj_10_clje" name="cg_fkyj_10_clje" jb_field="jb_single_save" ></td>
+    </tr>
+    <tr>
+        <td>竣工结算款次月</td>
+        <td><INPUT type="text" id="gc_fkyj_11_je" name="gc_fkyj_11_je" jb_field="jb_single_save" ></td>
+        <td><INPUT type="text" id="ys_fkyj_11_fbbl" name="ys_fkyj_11_fbbl" jb_field="jb_single_save" ></td>
+        <td><INPUT type="text" id="ys_fkyj_11_fbje" name="ys_fkyj_11_fbje" jb_field="jb_single_save" ></td>
+        <td><INPUT type="text" id="cg_fkyj_11_clbl" name="cg_fkyj_11_clbl" jb_field="jb_single_save" ></td>
+        <td><INPUT type="text" id="cg_fkyj_11_clje" name="cg_fkyj_11_clje" jb_field="jb_single_save" ></td>
+    </tr>
+    <tr>
+        <td>质保金</td>
+        <td><INPUT type="text" id="gc_fkyj_12_je" name="gc_fkyj_12_je" jb_field="jb_single_save" ></td>
+        <td><INPUT type="text" id="ys_fkyj_12_fbbl" name="ys_fkyj_12_fbbl" jb_field="jb_single_save" ></td>
+        <td><INPUT type="text" id="ys_fkyj_12_fbje" name="ys_fkyj_12_fbje" jb_field="jb_single_save" ></td>
+        <td><INPUT type="text" id="cg_fkyj_12_clbl" name="cg_fkyj_12_clbl" jb_field="jb_single_save" ></td>
+        <td><INPUT type="text" id="cg_fkyj_12_clje" name="cg_fkyj_12_clje" jb_field="jb_single_save" ></td>
+    </tr>
+    <tr>
+        <td colspan="2">预计付款总金额</td>
+        <td><INPUT type="text" id="ys_fkyj_fbbl" name="ys_fkyj_fbbl" jb_field="jb_single_save" ></td>
+        <td><INPUT type="text" id="ys_fkyj_fbje" name="ys_fkyj_fbje" jb_field="jb_single_save" ></td>
+        <td><INPUT type="text" id="cg_fkyj_clbl" name="cg_fkyj_clbl" jb_field="jb_single_save" ></td>
+        <td><INPUT type="text" id="cg_fkyj_clje" name="cg_fkyj_clje" jb_field="jb_single_save" ></td>
+    </tr>
+</table>
+
+</div>
 </div>

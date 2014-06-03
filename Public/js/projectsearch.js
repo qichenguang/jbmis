@@ -26,7 +26,7 @@ $(document).ready(function(){
                 editable:true, edittype:"text",editrules:{required:true},
                 editoptions:{size:"20"},
                 formatter:pro_id_format, unformat:pro_id_unformat,
-            formoptions:{rowpos:1, label: "项目ID", elmprefix:"(*)"}
+                formoptions:{rowpos:1, label: "项目ID", elmprefix:"(*)"}
             },
             {name:'sc_pro_name',index:'sc_pro_name',
                 width:150,align:"right",

@@ -34,7 +34,7 @@ $(document).ready(function() {
         console.log(rec_json_str);
         var rec_obj = $.parseJSON(rec_json_str);
         console.log(rec_obj);
-        var depcode = $("#department").val();
+        var depcode = $("#user_department").val();
         $(".module [jb_field]").each(function() {
             var id = $(this).attr('id');
             //console.log($(this).attr('id'));
@@ -167,7 +167,7 @@ $(document).ready(function() {
         content:'存盘?',
         onYes:function(ctl){
             //alert(ctl.attr("id"));
-            var depcode = $("#department").val();
+            var depcode = $("#user_department").val();
             var id = ctl.attr("id");
             if(id.substring(0,3) == (depcode + "_")){
                 //alert(ctl.val());
@@ -223,7 +223,7 @@ $(document).ready(function() {
         content:'存盘?',
         onYes:function(ctl){
             //alert(ctl.attr("id"));
-            var depcode = $("#department").val();
+            var depcode = $("#user_department").val();
             var id = ctl.attr("id");
             if(id.substring(0,3) == (depcode + "_")){
                 //alert(ctl.val());
@@ -337,7 +337,27 @@ $(document).ready(function() {
             position :"first",
             useDefValues : false,
             useFormatter : false,
-            addRowParams : {extraparam:{pro_id:cur_pos_id}}
+            addRowParams : {
+                extraparam:{pro_id:cur_pos_id},
+                successfunc : function(xhr){
+                    //alert("successfunc");
+                    //console.log(xhr);
+                    var result = eval('(' + xhr.responseText + ')');
+                    if(true == result.state){
+                        //alert(result.msg);
+                        //alert(result.msg);
+                        //重新载入,自动调用
+                        //$gridobj.trigger("reloadGrid"); //重新载入
+                        //alert(result.id);
+                        //jQuery(domTableId).setCell (1,1,result.id);
+                        jQuery(domTableId).trigger("reloadGrid");
+                        return true;
+                    }else{
+                        jAlert(result.msg);
+                        return true;
+                    }
+                }
+            }
         }
         //
         var editparameters = {

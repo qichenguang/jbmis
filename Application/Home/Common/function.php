@@ -1,6 +1,17 @@
 <?php
 
 
+function USER_FUN_GET_MYD_PJ_NAME(){
+    $myd_pj = array(
+        "A" => '非常满意',
+        "B" => '满意',
+        "C" => '基本满意',
+        "D" => '不太满意',
+        "E" => '不满意',
+    );
+    return $myd_pj;
+}
+
 function USER_FUN_GET_GCZC_IN_TYPE_NAME(){
     $in_type = array(
         'A' => "管理",

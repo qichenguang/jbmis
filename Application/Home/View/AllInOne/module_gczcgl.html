@@ -1,5 +1,34 @@
 <script type="text/javascript">
     $(document).ready(function() {
+        function get_dep_sx_from_name(name){
+            var dep_arr = {
+                "采购管理部" : 'cg',
+                "售后服务部" : 'sh',
+                "行政人事部" : 'hr',
+                "工程管理部" : 'gc',
+                "机电管理部" : 'jd',
+                "设计管理部" : 'sj',
+                "市场管理部" : 'sc',
+                "预算管理部" : 'ys'
+            };
+            return dep_arr[name];
+        }
+        function get_dep_opt_str(dep_sx){
+            var dep_arr = {
+                'cg':"采购管理部",
+                'sh':"售后服务部",
+                'gc':"工程管理部",
+                'jd':"机电管理部",
+                'sj':"设计管理部",
+                'sc':"市场管理部",
+                'ys':"预算管理部"
+            };
+            var str = "";
+            str += "<option value='all'>请选择</option>";
+            str += "<option value='" + dep_sx + "'>" + dep_arr[dep_sx] + "</option>";
+            return str;
+        }
+
         function get_dep_in_type_opt_str(dep){
             var all_item = {key2:'all',val2:'请选择'};
             var a = {key2:'A',val2:'管理'};
@@ -72,13 +101,13 @@
             }
             return str;
         }
-        function setGczcjlJqGrid(domTableId,domPageId,cur_pos_id,cur_user_id){
-            console.log(cur_pos_id);
+        function setGczcjlJqGrid(domTableId,domPageId,cur_pro_id,cur_user_id){
+            console.log(cur_pro_id);
             var $gridobj = jQuery(domTableId).jqGrid({
                 url:'/index.php/Home/AllInOne/ajaxGczcjlSearch',
                 datatype: "json",
                 mtype: 'POST',
-                postData: {pos_id:cur_pos_id},
+                postData: {pro_id:cur_pro_id},
                 colNames:['ID','部门','类型','细目','经验总结','遇到问题','解决方案','参考资料'],
                 colModel:[
                     {name:'id',index:'id',
@@ -103,26 +132,54 @@
                                 'jd':"机电管理部",
                                 'sj':"设计管理部",
                                 'sc':"市场管理部",
-                                'ys':"预算管理部"},
+                                'ys':"预算管理部"
+                            },
                             defaultValue:"all",
                             dataEvents: [
                                 {
-                                    type: 'change', //下拉选择的时候
+                                    type: 'focus', //change 下拉选择的时候
                                     fn: function(event){
-                                        //alert("aaaa");
                                         var cur_id = event.target.id;
+                                        //alert(cur_id);
                                         if(cur_id.indexOf("new_row") != -1){
-                                            var $cur_dep = $("#" + cur_id).val();
+                                            var dep_sx = $("#user_department").val();
+                                            //alert(dep_sx);
+                                            var str = get_dep_opt_str(dep_sx);
+                                            //alert(str2);
+                                            $("#new_row_department").empty();
+                                            $("#new_row_department").append(str);
+                                            $("#new_row_department").val(dep_sx);
                                             //alert($cur_dep);
                                             var $in_type = $("select#new_row_in_type");   //获取下面下拉框RoleName对象
                                             var $in_sub_type = $("select#new_row_in_sub_type");   //获取下面下拉框RoleName对象
                                             $in_type.empty();
                                             $in_sub_type.empty();
-                                            var str = get_dep_in_type_opt_str($cur_dep);
+                                            str = get_dep_in_type_opt_str(dep_sx);
                                             //alert(str);
                                             $in_type.append(str);                    // 然后绑定下拉框
-                                            str = get_dep_in_sub_type_opt_str($cur_dep);
+                                            str = get_dep_in_sub_type_opt_str(dep_sx);
                                             $in_sub_type.append(str);                    // 然后绑定下拉框
+                                        }else{
+                                            var id = cur_id.substring(0,cur_id.indexOf("_"));
+                                            var $old_in_type_id = $("#" + id + "_in_type");
+                                            var $old_in_sub_type_id = $("#" + id + "_in_sub_type");
+                                            var old_in_type_val = $old_in_type_id.val();
+                                            var old_in_sub_type_val = $old_in_sub_type_id.val();
+                                            var dep_sx = $("#user_department").val();
+                                            var str = get_dep_opt_str(dep_sx);
+                                            $("#" + cur_id).empty();
+                                            $("#" + cur_id).append(str);
+                                            $("#" + cur_id).val(dep_sx);
+                                            //
+                                            $old_in_type_id.empty();
+                                            $old_in_sub_type_id.empty();
+                                            str = get_dep_in_type_opt_str(dep_sx);
+                                            $old_in_type_id.append(str);
+                                            str = get_dep_in_sub_type_opt_str(dep_sx);
+                                            $old_in_sub_type_id.append(str);
+                                            //
+                                            $old_in_type_id.val(old_in_type_val);
+                                            $old_in_sub_type_id.val(old_in_sub_type_val);
                                         }
                                     }
                                 }
@@ -223,8 +280,8 @@
                 hiddengrid: false,
                 autowidth: true,
                 rownumbers: true,
-                rowNum:10,
-                rowList:[10,20,30],
+                rowNum:20,
+                rowList:[20,30,50],
                 pager: domPageId,
                 viewrecords: true,
                 sortorder: "desc",
@@ -232,6 +289,19 @@
                 editurl: '/index.php/Home/AllInOne/ajaxGczcjlSave',
                 caption:"",
                 onSelectRow: function(id){
+                    var rowid = jQuery(domTableId).jqGrid('getGridParam','selrow');
+                    if(rowid){
+                        var rowData = $(domTableId).jqGrid('getRowData',rowid);
+                         var dep_sx = get_dep_sx_from_name(rowData.department);
+                         if(dep_sx != $("#user_department").val()){
+                             $('#gczcjl_iledit').addClass('ui-state-disabled');
+                             $('#del_gczcjl').addClass('ui-state-disabled');
+                         }else{
+                             $('#gczcjl_iledit').removeClass('ui-state-disabled');
+                             $('#del_gczcjl').removeClass('ui-state-disabled');
+                         }
+                     }
+
                 },
                 onCellSelect: function(){
 
@@ -252,7 +322,27 @@
                 position :"first",
                 useDefValues : false,
                 useFormatter : false,
-                addRowParams : {extraparam:{pro_id:cur_pos_id,user_id:cur_user_id}}
+                addRowParams : {
+                    extraparam:{pro_id:cur_pro_id,user_id:cur_user_id},
+                    successfunc : function(xhr){
+                        //alert("successfunc");
+                        //console.log(xhr);
+                        var result = eval('(' + xhr.responseText + ')');
+                        if(true == result.state){
+                            //alert(result.msg);
+                            //alert(result.msg);
+                            //重新载入,自动调用
+                            //$gridobj.trigger("reloadGrid"); //重新载入
+                            //alert(result.id);
+                            //jQuery(domTableId).setCell (1,1,result.id);
+                            jQuery(domTableId).trigger("reloadGrid");
+                            return true;
+                        }else{
+                            jAlert(result.msg);
+                            return true;
+                        }
+                    }
+                }
             }
             //
             var editparameters = {
@@ -275,7 +365,7 @@
                     }
                 },
                 "url" : null,
-                "extraparam" : {pro_id:cur_pos_id,user_id:cur_user_id},
+                "extraparam" : {pro_id:cur_pro_id,user_id:cur_user_id},
                 "aftersavefunc" : null,
                 "errorfunc": null,
                 "afterrestorefunc" : null,
@@ -298,7 +388,7 @@
 
 
             //其他配置
-            jQuery(domTableId).jqGrid('gridResize',{minWidth:350,maxWidth:1000,minHeight:80, maxHeight:350});
+            jQuery(domTableId).jqGrid('gridResize',{minWidth:1500,maxWidth:2000,minHeight:500, maxHeight:1000});
             jQuery(domTableId).jqGrid('sortableRows');
             jQuery(domTableId).jqGrid('filterToolbar');
             if($(domPageId + ":contains(Toggle)").length < 1){
