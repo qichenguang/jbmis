@@ -739,4 +739,461 @@ class AllInOneController extends Controller {
                 break;
         }
     }
+
+    //分包
+    public function ajaxGysglfbSearch(){
+        $pagenum = I('page',1); // get the requested page
+        $limitnum = I('rows',20); // get how many rows we want to have into the grid
+        $sidx = I('sidx','id'); // get index row - i.e. user click to sort
+        $sord = I('sord','desc'); // get the direction
+        if($sidx == ""){
+            $sidx = 'id';
+        }
+
+        //手动查询标志
+        $searchOn = I('_search');
+        //多条件查询
+        $cond = array();
+        if('true' == $searchOn) {
+            $sarr = I('param.');
+            foreach( $sarr as $k=>$v) {
+                switch ($k) {
+                    case 'zxcl_name':
+                        $cond[$k] = array('LIKE', "%$v%");
+                        break;
+                    case 'id':
+                    case 'pro_id':
+                    case 'ys_fb_lx':
+                    case 'ys_fb_ht_lx':
+                    case 'ys_pj':
+                    case 'sj_pj':
+                    case 'jd_pj':
+                    case 'gc_pj':
+                    case 'cg_pj':
+                    case 'sh_pj':
+                        if("all" != $v){
+                            $cond[$k] = $v;
+                        }
+                        break;
+                }
+            }
+        }
+        //单条件 find
+        if(FALSE && 'true' == $searchOn){
+            $searchField = I('searchField');
+            $searchString = I('searchString');
+            $searchOper = I('searchOper');
+            $cond[$searchField] = array('LIKE', "%$searchString%");
+        }
+        //
+        $User = M('gys_fb'); // 实例化User对象
+        $count = $User->where($cond)->order(array($sidx => $sord))->count();// 查询满足要求的总记录数
+        $list =  $User->where($cond)->order(array($sidx => $sord))->page($pagenum,$limitnum)->select();
+
+        $total_pages = 0;
+        if( $count >0 ) {
+            $total_pages = ceil($count/$limitnum);
+        }
+        $responce["page"] = $pagenum;
+        $responce["total"] = $total_pages;
+        $responce["records"] = $count;
+
+        $myd_pj_arr = USER_FUN_GET_MYD_PJ_NAME();
+        $my_fb_type_arr = USER_FUN_GET_VO_TYPE_NAME();
+        $my_ht_type_arr = USER_FUN_GET_HT_TYPE_NAME();
+        $i=0;
+        if(!empty($list)){
+            foreach($list as $item){
+                $vozb = 0;
+                if($item['ys_fb_ht_je'] > 0 && $item['ys_fb_ht_voje'] >= 0){
+                    $vozb = $item['ys_fb_ht_voje'] / $item['ys_fb_ht_je'];
+                }
+
+                $responce["rows"][$i]['id']=$item["id"];
+                $responce["rows"][$i]['cell'] = array($item['id'],
+                    $my_fb_type_arr[$item['ys_fb_lx']],
+                    $my_ht_type_arr[$item['ys_fb_ht_lx']],
+                    $item['ys_fb_ht_je'],
+                    $item['ys_fb_ht_voje'],
+                    $vozb * 100 . "%",
+                    $myd_pj_arr[$item['ys_pj']],
+                    $myd_pj_arr[$item['sj_pj']],
+                    $myd_pj_arr[$item['jd_pj']],
+                    $myd_pj_arr[$item['gc_pj']],
+                    $myd_pj_arr[$item['cg_pj']],
+                    $myd_pj_arr[$item['sh_pj']],
+                    "0%",
+                );
+                $i++;
+            }
+        }
+        $this->ajaxReturn($responce);
+    }
+    public function ajaxGysglfbSave(){
+        $Data = M('gys_fb'); // 实例化Data数据模型
+
+        $oper = I('oper');
+        $id = I('id');
+        $pro_id = I('pro_id');
+
+        $ys_fb_lx = I('ys_fb_lx');
+        $ys_fb_ht_lx = I('ys_fb_ht_lx');
+        $ys_fb_ht_je = I('ys_fb_ht_je');
+        $ys_fb_ht_voje = I('ys_fb_ht_voje');
+        /*
+  `htje` double DEFAULT NULL COMMENT '合同金额',
+  `voje` double DEFAULT NULL COMMENT 'VO金额',
+  `ys_pj` char(1) NOT NULL COMMENT '平均：预算部',
+  `sj_pj` char(1) NOT NULL COMMENT '平均：设计部',
+  `jd_pj` char(1) NOT NULL COMMENT '平均：机电部',
+  `gc_pj` char(1) NOT NULL COMMENT '平均：工程部',
+  `cg_pj` char(1) NOT NULL COMMENT '平均：采购部',
+  `sh_pj` char(1) NOT NULL COMMENT '平均：售后部',
+        */
+
+        $ys_pj = I('ys_pj');
+        $sj_pj = I('sj_pj');
+        $jd_pj = I('jd_pj');
+        $gc_pj = I('gc_pj');
+        $cg_pj = I('cg_pj');
+        $sh_pj = I('sh_pj');
+
+
+        $condition = array();
+        switch ($oper) {
+            case "add"://
+                if( empty($pro_id) || empty($ys_fb_lx) || empty($ys_fb_ht_lx) || empty($ys_fb_ht_je) || empty($ys_fb_ht_voje)){
+                    $this->ajaxReturn(array('state' => false, 'msg' => "字段不能为空"));
+                }
+                $condition["pro_id"] = $pro_id;
+                $condition["ys_fb_lx"] = $ys_fb_lx;
+                $condition["ys_fb_ht_lx"] = $ys_fb_ht_lx;
+                $condition['ys_fb_ht_je'] = $ys_fb_ht_je;
+                $condition['ys_fb_ht_voje'] = $ys_fb_ht_voje;
+                $condition['ys_pj'] = $ys_pj;
+                $condition['sj_pj'] = $sj_pj;
+                $condition['jd_pj'] = $jd_pj;
+                $condition['gc_pj'] = $gc_pj;
+                $condition['cg_pj'] = $cg_pj;
+                $condition['sh_pj'] = $sh_pj;
+
+                $result  = $Data->add($condition);
+                if(false === $result){
+                    $this->ajaxReturn(array('state' => false, 'msg' => "存盘失败,请检查数据库连接设置"));
+                }else{
+                    $this->ajaxReturn(array('state' => true, 'msg' => "存盘成功", 'id' => $result));
+                }
+                break;
+            case "edit"://
+                if(empty($id) || empty($pro_id) || empty($ys_fb_lx) || empty($ys_fb_ht_lx) || empty($ys_fb_ht_je) || empty($ys_fb_ht_voje)){
+                    $this->ajaxReturn(array('state' => false, 'msg' => "字段不能为空", 'id' => $id));
+                }
+                $condition["pro_id"] = $pro_id;
+                $condition["ys_fb_lx"] = $ys_fb_lx;
+                $condition["ys_fb_ht_lx"] = $ys_fb_ht_lx;
+                $condition['ys_fb_ht_je'] = $ys_fb_ht_je;
+                $condition['ys_fb_ht_voje'] = $ys_fb_ht_voje;
+                $condition['ys_pj'] = $ys_pj;
+                $condition['sj_pj'] = $sj_pj;
+                $condition['jd_pj'] = $jd_pj;
+                $condition['gc_pj'] = $gc_pj;
+                $condition['cg_pj'] = $cg_pj;
+                $condition['sh_pj'] = $sh_pj;
+
+                $condition['id'] = $id;
+                $result  = $Data->save($condition);
+                if(false === $result){
+                    $this->ajaxReturn(array('state' => false, 'msg' => "存盘失败,请检查数据库连接设置", 'id' => $id));
+                }elseif(0 == $result){
+                    $this->ajaxReturn(array('state' => false, 'msg' => "信息没有修改", 'id' => $id));
+                }else{
+                    $this->ajaxReturn(array('state' => true, 'msg' => "存盘成功", 'id' => $id));
+                }
+                break;
+            case "del":
+                if(empty($id)){
+                    $this->ajaxReturn(array('state' => false, 'msg' => "字段不能为空", 'id' => $id));
+                }
+                $condition['id'] = $id;
+                $result  = $Data->where($condition)->delete();
+                if(false === $result){
+                    $this->ajaxReturn(array('state' => false, 'msg' => "存盘失败,请检查数据库连接设置", 'id' => $id));
+                }elseif(0 == $result){
+                    $this->ajaxReturn(array('state' => false, 'msg' => "信息没有修改", 'id' => $id));
+                }else{
+                    $this->ajaxReturn(array('state' => true, 'msg' => "存盘成功", 'id' => $id));
+                }
+                break;
+            default:
+                break;
+        }
+    }
+    //
+    //资金流
+    public function ajaxZjlsksjSearch(){
+        $pagenum = I('page',1); // get the requested page
+        $limitnum = I('rows',20); // get how many rows we want to have into the grid
+        $sidx = I('sidx','id'); // get index row - i.e. user click to sort
+        $sord = I('sord','desc'); // get the direction
+        if($sidx == ""){
+            $sidx = 'id';
+        }
+
+        //手动查询标志
+        $searchOn = I('_search');
+        //多条件查询
+        $cond = array();
+        if('true' == $searchOn) {
+            $sarr = I('param.');
+            foreach( $sarr as $k=>$v) {
+                switch ($k) {
+                    case 'zxcl_name':
+                        $cond[$k] = array('LIKE', "%$v%");
+                        break;
+                    case 'id':
+                    case 'pro_id':
+                    case 'sk_bs':
+                        if("all" != $v){
+                            $cond[$k] = $v;
+                        }
+                        break;
+                }
+            }
+        }
+        //单条件 find
+        if(FALSE && 'true' == $searchOn){
+            $searchField = I('searchField');
+            $searchString = I('searchString');
+            $searchOper = I('searchOper');
+            $cond[$searchField] = array('LIKE', "%$searchString%");
+        }
+        //
+        $User = M('zjl_sksj'); // 实例化User对象
+        $count = $User->where($cond)->order(array($sidx => $sord))->count();// 查询满足要求的总记录数
+        $list =  $User->where($cond)->order(array($sidx => $sord))->page($pagenum,$limitnum)->select();
+
+        $total_pages = 0;
+        if( $count >0 ) {
+            $total_pages = ceil($count/$limitnum);
+        }
+        $responce["page"] = $pagenum;
+        $responce["total"] = $total_pages;
+        $responce["records"] = $count;
+
+        $zjl_bs_arr = USER_FUN_GET_ZJL_SKSJ_BS_NAME();
+        $i=0;
+        if(!empty($list)){
+            foreach($list as $item){
+                $responce["rows"][$i]['id']=$item["id"];
+                $responce["rows"][$i]['cell'] = array($item['id'],
+                    $zjl_bs_arr[$item['sk_bs']],
+                    $item['sk_je'],
+                    $item['sk_time'],
+                );
+                $i++;
+            }
+        }
+        $this->ajaxReturn($responce);
+    }
+    public function ajaxZjlsksjSave(){
+        $Data = M('zjl_sksj'); // 实例化Data数据模型
+
+        $oper = I('oper');
+        $id = I('id');
+        $pro_id = I('pro_id');
+
+        $sk_bs = I('sk_bs');
+        $sk_je = I('sk_je');
+        $sk_time = I('sk_time');
+
+        $condition = array();
+        switch ($oper) {
+            case "add"://
+                if( empty($pro_id) || empty($sk_bs) || empty($sk_je) || empty($sk_time)){
+                    $this->ajaxReturn(array('state' => false, 'msg' => "字段不能为空"));
+                }
+                $condition["pro_id"] = $pro_id;
+                $condition["sk_bs"] = $sk_bs;
+                $condition["sk_je"] = $sk_je;
+                $condition['sk_time'] = $sk_time;
+
+                $result  = $Data->add($condition);
+                if(false === $result){
+                    $this->ajaxReturn(array('state' => false, 'msg' => "存盘失败,请检查数据库连接设置"));
+                }else{
+                    $this->ajaxReturn(array('state' => true, 'msg' => "存盘成功", 'id' => $result));
+                }
+                break;
+            case "edit"://
+                if(empty($id) || empty($pro_id) || empty($sk_bs) || empty($sk_je) || empty($sk_time) ){
+                    $this->ajaxReturn(array('state' => false, 'msg' => "字段不能为空", 'id' => $id));
+                }
+                $condition["pro_id"] = $pro_id;
+                $condition["sk_bs"] = $sk_bs;
+                $condition["sk_je"] = $sk_je;
+                $condition['sk_time'] = $sk_time;
+
+                $condition['id'] = $id;
+                $result  = $Data->save($condition);
+                if(false === $result){
+                    $this->ajaxReturn(array('state' => false, 'msg' => "存盘失败,请检查数据库连接设置", 'id' => $id));
+                }elseif(0 == $result){
+                    $this->ajaxReturn(array('state' => false, 'msg' => "信息没有修改", 'id' => $id));
+                }else{
+                    $this->ajaxReturn(array('state' => true, 'msg' => "存盘成功", 'id' => $id));
+                }
+                break;
+            case "del":
+                if(empty($id)){
+                    $this->ajaxReturn(array('state' => false, 'msg' => "字段不能为空", 'id' => $id));
+                }
+                $condition['id'] = $id;
+                $result  = $Data->where($condition)->delete();
+                if(false === $result){
+                    $this->ajaxReturn(array('state' => false, 'msg' => "存盘失败,请检查数据库连接设置", 'id' => $id));
+                }elseif(0 == $result){
+                    $this->ajaxReturn(array('state' => false, 'msg' => "信息没有修改", 'id' => $id));
+                }else{
+                    $this->ajaxReturn(array('state' => true, 'msg' => "存盘成功", 'id' => $id));
+                }
+                break;
+            default:
+                break;
+        }
+    }
+    //
+    public function ajaxZjlskyjSearch(){
+        $pagenum = I('page',1); // get the requested page
+        $limitnum = I('rows',20); // get how many rows we want to have into the grid
+        $sidx = I('sidx','id'); // get index row - i.e. user click to sort
+        $sord = I('sord','desc'); // get the direction
+        if($sidx == ""){
+            $sidx = 'id';
+        }
+
+        $hetong_amt = I('hetong_amt');
+        //手动查询标志
+        $searchOn = I('_search');
+        //多条件查询
+        $cond = array();
+        if('true' == $searchOn) {
+            $sarr = I('param.');
+            foreach( $sarr as $k=>$v) {
+                switch ($k) {
+                    case 'zxcl_name':
+                        $cond[$k] = array('LIKE', "%$v%");
+                        break;
+                    case 'id':
+                    case 'pro_id':
+                    case 'sk_bs':
+                        if("all" != $v){
+                            $cond[$k] = $v;
+                        }
+                        break;
+                }
+            }
+        }
+        //单条件 find
+        if(FALSE && 'true' == $searchOn){
+            $searchField = I('searchField');
+            $searchString = I('searchString');
+            $searchOper = I('searchOper');
+            $cond[$searchField] = array('LIKE', "%$searchString%");
+        }
+        //
+        $User = M('zjl_skyj'); // 实例化User对象
+        $count = $User->where($cond)->order(array($sidx => $sord))->count();// 查询满足要求的总记录数
+        $list =  $User->where($cond)->order(array($sidx => $sord))->page($pagenum,$limitnum)->select();
+
+        $total_pages = 0;
+        if( $count >0 ) {
+            $total_pages = ceil($count/$limitnum);
+        }
+        $responce["page"] = $pagenum;
+        $responce["total"] = $total_pages;
+        $responce["records"] = $count;
+
+        $zjl_bs_arr = USER_FUN_GET_ZJL_SKYJ_BS_NAME();
+        $i=0;
+        if(!empty($list)){
+            foreach($list as $item){
+                $responce["rows"][$i]['id']=$item["id"];
+                $responce["rows"][$i]['cell'] = array($item['id'],
+                    $zjl_bs_arr[$item['sk_bs']],
+                    $item['sk_rate'],
+                    intval($hetong_amt) * intval($item['sk_rate']),
+                    $item['sk_time'],
+                );
+                $i++;
+            }
+        }
+        $this->ajaxReturn($responce);
+    }
+    public function ajaxZjlskyjSave(){
+        $Data = M('zjl_skyj'); // 实例化Data数据模型
+
+        $oper = I('oper');
+        $id = I('id');
+        $pro_id = I('pro_id');
+
+
+        $sk_bs = I('sk_bs');
+        $sk_rate = I('sk_rate');
+        $sk_time = I('sk_time');
+
+        $condition = array();
+        switch ($oper) {
+            case "add"://
+                if( empty($pro_id) || empty($sk_bs) || empty($sk_rate) || empty($sk_time)){
+                    $this->ajaxReturn(array('state' => false, 'msg' => "字段不能为空"));
+                }
+                $condition["pro_id"] = $pro_id;
+                $condition["sk_bs"] = $sk_bs;
+                $condition["sk_rate"] = $sk_rate;
+                $condition['sk_time'] = $sk_time;
+
+                $result  = $Data->add($condition);
+                if(false === $result){
+                    $this->ajaxReturn(array('state' => false, 'msg' => "存盘失败,请检查数据库连接设置"));
+                }else{
+                    $this->ajaxReturn(array('state' => true, 'msg' => "存盘成功", 'id' => $result));
+                }
+                break;
+            case "edit"://
+                if(empty($id) || empty($pro_id) || empty($sk_bs) || empty($sk_rate) || empty($sk_time) ){
+                    $this->ajaxReturn(array('state' => false, 'msg' => "字段不能为空", 'id' => $id));
+                }
+                $condition["pro_id"] = $pro_id;
+                $condition["sk_bs"] = $sk_bs;
+                $condition["sk_rate"] = $sk_rate;
+                $condition['sk_time'] = $sk_time;
+
+                $condition['id'] = $id;
+                $result  = $Data->save($condition);
+                if(false === $result){
+                    $this->ajaxReturn(array('state' => false, 'msg' => "存盘失败,请检查数据库连接设置", 'id' => $id));
+                }elseif(0 == $result){
+                    $this->ajaxReturn(array('state' => false, 'msg' => "信息没有修改", 'id' => $id));
+                }else{
+                    $this->ajaxReturn(array('state' => true, 'msg' => "存盘成功", 'id' => $id));
+                }
+                break;
+            case "del":
+                if(empty($id)){
+                    $this->ajaxReturn(array('state' => false, 'msg' => "字段不能为空", 'id' => $id));
+                }
+                $condition['id'] = $id;
+                $result  = $Data->where($condition)->delete();
+                if(false === $result){
+                    $this->ajaxReturn(array('state' => false, 'msg' => "存盘失败,请检查数据库连接设置", 'id' => $id));
+                }elseif(0 == $result){
+                    $this->ajaxReturn(array('state' => false, 'msg' => "信息没有修改", 'id' => $id));
+                }else{
+                    $this->ajaxReturn(array('state' => true, 'msg' => "存盘成功", 'id' => $id));
+                }
+                break;
+            default:
+                break;
+        }
+    }
 }

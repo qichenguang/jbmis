@@ -38,6 +38,7 @@
                 }
             }
         }
+
         function checkSelectPrivil (event){
             var cur_id = event.target.id;
             var old_val = $("#" + cur_id).val();
@@ -67,7 +68,67 @@
                 }
             }
         }
-
+        function getColModel_Id(){
+            return {name:'id',index:'id',
+                    width:20,align:"right",
+                    sortable:true,
+                    editable:false,
+                    readonly:true,
+                    editoptions:{readonly:true,size:100},
+                formoptions:{rowpos:1, label: "id", elmprefix:"(*)"}
+            };
+        }
+        function getColModel_Je(indexname,rowpos,label,require){
+            return {
+                name:indexname,
+                index:indexname,
+                width:30,
+                align:"right",
+                sortable:true,
+                editable:true, edittype:"text",
+                editrules:{required: (typeof(require )== "undefined") ? true : require},
+                editoptions:{
+                    size:"20",
+                    dataEvents: [
+                        {
+                            type: 'focus', //change 下拉选择的时候
+                            fn: checkSelectPrivil
+                        }
+                    ]
+                },
+                formoptions:{rowpos:rowpos, label: label, elmprefix:"(*)"}
+            };
+        }
+        function getColModel_Pj(indexname,rowpos,label,require){
+            return {
+                name: indexname,
+                index: indexname,
+                width:40,
+                align:"center",
+                sortable:true,
+                stype:'select',//查询类型
+                editable:true,edittype:"select",
+                editoptions:{
+                    value:{
+                        'all':"全部",
+                        "A":'非常满意',
+                        "B":'满意',
+                        "C":'基本满意',
+                        "D":'不太满意',
+                        "E":'不满意'
+                    },
+                    defaultValue:"all",
+                    dataEvents: [
+                        {
+                            type: 'focus', //change 下拉选择的时候
+                            fn: checkSelectPrivil
+                        }
+                    ]
+                },
+                editrules:{required: (typeof(require )== "undefined") ? false : require },
+                formoptions:{ rowpos:rowpos,label: label ,elmprefix:"(*)"}
+            };
+        }
         //comm func
         function setGysglCommJqGrid(domTableId,domPageId,cur_pro_id,cur_user_id,cl){
             var search_url = "";
@@ -75,72 +136,22 @@
             var colNames = [];
             var selfdep = {};
             var caption_str = "";
+            var selfname = "";
+            var selflable = "";
             if(cl == "zxcl"){
                 caption_str = "装修材料";
                 search_url = '/index.php/Home/AllInOne/ajaxGysglzxclSearch';
                 save_url = '/index.php/Home/AllInOne/ajaxGysglzxclSave'
                 colNames = ['ID','装修材料名称','合同金额','VO金额','VO占比','设计部评价','工程部评价','采购部评价','售后部评价','平均评价'];
-                selfdep = {
-                    name:'sj_pj',
-                    index:'sj_pj',
-                    width:40,
-                    align:"center",
-                    sortable:true,
-                    stype:'select',//查询类型
-                    editable:true,edittype:"select",
-                    editoptions:{
-                        value:{
-                            'all':"全部",
-                                    "A":'非常满意',
-                                    "B":'满意',
-                                    "C":'基本满意',
-                                    "D":'不太满意',
-                                    "E":'不满意'
-                        },
-                        defaultValue:"all",
-                                dataEvents: [
-                            {
-                                type: 'focus', //change 下拉选择的时候
-                                fn: checkSelectPrivil
-                            }
-                        ]
-                    },
-                    editrules:{required:false},
-                    formoptions:{ rowpos:6,label: "设计部评价",elmprefix:"(*)"}
-                };
+                selfname = "sj_pj";
+                selflable = "设计部评价";
             }else if(cl == "jdcl"){
                 caption_str = "机电材料";
                 search_url = '/index.php/Home/AllInOne/ajaxGysgljdclSearch';
                 save_url = '/index.php/Home/AllInOne/ajaxGysgljdclSave';
                 colNames = ['ID','机电材料名称','合同金额','VO金额','VO占比','机电部评价','工程部评价','采购部评价','售后部评价','平均评价'];
-                selfdep = {
-                    name:'jd_pj',
-                    index:'jd_pj',
-                    width:40,
-                    align:"center",
-                    sortable:true,
-                    stype:'select',//查询类型
-                    editable:true,edittype:"select",
-                    editoptions:{
-                        value:{
-                            'all':"全部",
-                            "A":'非常满意',
-                            "B":'满意',
-                            "C":'基本满意',
-                            "D":'不太满意',
-                            "E":'不满意'
-                        },
-                        defaultValue:"all",
-                        dataEvents: [
-                            {
-                                type: 'focus', //change 下拉选择的时候
-                                fn: checkSelectPrivil
-                            }
-                        ]
-                    },
-                    editrules:{required:false},
-                    formoptions:{ rowpos:6,label: "机电部评价",elmprefix:"(*)"}
-                }
+                selfname = "jd_pj";
+                selflable = "机电部评价";
             }
             var $gyscommgridobj = jQuery(domTableId).jqGrid({
                 url: search_url,
@@ -149,14 +160,8 @@
                 postData: {pro_id:cur_pro_id},
                 colNames: colNames,
                 colModel:[
-                    {name:'id',index:'id',
-                        width:20,align:"right",
-                        sortable:true,
-                        editable:false,
-                        readonly:true,
-                        editoptions:{readonly:true,size:100},
-                        formoptions:{rowpos:1, label: "id", elmprefix:"(*)"}
-                    },
+                    getColModel_Id()
+                    ,
                     {name:'ys_zxcl_name',index:'ys_zxcl_name',
                         width:150,align:"right",
                         sortable:true,
@@ -172,120 +177,20 @@
                         },
                         formoptions:{rowpos:2, label: "装修材料名称", elmprefix:"(*)"}
                     },
-                    {name:'ys_htje',index:'ys_htje',
-                        width:30,align:"right",
-                        sortable:true,
-                        editable:true, edittype:"text",editrules:{required:true},
-                        editoptions:{
-                            size:"20",
-                            dataEvents: [
-                                {
-                                    type: 'focus', //change 下拉选择的时候
-                                    fn: checkSelectPrivil
-                                }
-                            ]
-                        },
-                        formoptions:{rowpos:3, label: "合同金额", elmprefix:"(*)"}
-                    },
-                    {name:'ys_voje',index:'ys_voje',
-                        width:30,align:"right",
-                        sortable:true,
-                        editable:true, edittype:"text",editrules:{required:true},
-                        editoptions:{
-                            size:"20",
-                            dataEvents: [
-                                {
-                                    type: 'focus', //change 下拉选择的时候
-                                    fn: checkSelectPrivil
-                                }
-                            ]
-                        },
-                        formoptions:{rowpos:4, label: "VO金额", elmprefix:"(*)"}
-                    },
-                    {name:'vozb',index:'vozb',
-                        width:30,align:"right",
-                        sortable:true,
-                        editable:true, edittype:"text",editrules:{required:false},
-                        editoptions:{size:"20"},
-                        //formatter:vozb_format, unformat:vozb_unformat,
-                        formoptions:{rowpos:5, label: "VO占比", elmprefix:"(*)"}
-                    },
-                    selfdep,
-                    {name:'gc_pj',index:'gc_pj',
-                        width:30, align:"center",
-                        sortable:true,
-                        stype:'select',//查询类型
-                        editable:true,edittype:"select",
-                        editoptions:{
-                            value:{
-                                'all':"全部",
-                                "A":'非常满意',
-                                "B":'满意',
-                                "C":'基本满意',
-                                "D":'不太满意',
-                                "E":'不满意'
-                            },
-                            defaultValue:"all",
-                            dataEvents: [
-                                {
-                                    type: 'focus', //下拉选择的时候
-                                    fn: checkSelectPrivil
-                                }
-                            ]
-                        },
-                        editrules:{required:false},
-                        formoptions:{ rowpos:7,label: "工程部评价",elmprefix:"(*)"}
-                    },
-                    {name:'cg_pj',index:'cg_pj',
-                        width:30, align:"center",
-                        sortable:true,
-                        stype:'select',//查询类型
-                        editable:true,edittype:"select",
-                        editoptions:{
-                            value:{
-                                'all':"全部",
-                                "A":'非常满意',
-                                "B":'满意',
-                                "C":'基本满意',
-                                "D":'不太满意',
-                                "E":'不满意'
-                            },
-                            defaultValue:"all",
-                            dataEvents: [
-                                {
-                                    type: 'focus', //下拉选择的时候
-                                    fn: checkSelectPrivil
-                                }
-                            ]
-                        },
-                        editrules:{required:false},
-                        formoptions:{ rowpos:8,label: "采购部评价",elmprefix:"(*)"}
-                    },
-                    {name:'sh_pj',index:'sh_pj',
-                        width:30, align:"center",
-                        sortable:true,
-                        stype:'select',//查询类型
-                        editable:true,edittype:"select",
-                        editoptions:{
-                            value:{
-                                'all':"全部",
-                                "A":'非常满意',
-                                "B":'满意',
-                                "C":'基本满意',
-                                "D":'不太满意',
-                                "E":'不满意'
-                            },
-                            defaultValue:"all",
-                            dataEvents: [
-                                {
-                                    type: 'focus', //下拉选择的时候
-                                    fn: checkSelectPrivil
-                                }
-                            ]
-                        },
-                        editrules:{required:false},
-                        formoptions:{ rowpos:9,label: "售后部评价",elmprefix:"(*)"}
-                    },
+                    getColModel_Je("ys_htje",3,"合同金额")
+                    ,
+                    getColModel_Je("ys_voje",4,"VO金额")
+                    ,
+                    getColModel_Je("vozb",5,"VO占比",false)
+                    ,
+                    getColModel_Pj(selfname,6,selflable)
+                    ,
+                    getColModel_Pj("gc_pj",7,"工程部评价")
+                    ,
+                    getColModel_Pj("cg_pj",8,"采购部评价")
+                    ,
+                    getColModel_Pj("sh_pj",9,"售后部评价")
+                    ,
                     {name:'pj_pj',index:'pj_pj',
                         width:150,align:"right",
                         sortable:true,
@@ -404,16 +309,230 @@
         }
         setGysglCommJqGrid("#gysglzxcl","#pgysglzxcl",$("#pro_id").val(),$("#user_id").val(),"zxcl");
         setGysglCommJqGrid("#gysgljdcl","#pgysgljdcl",$("#pro_id").val(),$("#user_id").val(),"jdcl");
+        //-----------------------------------------------------------------------------------------------------
+        function setGysglFbJqGrid(domTableId,domPageId,cur_pro_id,cur_user_id){
+            var caption_str = "分包";
+            var search_url = '/index.php/Home/AllInOne/ajaxGysglfbSearch';
+            var save_url = '/index.php/Home/AllInOne/ajaxGysglfbSave'
+            var colNames = ['ID','分包类型','合同类型','合同金额','VO金额','VO占比','预算部评价','设计部评价','机电部评价','工程部评价','采购部评价','售后部评价','平均评价'];
+
+            var $gyscommgridobj = jQuery(domTableId).jqGrid({
+                url: search_url,
+                datatype: "json",
+                mtype: 'POST',
+                postData: {pro_id:cur_pro_id},
+                colNames: colNames,
+                colModel:[
+                    getColModel_Id()
+                    ,
+                    {name:'ys_fb_lx',index:'ys_fb_lx',
+                        width:30, align:"center",
+                        sortable:true,
+                        stype:'select',//查询类型
+                        editable:true,edittype:"select",
+                        editoptions:{
+                            value:{
+                                '0':"全部",
+                                'zx':"装修",
+                                'dq':"电气",
+                                'kt':"空调",
+                                'xf':"消防",
+                                'jps':"给排水",
+                                'it':"IT",
+                                'sec':"SEC",
+                                'av':"AV"
+                            },
+                            defaultValue:"zx",
+                            dataEvents: [
+                                {
+                                    type: 'focus', //change 下拉选择的时候
+                                    fn: checkSelectPrivil
+                                }
+                            ]
+                        },
+                        editrules:{required:true},
+                        formoptions:{ rowpos:2,label: "分包类型",elmprefix:"(*)"}
+                    }
+                    ,
+                    {name:'ys_fb_ht_lx',index:'ys_fb_ht_lx',
+                        width:30, align:"center",
+                        sortable:true,
+                        stype:'select',//查询类型
+                        editable:true,edittype:"select",
+                        editoptions:{
+                            value:{
+                                '0':"全部",
+                                'A':"投标",
+                                'B':"询价",
+                                'C':"直接指定",
+                                'D':"客户指定"
+                            },
+                            defaultValue:"0",
+                            dataEvents: [
+                                {
+                                    type: 'focus', //change 下拉选择的时候
+                                    fn: checkSelectPrivil
+                                }
+                            ]
+                        },
+                        editrules:{required:true},
+                        formoptions:{ rowpos:3,label: "合同类型",elmprefix:"(*)"}
+                    }
+                    ,
+                    getColModel_Je("ys_fb_ht_je",4,"合同金额")
+                    ,
+                    getColModel_Je("ys_fb_ht_voje",5,"VO金额")
+                    ,
+                    getColModel_Je("vozb",5,"VO占比",false)
+                    ,
+                    getColModel_Pj("ys_pj",6,"预算部评价")
+                    ,
+                    getColModel_Pj("sj_pj",7,"设计部评价")
+                    ,
+                    getColModel_Pj("jd_pj",8,"机电部评价")
+                    ,
+                    getColModel_Pj("gc_pj",7,"工程部评价")
+                    ,
+                    getColModel_Pj("cg_pj",8,"采购部评价")
+                    ,
+                    getColModel_Pj("sh_pj",9,"售后部评价")
+                    ,
+                    {name:'pj_pj',index:'pj_pj',
+                        width:150,align:"right",
+                        sortable:true,
+                        editable:true, edittype:"text",editrules:{required:false},
+                        editoptions:{size:"20"},
+                        formoptions:{rowpos:5, label: "平均评价", elmprefix:"(*)"}
+                    }
+                ],
+                hiddengrid: false,
+                autowidth: true,
+                rownumbers: true,
+                rowNum:20,
+                rowList:[20,30,50],
+                pager: domPageId,
+                viewrecords: true,
+                sortorder: "desc",
+                forceFit : true,
+                editurl: save_url,
+                caption:caption_str,
+                onSelectRow: function(id){
+                    var rowid = jQuery(domTableId).jqGrid('getGridParam','selrow');
+                    if(rowid){
+                        var rowData = $(domTableId).jqGrid('getRowData',rowid);
+                        var domTableId_tag = domTableId.substring(1);
+                        if("ys" != $("#user_department").val()){
+                            $("#" + domTableId_tag + "_iladd").addClass('ui-state-disabled');
+                            $("#del_" + domTableId_tag).addClass('ui-state-disabled');
+                        }else{
+                            $("#" + domTableId_tag + "_iladd").removeClass('ui-state-disabled');
+                            $("#" + domTableId_tag + "_iledit").removeClass('ui-state-disabled');
+                            $("#del_" + domTableId_tag).removeClass('ui-state-disabled');
+                        }
+                    }
+
+                },
+                onCellSelect: function(){
+                    //alert("cellselect");
+                },
+                afterInsertRow:function(rowid,rowdata,rowelem){
+                    //alert(rowid);
+                }
+            });
+
+            //导航栏配置和CRUD函数
+            jQuery(domTableId).jqGrid('navGrid',domPageId,
+                    {view:true,search:false,edit:false,add:false,del:true}
+            );
+            //
+            var addparameters = {
+                rowID : "new_row",
+                initdata : {},
+                position :"first",
+                useDefValues : false,
+                useFormatter : false,
+                addRowParams : {
+                    extraparam:{pro_id:cur_pro_id,user_id:cur_user_id},
+                    successfunc : function(xhr){
+                        var result = eval('(' + xhr.responseText + ')');
+                        if(true == result.state){
+                            jQuery(domTableId).trigger("reloadGrid");
+                            return true;
+                        }else{
+                            jAlert(result.msg);
+                            return true;
+                        }
+                    }
+                }
+            }
+            //
+            var editparameters = {
+                "keys" : false,
+                "oneditfunc" : null,
+                "successfunc" : function(xhr){
+                    var result = eval('(' + xhr.responseText + ')');
+                    if(true == result.state){
+                        return true;
+                    }else{
+                        jAlert(result.msg);
+                        return true;
+                    }
+                },
+                "url" : null,
+                "extraparam" : {pro_id:cur_pro_id,user_id:cur_user_id},
+                "aftersavefunc" : null,
+                "errorfunc": null,
+                "afterrestorefunc" : null,
+                "restoreAfterError" : true,
+                "mtype" : "POST"
+            }
+            var parameters = {
+                edit: true,
+                editicon: "ui-icon-pencil",
+                add: true,
+                addicon:"ui-icon-plus",
+                save: true,
+                saveicon:"ui-icon-disk",
+                cancel: true,
+                cancelicon:"ui-icon-cancel",
+                addParams : addparameters,
+                editParams : editparameters
+            }
+            jQuery(domTableId).jqGrid('inlineNav',domPageId,parameters);
+
+
+            //其他配置
+            jQuery(domTableId).jqGrid('gridResize',{minWidth:1500,maxWidth:2000,minHeight:500, maxHeight:1000});
+            jQuery(domTableId).jqGrid('sortableRows');
+            jQuery(domTableId).jqGrid('filterToolbar');
+            if($(domPageId + ":contains(Toggle)").length < 1){
+                jQuery(domTableId).jqGrid('navButtonAdd',domPageId,{caption:"Toggle",title:"Toggle Search Toolbar", buttonicon :'ui-icon-pin-s',
+                    onClickButton:function(){
+                        $gyscommgridobj[0].toggleToolbar();
+                    }
+                });
+            }
+        }
+        setGysglFbJqGrid("#gysglfb","#pgysglfb",$("#pro_id").val(),$("#user_id").val(),"fb");
     });
+
+
+
 </script>
 <div id="module_gysgl"  class="module">
     <h3><a href="#">供应商管理</a></h3>
     <div>
-        <table id="gysglzxcl"></table>
-        <div id="pgysglzxcl"></div>
-    </div>
-    <div>
-        <table id="gysgljdcl"></table>
-        <div id="pgysgljdcl"></div>
+        <div>
+            <table id="gysglfb"></table>
+            <div id="pgysglfb"></div>
+        </div>
+        <div>
+            <table id="gysglzxcl"></table>
+            <div id="pgysglzxcl"></div>
+        </div>
+        <div>
+            <table id="gysgljdcl"></table>
+            <div id="pgysgljdcl"></div>
+        </div>
     </div>
 </div>

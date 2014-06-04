@@ -31,16 +31,21 @@ $(document).ready(function() {
                 sortable:true,
                 stype:'select',//查询类型
                 editable:true,edittype:"select",
-                editoptions:{value:{
-                    'all':"全部",
-                    'cg':"采购管理部",
-                    'sh':"售后服务部",
-                    'hr':"行政人事部",
-                    'gc':"工程管理部",
-                    'jd':"机电管理部",
-                    'sj':"设计管理部",
-                    'sc':"市场管理部",
-                    'ys':"预算管理部"},defaultValue:"all"},
+                editoptions:{
+                    value:{
+                        'all':"全部",
+                        'cg':"采购管理部",
+                        'sh':"售后服务部",
+                        'hr':"行政人事部",
+                        'gc':"工程管理部",
+                        'jd':"机电管理部",
+                        'sj':"设计管理部",
+                        'sc':"市场管理部",
+                        'ys':"预算管理部",
+                        'ht':"合同管理部"
+                    },
+                    defaultValue:"all"
+                },
                 editrules:{required:true},
                 formoptions:{ rowpos:3,label: "所属部门",elmprefix:"(*)"}
             },

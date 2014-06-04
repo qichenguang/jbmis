@@ -1,6 +1,40 @@
 <?php
 
-
+function USER_FUN_GET_ZJL_SKSJ_BS_NAME(){
+    $arr = array(
+        '0.1'=>'首付款',
+        '2'=>'第2笔',
+        '3'=>'第3笔',
+        '4'=>'第4笔',
+        '5'=>'第5笔',
+        '6'=>'第6笔',
+        '7'=>'第7笔',
+        '8'=>'第8笔',
+        '9'=>'竣工款',
+        '10'=>'第10笔',
+        '11'=>'第11笔',
+        '12'=>'第12笔',
+        '40'=>'质保金',
+    );
+    return $arr;
+}
+function USER_FUN_GET_ZJL_SKYJ_BS_NAME(){
+    $arr = array(
+        '0.1'=>'首付款',
+        '1'=>'进度款1',
+        '2'=>'进度款2',
+        '3'=>'进度款3',
+        '4'=>'进度款4',
+        '5'=>'进度款5',
+        '6'=>'进度款6',
+        '7'=>'进度款7',
+        '8'=>'进度款8',
+        '20'=>'竣工款',
+        '30'=>'结算款',
+        '40'=>'质保金',
+    );
+    return $arr;
+}
 function USER_FUN_GET_MYD_PJ_NAME(){
     $myd_pj = array(
         "A" => '非常满意',
@@ -112,6 +146,15 @@ function USER_FUN_GET_VO_TYPE_NAME(){
     );
     return $vo;
 }
+function USER_FUN_GET_HT_TYPE_NAME(){
+    $arr = array(
+        'A'=> "投标",
+        'B' => "询价",
+        'C' => "直接指定",
+        'D' => "客户指定",
+    );
+    return $arr;
+}
 function USER_FUN_GET_VO_RESON_NAME(){
     $vo_reson = array(
         'A' => "客户变更",
@@ -134,6 +177,7 @@ function USER_FUN_GET_DEPARTMENT_NAME(){
         'sj' => "设计管理部",
         'sc' => "市场管理部",
         'ys' => "预算管理部",
+        'ht' => "合同管理部",
         /*        管理部
                 分公司负责人
                 部门负责人（含财务部）
@@ -151,10 +195,11 @@ function USER_FUN_GET_DEPARTMENT_ARRAY(){
         5 => array('id' =>'sj', 'name'=> "设计管理部"),
         6 => array('id' =>'sc', 'name'=> "市场管理部"),
         7 => array('id' =>'ys', 'name'=> "预算管理部"),
+        8 => array('id' =>'ht', 'name'=> "合同管理部"),
 /*        管理部
         分公司负责人
         部门负责人（含财务部）
-        合同管理*/
+        */
     );
     return $dep;
 }
@@ -266,5 +311,13 @@ function USER_FUN_GET_DEPATMENT_MODULE_ARRAY(){
     unset($mod['module_gczcgl']);
     unset($mod['module_dxmgl']);
     $dep['hr']=$mod;
+    //ht
+    $mod = USER_FUN_GET_PROJECT_MODULE_ARRAY();
+    unset($mod['module_xmscfx']);
+    unset($mod['module_gysgl']);
+    unset($mod['module_ygjxgl']);
+    unset($mod['module_gczcgl']);
+    $dep['ht']=$mod;
+
     return $dep;
 }

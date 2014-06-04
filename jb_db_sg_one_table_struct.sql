@@ -20,21 +20,116 @@ CREATE TABLE `jb_pro2user` (
 ) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC COMMENT='项目2用户表';
 
 
+
 DROP TABLE IF EXISTS `jb_customer_vo`;
 CREATE TABLE `jb_customer_vo` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `pro_id` char(8) NOT NULL COMMENT '项目ID',
+  `pro_id` char(30) NOT NULL COMMENT '项目ID',
   `vo_type` char(5) NOT NULL COMMENT 'VO 类型',
   `vo_desc` char(200) NOT NULL COMMENT 'VO 描述',
   `vo_reson` char(1) NOT NULL COMMENT 'VO 原因',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=30 DEFAULT CHARSET=utf8 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC COMMENT='客户VO表';
+
+
+DROP TABLE IF EXISTS `jb_zjl_sksj`;
+CREATE TABLE `jb_zjl_sksj` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `pro_id` char(30) NOT NULL COMMENT '项目ID',
+  `sk_bs` char(5) NOT NULL COMMENT '实际收款笔数',
+  `sk_je` double DEFAULT NULL COMMENT '实际收款金额',
+  `sk_time` datetime DEFAULT NULL COMMENT '实际收款日期',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=30 DEFAULT CHARSET=utf8 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC COMMENT='资金流管理 收款实计表';
+
+DROP TABLE IF EXISTS `jb_zjl_skyj`;
+CREATE TABLE `jb_zjl_skyj` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `pro_id` char(30) NOT NULL COMMENT '项目ID',
+  `sk_bs` char(5) NOT NULL COMMENT '预计收款笔数',
+  `sk_rate` double DEFAULT NULL COMMENT '预计收款比例',
+  `sk_time` datetime DEFAULT NULL COMMENT '预计收款日期',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=30 DEFAULT CHARSET=utf8 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC COMMENT='资金流管理 收款预计表';
+
+DROP TABLE IF EXISTS `jb_gys`;
+CREATE TABLE `jb_gys` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `gys_name` char(30) NOT NULL COMMENT '供应商名称',
+  `status` tinyint(4) NOT NULL DEFAULT '1' COMMENT '标识 1：新建 2:正常已经审核 3.已经删除',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=30 DEFAULT CHARSET=utf8 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC COMMENT='供应商表';
+
+DROP TABLE IF EXISTS `jb_gys_fb`;
+CREATE TABLE `jb_gys_fb` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `pro_id` char(30) NOT NULL COMMENT '项目ID',
+  `ys_fb_lx` char(5) NOT NULL COMMENT '分包类型',
+  `ys_fb_ht_lx` char(1) NOT NULL COMMENT '分包合同类型',
+  `ys_fb_ht_je` double DEFAULT NULL COMMENT '分包合同金额',
+  `ys_fb_ht_voje` double DEFAULT NULL COMMENT '分包合同VO金额',
+  `ys_pj` char(1) NOT NULL COMMENT '平均：预算部',
+  `sj_pj` char(1) NOT NULL COMMENT '平均：设计部',
+  `jd_pj` char(1) NOT NULL COMMENT '平均：机电部',
+  `gc_pj` char(1) NOT NULL COMMENT '平均：工程部',
+  `cg_pj` char(1) NOT NULL COMMENT '平均：采购部',
+  `sh_pj` char(1) NOT NULL COMMENT '平均：售后部',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=30 DEFAULT CHARSET=utf8 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC COMMENT='供应商管理 分包表';
+
+DROP TABLE IF EXISTS `jb_gys_zxcl`;
+CREATE TABLE `jb_gys_zxcl` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `pro_id` char(30) NOT NULL COMMENT '项目ID',
+  `ys_zxcl_name` char(5) NOT NULL COMMENT '装修材料名称',
+  `ys_htje` double DEFAULT NULL COMMENT '合同金额',
+  `ys_voje` double DEFAULT NULL COMMENT 'VO金额',
+  `ys_pj` char(1) NOT NULL COMMENT '平均：预算部',
+  `sj_pj` char(1) NOT NULL COMMENT '平均：设计部',
+  `jd_pj` char(1) NOT NULL COMMENT '平均：机电部',
+  `gc_pj` char(1) NOT NULL COMMENT '平均：工程部',
+  `cg_pj` char(1) NOT NULL COMMENT '平均：采购部',
+  `sh_pj` char(1) NOT NULL COMMENT '平均：售后部',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=30 DEFAULT CHARSET=utf8 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC COMMENT='供应商管理 装修材料表';
+
+DROP TABLE IF EXISTS `jb_gys_jdcl`;
+CREATE TABLE `jb_gys_jdcl` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `pro_id` char(30) NOT NULL COMMENT '项目ID',
+  `ys_zxcl_name` char(5) NOT NULL COMMENT '装修材料名称',
+  `ys_htje` double DEFAULT NULL COMMENT '合同金额',
+  `ys_voje` double DEFAULT NULL COMMENT 'VO金额',
+  `ys_pj` char(1) NOT NULL COMMENT '平均：预算部',
+  `sj_pj` char(1) NOT NULL COMMENT '平均：设计部',
+  `jd_pj` char(1) NOT NULL COMMENT '平均：机电部',
+  `gc_pj` char(1) NOT NULL COMMENT '平均：工程部',
+  `cg_pj` char(1) NOT NULL COMMENT '平均：采购部',
+  `sh_pj` char(1) NOT NULL COMMENT '平均：售后部',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=30 DEFAULT CHARSET=utf8 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC COMMENT='供应商管理 机电材料表';
+
+DROP TABLE IF EXISTS `jb_gczcjl`;
+CREATE TABLE `jb_gczcjl` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) unsigned DEFAULT NULL COMMENT '录入人员',
+  `department` char(2) DEFAULT NULL COMMENT '部门',
+  `pro_id` char(30) NOT NULL COMMENT '项目ID',
+  `in_type` char(5) NOT NULL COMMENT '输入 类型',
+  `in_sub_type` char(5) NOT NULL COMMENT '输入 子类型',
+	`jyzj` varchar(1024) NOT NULL COMMENT '经验总结',
+	`ydwt` varchar(1024) NOT NULL COMMENT '具体遇到的问题',
+	`jjfa` varchar(1024) NOT NULL COMMENT '具体的解决方案',
+	`ckwj` varchar(1024) NOT NULL COMMENT '参考查询文件',
+
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=30 DEFAULT CHARSET=utf8 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC COMMENT='过程资产积累表';
 ###########################################################################################################################################
 DROP TABLE IF EXISTS `jb_project`;
 CREATE TABLE `jb_project` (
 
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `pro_id` char(8) NOT NULL COMMENT '项目ID',
+  `pro_id` char(30) NOT NULL COMMENT '项目ID',
   
   #售后服务部表
   `sh_yjtime` datetime DEFAULT NULL COMMENT '工程部移交售后服务部移交日期',
