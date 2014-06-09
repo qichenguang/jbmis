@@ -1,4 +1,5 @@
 $(document).ready(function() {
+
     //
     function hide_all_modules(){
         $("#module_xmjbxx").accordion({ collapsible: true, autoHeight: true,clearStyle: true,fillSpace:true,heightStyle:"content"  });
@@ -96,7 +97,7 @@ $(document).ready(function() {
     $('.module [jb_field=multiple]').multiselect({
         multiple: true,
         header: true,
-        noneSelectedText: "请选择一项",
+        noneSelectedText: "请选择至少一项",
         selectedList: 8
     });
     $('.module [jb_field=single]').multiselect({
@@ -248,14 +249,15 @@ $(document).ready(function() {
         }
     });
 
-    function setVoJqGrid(domTableId,domPageId,cur_pos_id){
-        console.log(cur_pos_id);
+    function setVoJqGrid(domTableId,domPageId,cur_pro_id,cur_vo_type,domResultId){
+        //console.log(cur_pro_id);
+        //console.log(cur_vo_type);
         var $gridobj = jQuery(domTableId).jqGrid({
             url:'/index.php/Home/AllInOne/ajaxCustomervomngSearch',
             datatype: "json",
             mtype: 'POST',
-            postData: {pos_id:cur_pos_id},
-            colNames:['ID','类型','描述','原因'],
+            postData: {pro_id:cur_pro_id,vo_type:cur_vo_type},
+            colNames:['ID','金额','原因','描述'],
             colModel:[
                 {name:'id',index:'id',
                     width:20,align:"right",
@@ -264,57 +266,50 @@ $(document).ready(function() {
                     readonly:true,
                     editoptions:{readonly:true,size:100}
                 },
-                {name:'vo_type',index:'vo_type',
-                    width:30, align:"center",
+                {name:'vo_je',index:'vo_je',
+                    width:30,align:"right",
                     sortable:true,
-                    stype:'select',//查询类型
-                    editable:true,edittype:"select",
-                    editoptions:{value:{
-                        '0':"全部",
-                        'zx':"装修",
-                        'dq':"电气",
-                        'kt':"空调",
-                        'xf':"消防",
-                        'jps':"给排水",
-                        'it':"IT",
-                        'sec':"SEC",
-                        'av':"AV"
-                    },defaultValue:"zx"},
-                    editrules:{required:true},
-                    formoptions:{ rowpos:1,label: "类型",elmprefix:"(*)"}
-                },
-                {name:'vo_desc',index:'vo_desc',
-                    width:150,align:"right",
-                    sortable:true,
+                    formatter: 'number',
+                    summaryType:'sum',
                     editable:true, edittype:"text",editrules:{required:true},
-                    editoptions:{size:150},
-/*                    editable:true, edittype:"textarea",editrules:{required:true},
-                    editoptions:{rows:"3",cols:"30"},*/
-                    formoptions:{rowpos:2, label: "描述", elmprefix:"(*)"}
+                    editoptions:{size:30},
+                    formoptions:{rowpos:2, label: "金额", elmprefix:"(*)"}
                 },
                 {name:'vo_reson',index:'vo_reson',
                     width:30, align:"center",
                     sortable:true,
                     stype:'select',//查询类型
                     editable:true,edittype:"select",
-                    editoptions:{value:{
-                        '0':"全部",
-                        'A': "客户变更",
-                        'B': "范围变更",
-                        'C': "代客户采购",
-                        'D': "设计公司变更",
-                        'E': "大厦或消防要求",
-                        'F': "现场条件不符",
-                        'G': "其它"
-                    },defaultValue:"A"},
+                    editoptions:{
+                        value:{
+                            '0':"全部",
+                            'A': "客户变更",
+                            'B': "范围变更",
+                            'C': "代客户采购",
+                            'D': "设计公司变更",
+                            'E': "大厦或消防要求",
+                            'F': "现场条件不符",
+                            'G': "其它"
+                        },
+                        defaultValue:"A"
+                    },
                     editrules:{required:true},
                     formoptions:{ rowpos:3,label: "原因",elmprefix:"(*)"}
+                },
+                {name:'vo_desc',index:'vo_desc',
+                    width:50,align:"right",
+                    sortable:true,
+                    editable:true, edittype:"text",editrules:{required:true},
+                    editoptions:{size:50},
+/*                  editable:true, edittype:"textarea",editrules:{required:true},
+                    editoptions:{rows:"3",cols:"30"},*/
+                    formoptions:{rowpos:4, label: "描述", elmprefix:"(*)"}
                 }
             ],
             hiddengrid: false,
             autowidth: true,
             rownumbers: true,
-            rowNum:10,
+            rowNum:20,
             rowList:[10,20,30],
             pager: domPageId,
             viewrecords: true,
@@ -322,6 +317,15 @@ $(document).ready(function() {
             forceFit : true,
             editurl: '/index.php/Home/AllInOne/ajaxCustomervomngSave',
             caption:"",
+            footerrow : true,
+            gridComplete: function() {
+                var rowNum = parseInt(jQuery(domTableId).jqGrid('getGridParam','records',10));
+                if(rowNum > 0){
+                    var hj_je  = jQuery(domTableId).jqGrid('getCol','vo_je',false,'sum');
+                    jQuery(domTableId).jqGrid('footerData',"set",{id:'合计:',vo_je:hj_je});
+                    $("#" + domResultId).val(hj_je);
+                }
+            },
             onSelectRow: function(id){
             }
         });
@@ -338,7 +342,7 @@ $(document).ready(function() {
             useDefValues : false,
             useFormatter : false,
             addRowParams : {
-                extraparam:{pro_id:cur_pos_id},
+                extraparam:{pro_id:cur_pro_id,vo_type:cur_vo_type},
                 successfunc : function(xhr){
                     //alert("successfunc");
                     //console.log(xhr);
@@ -369,6 +373,7 @@ $(document).ready(function() {
                 var result = eval('(' + xhr.responseText + ')');
                 if(true == result.state){
                     //alert(result.msg);
+                    jQuery(domTableId).trigger("reloadGrid");
                     return true;
                 }else{
                     jAlert(result.msg);
@@ -376,7 +381,7 @@ $(document).ready(function() {
                 }
             },
             "url" : null,
-            "extraparam" : {pro_id:cur_pos_id},
+            "extraparam" : {pro_id:cur_pro_id,vo_type:cur_vo_type},
             "aftersavefunc" : null,
             "errorfunc": null,
             "afterrestorefunc" : null,
@@ -401,29 +406,45 @@ $(document).ready(function() {
         //其他配置
         jQuery(domTableId).jqGrid('gridResize',{minWidth:350,maxWidth:1000,minHeight:80, maxHeight:350});
         jQuery(domTableId).jqGrid('sortableRows');
-        jQuery(domTableId).jqGrid('filterToolbar');
+/*        jQuery(domTableId).jqGrid('filterToolbar');
+        $gridobj[0].toggleToolbar();
         if($(domPageId + ":contains(Toggle)").length < 1){
             jQuery(domTableId).jqGrid('navButtonAdd',domPageId,{caption:"Toggle",title:"Toggle Search Toolbar", buttonicon :'ui-icon-pin-s',
                 onClickButton:function(){
                     $gridobj[0].toggleToolbar();
                 }
             });
-        }
+        }*/
     }
-    function showVOJqGriddialog(domDialogId){
+
+    function get_fb_type_str(dep_sx){
+        var fb_arr = {
+            'zx':"装修",
+            'dq':"电气",
+            'kt':"空调",
+            'xf':"消防",
+            'jps':"给排水",
+            'it':"IT",
+            'sec':"SEC",
+            'av':"AV"
+        };
+        return fb_arr[dep_sx];
+    }
+    function showVOJqGriddialog(domDialogId,vo_type,domResultId){
         var dialogOpts = {
-            title: "VO",
+            title: "客户VO :  " + get_fb_type_str(vo_type),
             bgiframe: true,
             resizable: true,
             width: 800,
             height:500,
+            //autoOpen: false,
             modal: true,
             overlay: {
                 backgroundColor: '#000',
                 opacity: 0.5
             },
             open: function() {
-                setVoJqGrid("#testdq","#testpdq",$("#pro_id").val());
+                setVoJqGrid("#" + vo_type + "_dg","#p" + vo_type + "_dg",$("#pro_id").val(),vo_type,domResultId);
             },
             buttons: {
                 "Ok": function() {
@@ -435,9 +456,14 @@ $(document).ready(function() {
             }
         }
         $(domDialogId).dialog(dialogOpts);
+        //$(domDialogId).dialog('open');
     }
     $('.module').on('click','[jb_field=jb_multi_save]',function(event){
-        showVOJqGriddialog("#testdialog");
+        var domSrc = event.target.id;
+        //alert(domSrc);
+        var vo_type = domSrc.split("_")[1];
+        //alert(vo_type);
+        showVOJqGriddialog("#" + vo_type + "_dialog",vo_type,domSrc);
         return false;
     })
 });

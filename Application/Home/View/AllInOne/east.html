@@ -1,0 +1,91 @@
+<script type="text/javascript">
+    $(document).ready(function() {
+        PNotify.prototype.options.styling = "jqueryui";
+        function getNotify() {
+            $.get("/index.php/Home/DbOpt/ajaxNotify", function(result){
+                //console.log(xhr);
+                //alert(xhr.responseText);
+                //var result = eval('(' + xhr.responseText + ')');
+                //console.log(result);
+                if(true == result.state){
+                    alert(result.msg);
+/*                    new PNotify({
+                        title: 'Oh No!',
+                        text: result.msg,
+                        type: 'error'
+                    });*/
+/*                    new PNotify({
+                        title: 'jQuery UI Icon Error',
+                        text: 'Oh no. Something\'s wrong with your network, and I\'m showing you visually using an appropriate icon to indicate the type of error that has occured. You know, network.',
+                        type: 'error',
+                        icon: 'ui-icon ui-icon-signal-diag'
+                    });*/
+                    var notice = new PNotify({
+                        title: 'Click Close Notice',
+                        text: 'Click me anywhere to dismiss me.',
+                        buttons: {
+                            closer: true,
+                            sticker: true
+                        },
+                        type: 'error',
+                        icon: 'ui-icon ui-icon-signal-diag'
+                    });
+                    notice.get().click(function() {
+                        notice.remove();
+                    });
+/*                    new PNotify({
+                        title: 'Permanent Buttons Notice',
+                        text: 'My buttons are really lonely, so they\'re gonna hang out with us.',
+                        buttons: {
+                            closer_hover: false,
+                            sticker_hover: false
+                        }
+                    });*/
+ /*                   (new PNotify({
+                        title: 'Confirmation Needed',
+                        text: 'Are you sure?',
+                        icon: 'glyphicon glyphicon-question-sign',
+                        hide: false,
+                        confirm: {
+                            confirm: true
+                        },
+                        buttons: {
+                            closer: false,
+                            sticker: false
+                        },
+                        history: {
+                            history: false
+                        }
+                    })).get().on('pnotify.confirm', function() {
+                                alert('Ok, cool.');
+                            }).on('pnotify.cancel', function() {
+                                alert('Oh ok. Chicken, I see.');
+                            });*/
+                    return true;
+                }else{
+                    return true;
+                }
+            });
+        }
+
+        function getNotify2() {
+            PNotify.prototype.options.styling = "jqueryui";
+                       new PNotify({
+     title: 'Permanent Buttons Notice',
+     text: 'My buttons are really lonely, so they\'re gonna hang out with us.',
+     buttons: {
+     closer_hover: false,
+     sticker_hover: false,
+         closer:true,
+         sticker:true
+     }
+        });
+        }
+        setInterval(getNotify2, 2000);
+    });
+</script>
+<div>
+
+</div>
+
+

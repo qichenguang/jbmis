@@ -14,7 +14,7 @@
     .module th{font-weight:bold;background:#ccc;}
 </style>-->
 
-<div id="AllInOneMain">
+<div id="AllInOneMain"  style="display:none">
     <INPUT type="text" id="user_id" name="user_id" value="{$user_id}" >
     <br/>
     <INPUT type="text" id="user_department" name="user_department" value="{$user_department}" >
@@ -27,20 +27,48 @@
     <br/>
     <INPUT type="text" id="dep_sx" name="dep_sx" value="{$dep_sx}" >
     <br/>
-    <textarea rows="10" cols="200" id="all_dep_username" name="all_dep_username">{$all_dep_username}</textarea>
+    <textarea rows="10" cols="200" id="all_dep_username" name="all_dep_username" >{$all_dep_username}</textarea>
     <br/>
 </div>
 
 
-<div id="testdialog">
-<table id="testdq"></table>
-<div id="testpdq"></div>
+<div id="zx_dialog">
+<table id="zx_dg"></table>
+<div id="pzx_dg"></div>
+</div>
+<div id="dq_dialog">
+    <table id="dq_dg"></table>
+    <div id="pdq_dg"></div>
+</div>
+<div id="kt_dialog">
+    <table id="kt_dg"></table>
+    <div id="pkt_dg"></div>
+</div>
+<div id="xf_dialog">
+    <table id="xf_dg"></table>
+    <div id="pxf_dg"></div>
+</div>
+<div id="jps_dialog">
+    <table id="jps_dg"></table>
+    <div id="pjps_dg"></div>
+</div>
+<div id="it_dialog">
+    <table id="it_dg"></table>
+    <div id="pit_dg"></div>
+</div>
+<div id="sec_dialog">
+    <table id="sec_dg"></table>
+    <div id="psec_dg"></div>
+</div>
+<div id="av_dialog">
+    <table id="av_dg"></table>
+    <div id="pav_dg"></div>
 </div>
 
 <span id="lock">锁定</span><span id="unlock">解锁</span>
 <br>
 <div id="AllInOneDetail">
-    <include file="AllInOne/module_xmzjlgl" />
+    <include file="AllInOne/module_xmcbgl" />
 </div>
 
 

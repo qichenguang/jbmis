@@ -1,23 +1,115 @@
+<script type="text/javascript">
+    $(document).ready(function() {
+        function get_comm_hj(domDiv,hjType,domResult){
+            var sum = 0.00;
+            $("#" + domDiv + " [jb_hj=" + hjType + "]").each(function(){
+                sum += parseFloat($(this).val()) || 0.00;
+            });
+            $("#" + domResult).val(sum);
+        }
+        function add_comm_hj_event(domDiv,hjType,domResult){
+            $("#" + domDiv + " [jb_hj=" + hjType + "]").each(function(){
+               $(this).on('blur',function(){
+                   if("nkje" == hjType){
+                       var cur_id = $(this).attr("id");
+                       var cur_dwbj_id = cur_id.substring(0,cur_id.lastIndexOf("_")) + "_dwbj";
+                       //alert(cur_dwbj_id);
+                       var nkje = parseFloat($(this).val()) || 0.00;
+                       //alert(nkje);
+                       var dwbj =  parseFloat($("#" + cur_dwbj_id).val()) || 0.00;
+                       //alert(dwbj);
+                       if(nkje >= dwbj){
+                           alert("内控金额 大于 对外报价！");
+                           $(this).focus();
+                           return;
+                       }
+                   }
+                   get_comm_hj(domDiv,hjType,domResult);
+                   get_comm_mll("module_xmcbgl","jb_kgmll");
+                   get_comm_total_kgmll("module_xmcbgl");
+               });
+            });
+        }
+        //dwbj
+        add_comm_hj_event("module_xmcbgl","dwbj","ys_hj_dwbj");
+        get_comm_hj("module_xmcbgl","dwbj","ys_hj_dwbj");
+        //nkje
+        add_comm_hj_event("module_xmcbgl","nkje","ys_hj_nkje");
+        get_comm_hj("module_xmcbgl","nkje","ys_hj_nkje");
+
+        //vo
+        function get_all_customer_vo_hj(){
+            $.get("/index.php/Home/DbOpt/ajaxGetAllVOJe?pro_id=" + $("#pro_id").val(), function(xhr){
+                console.log(xhr);
+                $.each(xhr,function(index,element){
+                    //alert(index);
+                    //alert(element);
+                    $("#ys_" + index + "_vo").val(element);
+                });
+                get_comm_hj("module_xmcbgl","vo","ys_hj_vo");
+            });
+        }
+        add_comm_hj_event("module_xmcbgl","vo","ys_hj_vo");
+        get_all_customer_vo_hj();
+        //kgmll
+        function get_comm_mll(domDiv,mlltype){
+            $("#" + domDiv + " [" + mlltype + "]").each(function(){
+                var fb_type = $(this).attr(mlltype);
+                var fb_dwbj = $("#ys_" + fb_type + "_dwbj").val() || 0.00;
+                var fb_nkje = $("#ys_" + fb_type + "_nkje").val() || 0.00;
+                var fb_kgmll = 0.00;
+                if(fb_dwbj > 0.00 ){
+                    fb_kgmll = (parseFloat(fb_dwbj) - parseFloat(fb_nkje))/parseFloat(fb_dwbj) ;
+                }
+                //Math.round(x*100)/100
+                $("#ys_" + fb_type + "_kgmll").val(Math.round(fb_kgmll * 10000)/100 + "%");
+            });
+        }
+        get_comm_mll("module_xmcbgl","jb_kgmll");
+        function get_comm_total_kgmll(domDiv){
+            var fb_dwbj = $("#ys_hj_dwbj").val() || 0.00;
+            var fb_nkje = $("#ys_hj_nkje").val() || 0.00;
+            var fb_kgmll = 0.00;
+            if(fb_dwbj > 0.00 ){
+                fb_kgmll = (parseFloat(fb_dwbj) - parseFloat(fb_nkje))/parseFloat(fb_dwbj) ;
+            }
+            //Math.round(x*100)/100
+            $("#ys_hj_kgmll").val(Math.round(fb_kgmll * 10000)/100 + "%");
+        }
+        get_comm_total_kgmll("module_xmcbgl");
+    });
+</script>
+<style type="text/css">
+/*    table
+    {
+        border-collapse: collapse;
+        border: none;
+        width: 200px;
+    }
+    td
+    {
+        border: solid #000 1px;
+    }*/
+</style>
 <div id="module_xmcbgl" class="module">
     <h3><a href="#">项目成本管理</a></h3>
-
     <div>
         <table>
             <tr>
                 <td>项目财务编号：</td>
-                <td><input type="text" id="ys_cw_bh" name="ys_cw_bh" jb_field="jb_single_save"/></td>
+                <td><input type="text" id="ht_xmcwbh" name="ht_xmcwbh" jb_field="jb_single_save"/></td>
                 <td>合同金额：</td>
-                <td><input type="text" id="ys_hetong_amt" name="ys_hetong_amt" jb_field="jb_single_save"/></td>
+                <td><input type="text" id="ys_hetong_amt" name="ys_hetong_amt" /></td>
                 <td>合同结算总金额：</td>
-                <td><input type="text" id="ys_hetong_js_amt" name="ys_hetong_js_amt" jb_field="jb_single_save"/></td>
+                <td><input type="text" id="ys_hetong_js_amt" name="ys_hetong_js_amt" /></td>
             </tr>
             <tr>
                 <td>投标毛利率：</td>
                 <td><input type="text" id="ys_tb_mll" name="ys_tb_mll" jb_field="jb_single_save"/></td>
                 <td>开工毛利率：</td>
-                <td><input type="text" id="ys_kg_mlldouble" name="ys_tb_mll" jb_field="jb_single_save"/></td>
+                <td><input type="text" id="ys_kg_mlldouble" name="ys_tb_mll" /></td>
                 <td>实际毛利率：</td>
-                <td><input type="text" id="ys_sj_mlldouble" name="ys_sj_mlldouble" jb_field="jb_single_save"/></td>
+                <td><input type="text" id="ys_sj_mlldouble" name="ys_sj_mlldouble" /></td>
             </tr>
         </table>
         <table>
@@ -36,10 +128,10 @@
             <tr>
                 <td rowspan=10>分包：</td>
                 <td>装修</td>
-                <td><input type="text" id="ys_zx_dwbj" name="ys_zx_dwbj" jb_field="jb_single_save"/></td>
-                <td><input type="text" id="ys_zx_vo" name="ys_zx_vo" jb_field="jb_multi_save"/></td>
-                <td><input type="text" id="ys_zx_nkje" name="ys_zx_nkje" jb_field="jb_single_save"/></td>
-                <td><input type="text" id="ys_zx_kgml" name="ys_zx_kgml" jb_field="jb_single_save"/></td>
+                <td><input type="text" id="ys_zx_dwbj" name="ys_zx_dwbj" jb_hj="dwbj" jb_field="jb_single_save"/></td>
+                <td><input type="text" id="ys_zx_vo" name="ys_zx_vo" jb_hj="vo" jb_field="jb_multi_save"/></td>
+                <td><input type="text" id="ys_zx_nkje" name="ys_zx_nkje" jb_hj="nkje" jb_field="jb_single_save"/></td>
+                <td><input type="text" id="ys_zx_kgmll" name="ys_zx_kgmll" jb_kgmll="zx"/></td>
                 <td><input type="text" id="ys_zx_sjcb" name="ys_zx_sjcb" jb_field="jb_single_save"/></td>
                 <td><input type="text" id="ys_zx_sjcbbh" name="ys_zx_sjcbbh" jb_field="jb_single_save"/></td>
                 <td><input type="text" id="ys_zx_sjml" name="ys_zx_sjml" jb_field="jb_single_save"/></td>
@@ -47,10 +139,10 @@
             </tr>
             <tr>
                 <td>电气</td>
-                <td><input type="text" id="ys_dq_dwbj" name="ys_dq_dwbj" jb_field="jb_single_save"/></td>
-                <td><input type="text" id="ys_dq_vo" name="ys_dq_vo" jb_field="jb_multi_save"/></td>
-                <td><input type="text" id="ys_dq_nkje" name="ys_dq_nkje" jb_field="jb_single_save"/></td>
-                <td><input type="text" id="ys_dq_kgml" name="ys_dq_kgml" jb_field="jb_single_save"/></td>
+                <td><input type="text" id="ys_dq_dwbj" name="ys_dq_dwbj" jb_hj="dwbj" jb_field="jb_single_save"/></td>
+                <td><input type="text" id="ys_dq_vo" name="ys_dq_vo" jb_hj="vo" jb_field="jb_multi_save"/></td>
+                <td><input type="text" id="ys_dq_nkje" name="ys_dq_nkje" jb_hj="nkje" jb_field="jb_single_save"/></td>
+                <td><input type="text" id="ys_dq_kgmll" name="ys_dq_kgmll" jb_kgmll="dq"/></td>
                 <td><input type="text" id="ys_dq_sjcb" name="ys_dq_sjcb" jb_field="jb_single_save"/></td>
                 <td><input type="text" id="ys_dq_sjcbbh" name="ys_dq_sjcbbh" jb_field="jb_single_save"/></td>
                 <td><input type="text" id="ys_dq_sjml" name="ys_dq_sjml" jb_field="jb_single_save"/></td>
@@ -58,10 +150,10 @@
             </tr>
             <tr>
                 <td>空调</td>
-                <td><input type="text" id="ys_kt_dwbj" name="ys_kt_dwbj" jb_field="jb_single_save"/></td>
-                <td><input type="text" id="ys_kt_vo" name="ys_kt_vo" jb_field="jb_multi_save"/></td>
-                <td><input type="text" id="ys_kt_nkje" name="ys_kt_nkje" jb_field="jb_single_save"/></td>
-                <td><input type="text" id="ys_kt_kgml" name="ys_kt_kgml" jb_field="jb_single_save"/></td>
+                <td><input type="text" id="ys_kt_dwbj" name="ys_kt_dwbj" jb_hj="dwbj" jb_field="jb_single_save"/></td>
+                <td><input type="text" id="ys_kt_vo" name="ys_kt_vo" jb_hj="vo" jb_field="jb_multi_save"/></td>
+                <td><input type="text" id="ys_kt_nkje" name="ys_kt_nkje" jb_hj="nkje" jb_field="jb_single_save"/></td>
+                <td><input type="text" id="ys_kt_kgmll" name="ys_kt_kgmll" jb_kgmll="kt"/></td>
                 <td><input type="text" id="ys_kt_sjcb" name="ys_kt_sjcb" jb_field="jb_single_save"/></td>
                 <td><input type="text" id="ys_kt_sjcbbh" name="ys_kt_sjcbbh" jb_field="jb_single_save"/></td>
                 <td><input type="text" id="ys_kt_sjml" name="ys_kt_sjml" jb_field="jb_single_save"/></td>
@@ -69,10 +161,10 @@
             </tr>
             <tr>
                 <td>消防</td>
-                <td><input type="text" id="ys_xf_dwbj" name="ys_xf_dwbj" jb_field="jb_single_save"/></td>
-                <td><input type="text" id="ys_xf_vo" name="ys_xf_vo" jb_field="jb_multi_save"/></td>
-                <td><input type="text" id="ys_xf_nkje" name="ys_xf_nkje" jb_field="jb_single_save"/></td>
-                <td><input type="text" id="ys_xf_kgml" name="ys_xf_kgml" jb_field="jb_single_save"/></td>
+                <td><input type="text" id="ys_xf_dwbj" name="ys_xf_dwbj" jb_hj="dwbj" jb_field="jb_single_save"/></td>
+                <td><input type="text" id="ys_xf_vo" name="ys_xf_vo" jb_hj="vo" jb_field="jb_multi_save"/></td>
+                <td><input type="text" id="ys_xf_nkje" name="ys_xf_nkje" jb_hj="nkje" jb_field="jb_single_save"/></td>
+                <td><input type="text" id="ys_xf_kgmll" name="ys_xf_kgmll" jb_kgmll="xf"/></td>
                 <td><input type="text" id="ys_xf_sjcb" name="ys_xf_sjcb" jb_field="jb_single_save"/></td>
                 <td><input type="text" id="ys_xf_sjcbbh" name="ys_xf_sjcbbh" jb_field="jb_single_save"/></td>
                 <td><input type="text" id="ys_xf_sjml" name="ys_xf_sjml" jb_field="jb_single_save"/></td>
@@ -80,10 +172,10 @@
             </tr>
             <tr>
                 <td>给排水</td>
-                <td><input type="text" id="ys_jps_dwbj" name="ys_jps_dwbj" jb_field="jb_single_save"/></td>
-                <td><input type="text" id="ys_jps_vo" name="ys_jps_vo" jb_field="jb_multi_save"/></td>
-                <td><input type="text" id="ys_jps_nkje" name="ys_jps_nkje" jb_field="jb_single_save"/></td>
-                <td><input type="text" id="ys_jps_kgml" name="ys_jps_kgml" jb_field="jb_single_save"/></td>
+                <td><input type="text" id="ys_jps_dwbj" name="ys_jps_dwbj" jb_hj="dwbj" jb_field="jb_single_save"/></td>
+                <td><input type="text" id="ys_jps_vo" name="ys_jps_vo" jb_hj="vo" jb_field="jb_multi_save"/></td>
+                <td><input type="text" id="ys_jps_nkje" name="ys_jps_nkje" jb_hj="nkje" jb_field="jb_single_save"/></td>
+                <td><input type="text" id="ys_jps_kgmll" name="ys_jps_kgmll" jb_kgmll="jps"/></td>
                 <td><input type="text" id="ys_jps_sjcb" name="ys_jps_sjcb" jb_field="jb_single_save"/></td>
                 <td><input type="text" id="ys_jps_sjcbbh" name="ys_jps_sjcbbh" jb_field="jb_single_save"/></td>
                 <td><input type="text" id="ys_jps_sjml" name="ys_jps_sjml" jb_field="jb_single_save"/></td>
@@ -91,10 +183,10 @@
             </tr>
             <tr>
                 <td>IT</td>
-                <td><input type="text" id="ys_it_dwbj" name="ys_it_dwbj" jb_field="jb_single_save"/></td>
-                <td><input type="text" id="ys_it_vo" name="ys_it_vo" jb_field="jb_multi_save"/></td>
-                <td><input type="text" id="ys_it_nkje" name="ys_it_nkje" jb_field="jb_single_save"/></td>
-                <td><input type="text" id="ys_it_kgml" name="ys_it_kgml" jb_field="jb_single_save"/></td>
+                <td><input type="text" id="ys_it_dwbj" name="ys_it_dwbj" jb_hj="dwbj" jb_field="jb_single_save"/></td>
+                <td><input type="text" id="ys_it_vo" name="ys_it_vo" jb_hj="vo" jb_field="jb_multi_save"/></td>
+                <td><input type="text" id="ys_it_nkje" name="ys_it_nkje" jb_hj="nkje" jb_field="jb_single_save"/></td>
+                <td><input type="text" id="ys_it_kgmll" name="ys_it_kgmll" jb_kgmll="it"/></td>
                 <td><input type="text" id="ys_it_sjcb" name="ys_it_sjcb" jb_field="jb_single_save"/></td>
                 <td><input type="text" id="ys_it_sjcbbh" name="ys_it_sjcbbh" jb_field="jb_single_save"/></td>
                 <td><input type="text" id="ys_it_sjml" name="ys_it_sjml" jb_field="jb_single_save"/></td>
@@ -102,10 +194,10 @@
             </tr>
             <tr>
                 <td>SEC</td>
-                <td><input type="text" id="ys_sec_dwbj" name="ys_sec_dwbj" jb_field="jb_single_save"/></td>
-                <td><input type="text" id="ys_sec_vo" name="ys_sec_vo" jb_field="jb_multi_save"/></td>
-                <td><input type="text" id="ys_sec_nkje" name="ys_sec_nkje" jb_field="jb_single_save"/></td>
-                <td><input type="text" id="ys_sec_kgml" name="ys_sec_kgml" jb_field="jb_single_save"/></td>
+                <td><input type="text" id="ys_sec_dwbj" name="ys_sec_dwbj" jb_hj="dwbj" jb_field="jb_single_save"/></td>
+                <td><input type="text" id="ys_sec_vo" name="ys_sec_vo" jb_hj="vo" jb_field="jb_multi_save"/></td>
+                <td><input type="text" id="ys_sec_nkje" name="ys_sec_nkje" jb_hj="nkje" jb_field="jb_single_save"/></td>
+                <td><input type="text" id="ys_sec_kgmll" name="ys_sec_kgmll" jb_kgmll="sec"/></td>
                 <td><input type="text" id="ys_sec_sjcb" name="ys_sec_sjcb" jb_field="jb_single_save"/></td>
                 <td><input type="text" id="ys_sec_sjcbbh" name="ys_sec_sjcbbh" jb_field="jb_single_save"/></td>
                 <td><input type="text" id="ys_sec_sjml" name="ys_sec_sjml" jb_field="jb_single_save"/></td>
@@ -113,10 +205,10 @@
             </tr>
             <tr>
                 <td>AV</td>
-                <td><input type="text" id="ys_av_dwbj" name="ys_av_dwbj" jb_field="jb_single_save"/></td>
-                <td><input type="text" id="ys_av_vo" name="ys_av_vo" jb_field="jb_multi_save"/></td>
-                <td><input type="text" id="ys_av_nkje" name="ys_av_nkje" jb_field="jb_single_save"/></td>
-                <td><input type="text" id="ys_av_kgml" name="ys_av_kgml" jb_field="jb_single_save"/></td>
+                <td><input type="text" id="ys_av_dwbj" name="ys_av_dwbj" jb_hj="dwbj" jb_field="jb_single_save"/></td>
+                <td><input type="text" id="ys_av_vo" name="ys_av_vo" jb_hj="vo"  jb_field="jb_multi_save"/></td>
+                <td><input type="text" id="ys_av_nkje" name="ys_av_nkje" jb_hj="nkje" jb_field="jb_single_save"/></td>
+                <td><input type="text" id="ys_av_kgmll" name="ys_av_kgmll" jb_kgmll="av"/></td>
                 <td><input type="text" id="ys_av_sjcb" name="ys_av_sjcb" jb_field="jb_single_save"/></td>
                 <td><input type="text" id="ys_av_sjcbbh" name="ys_av_sjcbbh" jb_field="jb_single_save"/></td>
                 <td><input type="text" id="ys_av_sjml" name="ys_av_sjml" jb_field="jb_single_save"/></td>
@@ -127,10 +219,10 @@
             </tr>
             <tr>
                 <td><h3>小计：</h3></td>
-                <td><input type="text" id="ys_dwbj" name="ys_dwbj" jb_field="jb_single_save"/></td>
-                <td><input type="text" id="ys_vo" name="ys_vo" jb_field="jb_multi_save"/></td>
-                <td><input type="text" id="ys_nkje" name="ys_nkje" jb_field="jb_single_save"/></td>
-                <td><input type="text" id="ys_kgml" name="ys_kgml" jb_field="jb_single_save"/></td>
+                <td><input type="text" id="ys_hj_dwbj" name="ys_hj_dwbj" readonly="true"/></td>
+                <td><input type="text" id="ys_hj_vo" name="ys_hj_vo" readonly="true"/></td>
+                <td><input type="text" id="ys_hj_nkje" name="ys_hj_nkje" readonly="true"/></td>
+                <td><input type="text" id="ys_hj_kgmll" name="ys_hj_kgmll" readonly="true"/></td>
                 <td><input type="text" id="ys_sjcb" name="ys_sjcb" jb_field="jb_single_save"/></td>
                 <td><input type="text" id="ys_sjcbbh" name="ys_sjcbbh" jb_field="jb_single_save"/></td>
                 <td><input type="text" id="ys_sjml" name="ys_sjml" jb_field="jb_single_save"/></td>
@@ -142,61 +234,61 @@
             <tr>
                 <td rowspan=6>采购：</td>
                 <td>装修材料采购</td>
-                <td><input type="text" id="ys_zx_dwbj" name="ys_zx_dwbj" jb_field="jb_single_save"/></td>
-                <td><input type="text" id="ys_zx_vo" name="ys_zx_vo" jb_field="jb_multi_save"/></td>
-                <td><input type="text" id="ys_zx_nkje" name="ys_zx_nkje" jb_field="jb_single_save"/></td>
-                <td><input type="text" id="ys_zx_kgml" name="ys_zx_kgml" jb_field="jb_single_save"/></td>
-                <td><input type="text" id="ys_zx_sjcb" name="ys_zx_sjcb" jb_field="jb_single_save"/></td>
-                <td><input type="text" id="ys_zx_sjcbbh" name="ys_zx_sjcbbh" jb_field="jb_single_save"/></td>
-                <td><input type="text" id="ys_zx_sjml" name="ys_zx_sjml" jb_field="jb_single_save"/></td>
-                <td><input type="text" id="ys_zx_sm" name="ys_zx_sm" jb_field="jb_single_save"/></td>
+                <td><input type="text" id="ys_cl_dwbj" name="ys_zx_dwbj" jb_field="jb_single_save"/></td>
+                <td><input type="text" id="ys_cl_vo" name="ys_zx_vo" jb_field="jb_multi_save"/></td>
+                <td><input type="text" id="ys_cl_nkje" name="ys_zx_nkje" jb_field="jb_single_save"/></td>
+                <td><input type="text" id="ys_cl_kgml" name="ys_zx_kgml" jb_field="jb_single_save"/></td>
+                <td><input type="text" id="ys_cl_sjcb" name="ys_zx_sjcb" jb_field="jb_single_save"/></td>
+                <td><input type="text" id="ys_cl_sjcbbh" name="ys_zx_sjcbbh" jb_field="jb_single_save"/></td>
+                <td><input type="text" id="ys_cl_sjml" name="ys_zx_sjml" jb_field="jb_single_save"/></td>
+                <td><input type="text" id="ys_cl_sm" name="ys_zx_sm" jb_field="jb_single_save"/></td>
             </tr>
             <tr>
                 <td>机电设备采购</td>
-                <td><input type="text" id="ys_dq_dwbj" name="ys_dq_dwbj" jb_field="jb_single_save"/></td>
-                <td><input type="text" id="ys_dq_vo" name="ys_dq_vo" jb_field="jb_multi_save"/></td>
-                <td><input type="text" id="ys_dq_nkje" name="ys_dq_nkje" jb_field="jb_single_save"/></td>
-                <td><input type="text" id="ys_dq_kgml" name="ys_dq_kgml" jb_field="jb_single_save"/></td>
-                <td><input type="text" id="ys_dq_sjcb" name="ys_dq_sjcb" jb_field="jb_single_save"/></td>
-                <td><input type="text" id="ys_dq_sjcbbh" name="ys_dq_sjcbbh" jb_field="jb_single_save"/></td>
-                <td><input type="text" id="ys_dq_sjml" name="ys_dq_sjml" jb_field="jb_single_save"/></td>
-                <td><input type="text" id="ys_dq_sm" name="ys_dq_sm" jb_field="jb_single_save"/></td>
+                <td><input type="text" id="ys_jd_dwbj" name="ys_dq_dwbj" jb_field="jb_single_save"/></td>
+                <td><input type="text" id="ys_jd_vo" name="ys_dq_vo" jb_field="jb_multi_save"/></td>
+                <td><input type="text" id="ys_jd_nkje" name="ys_dq_nkje" jb_field="jb_single_save"/></td>
+                <td><input type="text" id="ys_jd_kgml" name="ys_dq_kgml" jb_field="jb_single_save"/></td>
+                <td><input type="text" id="ys_jd_sjcb" name="ys_dq_sjcb" jb_field="jb_single_save"/></td>
+                <td><input type="text" id="ys_jd_sjcbbh" name="ys_dq_sjcbbh" jb_field="jb_single_save"/></td>
+                <td><input type="text" id="ys_jd_sjml" name="ys_dq_sjml" jb_field="jb_single_save"/></td>
+                <td><input type="text" id="ys_jd_sm" name="ys_dq_sm" jb_field="jb_single_save"/></td>
             </tr>
             <tr>
                 <td>工厂库存及零星材料采购总金额</td>
-                <td><input type="text" id="ys_kt_dwbj" name="ys_kt_dwbj" jb_field="jb_single_save"/></td>
-                <td><input type="text" id="ys_kt_vo" name="ys_kt_vo" jb_field="jb_multi_save"/></td>
-                <td><input type="text" id="ys_kt_nkje" name="ys_kt_nkje" jb_field="jb_single_save"/></td>
-                <td><input type="text" id="ys_kt_kgml" name="ys_kt_kgml" jb_field="jb_single_save"/></td>
-                <td><input type="text" id="ys_kt_sjcb" name="ys_kt_sjcb" jb_field="jb_single_save"/></td>
-                <td><input type="text" id="ys_kt_sjcbbh" name="ys_kt_sjcbbh" jb_field="jb_single_save"/></td>
-                <td><input type="text" id="ys_kt_sjml" name="ys_kt_sjml" jb_field="jb_single_save"/></td>
-                <td><input type="text" id="ys_kt_sm" name="ys_kt_sm" jb_field="jb_single_save"/></td>
+                <td><input type="text" id="ys__dwbj" name="ys_kt_dwbj" jb_field="jb_single_save"/></td>
+                <td><input type="text" id="ys__vo" name="ys_kt_vo" jb_field="jb_multi_save"/></td>
+                <td><input type="text" id="ys__nkje" name="ys_kt_nkje" jb_field="jb_single_save"/></td>
+                <td><input type="text" id="ys__kgml" name="ys_kt_kgml" jb_field="jb_single_save"/></td>
+                <td><input type="text" id="ys__sjcb" name="ys_kt_sjcb" jb_field="jb_single_save"/></td>
+                <td><input type="text" id="ys__sjcbbh" name="ys_kt_sjcbbh" jb_field="jb_single_save"/></td>
+                <td><input type="text" id="ys__sjml" name="ys_kt_sjml" jb_field="jb_single_save"/></td>
+                <td><input type="text" id="ys__sm" name="ys_kt_sm" jb_field="jb_single_save"/></td>
             </tr>
             <tr>
                 <td>工厂人工费</td>
-                <td><input type="text" id="ys_xf_dwbj" name="ys_xf_dwbj" jb_field="jb_single_save"/></td>
-                <td><input type="text" id="ys_xf_vo" name="ys_xf_vo" jb_field="jb_multi_save"/></td>
-                <td><input type="text" id="ys_xf_nkje" name="ys_xf_nkje" jb_field="jb_single_save"/></td>
-                <td><input type="text" id="ys_xf_kgml" name="ys_xf_kgml" jb_field="jb_single_save"/></td>
-                <td><input type="text" id="ys_xf_sjcb" name="ys_xf_sjcb" jb_field="jb_single_save"/></td>
-                <td><input type="text" id="ys_xf_sjcbbh" name="ys_xf_sjcbbh" jb_field="jb_single_save"/></td>
-                <td><input type="text" id="ys_xf_sjml" name="ys_xf_sjml" jb_field="jb_single_save"/></td>
-                <td><input type="text" id="ys_xf_sm" name="ys_xf_sm" jb_field="jb_single_save"/></td>
+                <td><input type="text" id="ys_1xf_dwbj" name="ys_xf_dwbj" jb_field="jb_single_save"/></td>
+                <td><input type="text" id="ys_1xf_vo" name="ys_xf_vo" jb_field="jb_multi_save"/></td>
+                <td><input type="text" id="ys_1xf_nkje" name="ys_xf_nkje" jb_field="jb_single_save"/></td>
+                <td><input type="text" id="ys_1xf_kgml" name="ys_xf_kgml" jb_field="jb_single_save"/></td>
+                <td><input type="text" id="ys_1xf_sjcb" name="ys_xf_sjcb" jb_field="jb_single_save"/></td>
+                <td><input type="text" id="ys_1xf_sjcbbh" name="ys_xf_sjcbbh" jb_field="jb_single_save"/></td>
+                <td><input type="text" id="ys_1xf_sjml" name="ys_xf_sjml" jb_field="jb_single_save"/></td>
+                <td><input type="text" id="ys_1xf_sm" name="ys_xf_sm" jb_field="jb_single_save"/></td>
             </tr>
             <tr>
                 <td colspan="9">&nbsp;</td>
             </tr>
             <tr>
                 <td><h3>小计：</h3></td>
-                <td><input type="text" id="ys_dwbj" name="ys_dwbj" jb_field="jb_single_save"/></td>
-                <td><input type="text" id="ys_vo" name="ys_vo" jb_field="jb_multi_save"/></td>
-                <td><input type="text" id="ys_nkje" name="ys_nkje" jb_field="jb_single_save"/></td>
-                <td><input type="text" id="ys_kgml" name="ys_kgml" jb_field="jb_single_save"/></td>
-                <td><input type="text" id="ys_sjcb" name="ys_sjcb" jb_field="jb_single_save"/></td>
-                <td><input type="text" id="ys_sjcbbh" name="ys_sjcbbh" jb_field="jb_single_save"/></td>
-                <td><input type="text" id="ys_sjml" name="ys_sjml" jb_field="jb_single_save"/></td>
-                <td><input type="text" id="ys_sm" name="ys_sm" jb_field="jb_single_save"/></td>
+                <td><input type="text" id="ys_1dwbj" name="ys_dwbj" jb_field="jb_single_save"/></td>
+                <td><input type="text" id="ys_1vo" name="ys_vo" jb_field="jb_multi_save"/></td>
+                <td><input type="text" id="ys_1nkje" name="ys_nkje" jb_field="jb_single_save"/></td>
+                <td><input type="text" id="ys_1kgml" name="ys_kgml" jb_field="jb_single_save"/></td>
+                <td><input type="text" id="ys_1sjcb" name="ys_sjcb" jb_field="jb_single_save"/></td>
+                <td><input type="text" id="ys_1sjcbbh" name="ys_sjcbbh" jb_field="jb_single_save"/></td>
+                <td><input type="text" id="ys_1sjml" name="ys_sjml" jb_field="jb_single_save"/></td>
+                <td><input type="text" id="ys_1sm" name="ys_sm" jb_field="jb_single_save"/></td>
             </tr>
         </table>
     </div>

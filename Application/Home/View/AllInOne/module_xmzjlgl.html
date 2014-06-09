@@ -412,6 +412,210 @@
             jQuery(domTableId).jqGrid('sortableRows');
         }
         setZjlgl_Skyj_JqGrid("#zjlskyj","#pzjlskyj",$("#pro_id").val(),$("#user_id").val(),$("#user_department").val(),$("#ys_hetong_amt").val());
+
+        //--------------------------------------------------------------------------------------------------------
+        function setZjlgl_Fkyj_JqGrid(domTableId,domPageId,cur_pro_id,cur_user_id,cur_dep_id,cur_fb_amt,cur_cl_amt){
+            var caption_str = "付款预计";
+            var search_url = '/index.php/Home/AllInOne/ajaxZjlfkyjSearch';
+            var save_url = '/index.php/Home/AllInOne/ajaxZjlfkyjSave';
+            var colNames = ['ID','笔数','预计付款占分包合同比例','分包付款金额','预计付款占材料合同比例','材料付款金额','时间'];
+            //
+            var $zjlskyjgridobj = jQuery(domTableId).jqGrid({
+                url: search_url,
+                datatype: "json",
+                mtype: 'POST',
+                postData: {pro_id:cur_pro_id,fb_amt:cur_fb_amt,cl_amt:cur_cl_amt},
+                colNames: colNames,
+                colModel:[
+                    getColModel_Id()
+                    ,
+                    {
+                        name: "fk_bs",
+                        index: "fk_bs",
+                        width:40,
+                        align:"center",
+                        sortable:true,
+                        stype:'select',//查询类型
+                        editable:true,edittype:"select",
+                        editoptions:{
+                            value:{
+                                '0':'全部',
+                                '0.1':'首付款',
+                                '1':'进度款1：开工第2月',
+                                '2':'进度款2：开工第3月',
+                                '3':'进度款3：开工第4月',
+                                '4':'进度款4：开工第5月',
+                                '5':'进度款5：开工第6月',
+                                '6':'进度款6：开工第7月',
+                                '7':'进度款7：开工第8月',
+                                '8':'进度款8：开工第9月',
+                                '20':'竣工结算款',
+                                '30':'竣工结算款次月',
+                                '40':'质保金'
+                            },
+                            defaultValue:"0"
+                        },
+                        editrules:{required:true},
+                        formoptions:{ rowpos:2,label: "笔数" ,elmprefix:"(*)"}
+                    }
+                    ,
+                    getColModel_Je("fk_fb_rate",3,"预计付款占分包合同比例",false)
+                    ,
+                    {
+                        name:"fk_fb_je",
+                        index:"fk_fb_je",
+                        width:30,
+                        align:"right",
+                        sortable:true,
+                        editable:true, edittype:"text",
+                        editrules:{required: false},
+                        editoptions:{
+                            size:"20"
+                        },
+                        formatter: 'number',
+                        summaryType:'sum',
+                        formoptions:{rowpos:4, label: "分包付款金额", elmprefix:"(*)"}
+                    }
+                    ,
+                    getColModel_Je("fk_cl_rate",3,"预计付款占材料合同比例",false)
+                    ,
+                    {
+                        name:"fk_cl_je",
+                        index:"fk_cl_je",
+                        width:30,
+                        align:"right",
+                        sortable:true,
+                        editable:true, edittype:"text",
+                        editrules:{required: false},
+                        editoptions:{
+                            size:"20"
+                        },
+                        formatter: 'number',
+                        summaryType:'sum',
+                        formoptions:{rowpos:4, label: "材料付款金额", elmprefix:"(*)"}
+                    }
+                    ,
+                    getColModel_Time("fk_time",4,"日期")
+                ],
+                hiddengrid: false,
+                autowidth: true,
+                rownumbers: true,
+                rowNum:20,
+                rowList:[20,30,50],
+                pager: domPageId,
+                viewrecords: true,
+                sortorder: "desc",
+                forceFit : true,
+                editurl: save_url,
+                caption:caption_str,
+                footerrow : true,
+                userDataOnFooter : true,
+                altRows : true,
+                gridComplete: function() {
+                    var rowNum = parseInt(jQuery(domTableId).jqGrid('getGridParam','records',10));
+                    if(rowNum > 0){
+                        var fk_fb_je  = jQuery(domTableId).jqGrid('getCol','fk_fb_je',false,'sum');
+                        var fk_cl_je  = jQuery(domTableId).jqGrid('getCol','fk_cl_je',false,'sum');
+                        jQuery(domTableId).jqGrid('footerData',"set",{fk_fb_rate:'合计:',fk_fb_je:fk_fb_je,fk_cl_je:fk_cl_je});
+                    }
+                },
+                onSelectRow: function(id){
+                    var rowid = jQuery(domTableId).jqGrid('getGridParam','selrow');
+                    if(rowid){
+                        var rowData = $(domTableId).jqGrid('getRowData',rowid);
+                        var domTableId_tag = domTableId.substring(1);
+                        if("ys" != $("#user_department").val()){
+                            $("#" + domTableId_tag + "_iladd").addClass('ui-state-disabled');
+                            $("#del_" + domTableId_tag).addClass('ui-state-disabled');
+                        }else{
+                            $("#" + domTableId_tag + "_iladd").removeClass('ui-state-disabled');
+                            $("#" + domTableId_tag + "_iledit").removeClass('ui-state-disabled');
+                            $("#del_" + domTableId_tag).removeClass('ui-state-disabled');
+                        }
+                    }
+
+                },
+                onCellSelect: function(){
+                    //alert("cellselect");
+                },
+                afterInsertRow:function(rowid,rowdata,rowelem){
+                    //alert(rowid);
+                }
+            });
+
+            //导航栏配置和CRUD函数
+            if(cur_dep_id == "gc" || cur_dep_id == "cg"){
+                jQuery(domTableId).jqGrid('navGrid',domPageId,
+                        {view:true,search:false,edit:false,add:false,del:true}
+                );
+            }else{
+                jQuery(domTableId).jqGrid('navGrid',domPageId,
+                        {view:true,search:false,edit:false,add:false,del:false}
+                );
+            }
+            //
+            var addparameters = {
+                rowID : "new_row",
+                initdata : {},
+                position :"first",
+                useDefValues : false,
+                useFormatter : false,
+                addRowParams : {
+                    extraparam:{pro_id:cur_pro_id,user_id:cur_user_id},
+                    successfunc : function(xhr){
+                        var result = eval('(' + xhr.responseText + ')');
+                        if(true == result.state){
+                            jQuery(domTableId).trigger("reloadGrid");
+                            return true;
+                        }else{
+                            jAlert(result.msg);
+                            return true;
+                        }
+                    }
+                }
+            }
+            //
+            var editparameters = {
+                "keys" : false,
+                "oneditfunc" : null,
+                "successfunc" : function(xhr){
+                    var result = eval('(' + xhr.responseText + ')');
+                    if(true == result.state){
+                        return true;
+                    }else{
+                        jAlert(result.msg);
+                        return true;
+                    }
+                },
+                "url" : null,
+                "extraparam" : {pro_id:cur_pro_id,user_id:cur_user_id,fb_amt:cur_fb_amt,cl_amt:cur_cl_amt},
+                "aftersavefunc" : null,
+                "errorfunc": null,
+                "afterrestorefunc" : null,
+                "restoreAfterError" : true,
+                "mtype" : "POST"
+            }
+            var parameters = {
+                edit: true,
+                editicon: "ui-icon-pencil",
+                add: true,
+                addicon:"ui-icon-plus",
+                save: true,
+                saveicon:"ui-icon-disk",
+                cancel: true,
+                cancelicon:"ui-icon-cancel",
+                addParams : addparameters,
+                editParams : editparameters
+            }
+
+            if(cur_dep_id == "gc" || cur_dep_id == "cg"){
+                jQuery(domTableId).jqGrid('inlineNav',domPageId,parameters);
+            }
+            //其他配置
+            jQuery(domTableId).jqGrid('gridResize',{minWidth:1500,maxWidth:2000,minHeight:500, maxHeight:1000});
+            jQuery(domTableId).jqGrid('sortableRows');
+        }
+        setZjlgl_Fkyj_JqGrid("#zjlfkyj","#pzjlfkyj",$("#pro_id").val(),$("#user_id").val(),$("#user_department").val(),1000,1000);
     });
 </script>
 <div id="module_xmzjlgl"  class="module">
@@ -449,6 +653,9 @@
             <table id="zjlskyj"></table>
             <div id="pzjlskyj"></div>
         </div>
-
+        <div>
+            <table id="zjlfkyj"></table>
+            <div id="pzjlfkyj"></div>
+        </div>
     </div>
 </div>

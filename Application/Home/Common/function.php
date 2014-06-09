@@ -35,6 +35,24 @@ function USER_FUN_GET_ZJL_SKYJ_BS_NAME(){
     );
     return $arr;
 }
+function USER_FUN_GET_ZJL_FKYJ_BS_NAME(){
+    $arr = array(
+        '0.1'=>'首付款',
+        '1'=>'进度款1：开工第2月',
+        '2'=>'进度款2：开工第3月',
+        '3'=>'进度款3：开工第4月',
+        '4'=>'进度款4：开工第5月',
+        '5'=>'进度款5：开工第6月',
+        '6'=>'进度款6：开工第7月',
+        '7'=>'进度款7：开工第8月',
+        '8'=>'进度款8：开工第9月',
+        '20'=>'竣工结算款',
+        '30'=>'竣工结算款次月',
+        '40'=>'质保金',
+         '0'=>'全部'
+    );
+    return $arr;
+}
 function USER_FUN_GET_MYD_PJ_NAME(){
     $myd_pj = array(
         "A" => '非常满意',
@@ -92,7 +110,7 @@ function USER_FUN_GET_MYD_LIST_NAME(){
         array(
             'sx' => 'sj',
             'name'=> "设计满意度",
-            item => array(
+            'item' => array(
                 1=>"设计满意度1",
                 2=>"设计满意度2")
         ),
@@ -105,7 +123,7 @@ function USER_FUN_GET_MYD_LIST_NAME(){
         array(
             'sx' => 'sh',
             'name'=>"售后满意度",
-            item => array(
+            'item' => array(
                 1=>"售后满意度1",
                 2=>"售后满意度2")
         ),
@@ -214,6 +232,7 @@ function USER_FUN_GET_DEPARTMENT_SX(){
         5 => 'sj',
         6 => 'sc',
         7 => 'ys',
+        8 => 'ht',
     );
     return $dep;
 }

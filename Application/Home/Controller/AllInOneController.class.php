@@ -105,7 +105,7 @@ class AllInOneController extends Controller {
         $searchOn = I('_search');
         //多条件查询
         $cond = array();
-        if('true' == $searchOn) {
+        if(TRUE || 'true' == $searchOn) {
             $sarr = I('param.');
             foreach( $sarr as $k=>$v) {
                 switch ($k) {
@@ -116,9 +116,7 @@ class AllInOneController extends Controller {
                     case 'pro_id':
                     case 'vo_reson':
                     case 'vo_type':
-                        if("0" != $v){
                             $cond[$k] = $v;
-                        }
                         break;
                 }
             }
@@ -151,7 +149,7 @@ class AllInOneController extends Controller {
             foreach($list as $item){
                 $responce["rows"][$i]['id']=$item["id"];
                 $responce["rows"][$i]['cell'] = array($item['id'],
-                    $lx[$item['vo_type']],$item['vo_desc'],$reson[$item['vo_reson']]);
+                    $item['vo_je'],$reson[$item['vo_reson']],$item['vo_desc'],);
                 $i++;
             }
         }
@@ -165,6 +163,7 @@ class AllInOneController extends Controller {
         $id = I('id');
         $pro_id = I('pro_id');
 
+        $vo_je = I('vo_je');
         $vo_type = I('vo_type');
         $vo_reson = I('vo_reson');
         $vo_desc = I('vo_desc');
@@ -176,10 +175,11 @@ class AllInOneController extends Controller {
         $condition = array();
         switch ($oper) {
             case "add"://
-                if( empty($pro_id) || empty($vo_type) || empty($vo_reson)|| empty($vo_desc) ){
+                if( empty($pro_id) || empty($vo_type) || empty($vo_reson)|| empty($vo_desc) || empty($vo_je)){
                     $this->ajaxReturn(array('state' => false, 'msg' => "字段不能为空"));
                 }
                 $condition["pro_id"] = $pro_id;
+                $condition['vo_je'] = $vo_je;
                 $condition['vo_type'] = $vo_type;
                 $condition['vo_reson'] = $vo_reson;
                 $condition['vo_desc'] = $vo_desc;
@@ -195,6 +195,7 @@ class AllInOneController extends Controller {
                     $this->ajaxReturn(array('state' => false, 'msg' => "字段不能为空", 'id' => $id));
                 }
                 $condition["pro_id"] = $pro_id;
+                $condition['vo_je'] = $vo_je;
                 $condition['vo_type'] = $vo_type;
                 $condition['vo_reson'] = $vo_reson;
                 $condition['vo_desc'] = $vo_desc;
@@ -246,7 +247,7 @@ class AllInOneController extends Controller {
         $searchOn = I('_search');
         //多条件查询
         $cond = array();
-        if('true' == $searchOn) {
+        if(TRUE || 'true' == $searchOn) {
             $sarr = I('param.');
             foreach( $sarr as $k=>$v) {
                 switch ($k) {
@@ -413,7 +414,7 @@ class AllInOneController extends Controller {
         $searchOn = I('_search');
         //多条件查询
         $cond = array();
-        if('true' == $searchOn) {
+        if(TRUE || 'true' == $searchOn) {
             $sarr = I('param.');
             foreach( $sarr as $k=>$v) {
                 switch ($k) {
@@ -583,7 +584,7 @@ class AllInOneController extends Controller {
         $searchOn = I('_search');
         //多条件查询
         $cond = array();
-        if('true' == $searchOn) {
+        if(TRUE || 'true' == $searchOn) {
             $sarr = I('param.');
             foreach( $sarr as $k=>$v) {
                 switch ($k) {
@@ -754,7 +755,7 @@ class AllInOneController extends Controller {
         $searchOn = I('_search');
         //多条件查询
         $cond = array();
-        if('true' == $searchOn) {
+        if(TRUE ||  'true' == $searchOn) {
             $sarr = I('param.');
             foreach( $sarr as $k=>$v) {
                 switch ($k) {
@@ -943,7 +944,7 @@ class AllInOneController extends Controller {
         $searchOn = I('_search');
         //多条件查询
         $cond = array();
-        if('true' == $searchOn) {
+        if(TRUE || 'true' == $searchOn) {
             $sarr = I('param.');
             foreach( $sarr as $k=>$v) {
                 switch ($k) {
@@ -1076,7 +1077,7 @@ class AllInOneController extends Controller {
         $searchOn = I('_search');
         //多条件查询
         $cond = array();
-        if('true' == $searchOn) {
+        if(TRUE || 'true' == $searchOn) {
             $sarr = I('param.');
             foreach( $sarr as $k=>$v) {
                 switch ($k) {
@@ -1167,6 +1168,147 @@ class AllInOneController extends Controller {
                 $condition["sk_bs"] = $sk_bs;
                 $condition["sk_rate"] = $sk_rate;
                 $condition['sk_time'] = $sk_time;
+
+                $condition['id'] = $id;
+                $result  = $Data->save($condition);
+                if(false === $result){
+                    $this->ajaxReturn(array('state' => false, 'msg' => "存盘失败,请检查数据库连接设置", 'id' => $id));
+                }elseif(0 == $result){
+                    $this->ajaxReturn(array('state' => false, 'msg' => "信息没有修改", 'id' => $id));
+                }else{
+                    $this->ajaxReturn(array('state' => true, 'msg' => "存盘成功", 'id' => $id));
+                }
+                break;
+            case "del":
+                if(empty($id)){
+                    $this->ajaxReturn(array('state' => false, 'msg' => "字段不能为空", 'id' => $id));
+                }
+                $condition['id'] = $id;
+                $result  = $Data->where($condition)->delete();
+                if(false === $result){
+                    $this->ajaxReturn(array('state' => false, 'msg' => "存盘失败,请检查数据库连接设置", 'id' => $id));
+                }elseif(0 == $result){
+                    $this->ajaxReturn(array('state' => false, 'msg' => "信息没有修改", 'id' => $id));
+                }else{
+                    $this->ajaxReturn(array('state' => true, 'msg' => "存盘成功", 'id' => $id));
+                }
+                break;
+            default:
+                break;
+        }
+    }
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+    public function ajaxZjlfkyjSearch(){
+        $pagenum = I('page',1); // get the requested page
+        $limitnum = I('rows',20); // get how many rows we want to have into the grid
+        $sidx = I('sidx','id'); // get index row - i.e. user click to sort
+        $sord = I('sord','desc'); // get the direction
+        if($sidx == ""){
+            $sidx = 'id';
+        }
+
+        $fb_amt = I('fb_amt');
+        $cl_amt = I('cl_amt');
+        //手动查询标志
+        $searchOn = I('_search');
+        //多条件查询
+        $cond = array();
+        if(TRUE || 'true' == $searchOn) {
+            $sarr = I('param.');
+            foreach( $sarr as $k=>$v) {
+                switch ($k) {
+                    case 'zxcl_name':
+                        $cond[$k] = array('LIKE', "%$v%");
+                        break;
+                    case 'id':
+                    case 'pro_id':
+                    case 'sk_bs':
+                        if("all" != $v){
+                            $cond[$k] = $v;
+                        }
+                        break;
+                }
+            }
+        }
+        //单条件 find
+        if(FALSE && 'true' == $searchOn){
+            $searchField = I('searchField');
+            $searchString = I('searchString');
+            $searchOper = I('searchOper');
+            $cond[$searchField] = array('LIKE', "%$searchString%");
+        }
+        //
+        $User = M('zjl_fkyj'); // 实例化User对象
+        $count = $User->where($cond)->order(array($sidx => $sord))->count();// 查询满足要求的总记录数
+        $list =  $User->where($cond)->order(array($sidx => $sord))->page($pagenum,$limitnum)->select();
+
+        $total_pages = 0;
+        if( $count >0 ) {
+            $total_pages = ceil($count/$limitnum);
+        }
+        $responce["page"] = $pagenum;
+        $responce["total"] = $total_pages;
+        $responce["records"] = $count;
+
+        $zjl_bs_arr = USER_FUN_GET_ZJL_FKYJ_BS_NAME();
+        $i=0;
+        if(!empty($list)){
+            foreach($list as $item){
+                $responce["rows"][$i]['id']=$item["id"];
+                $responce["rows"][$i]['cell'] = array($item['id'],
+                    $zjl_bs_arr[$item['fk_bs']],
+                    $item['fk_fb_rate'],
+                    intval($fb_amt) * intval($item['fk_fb_rate']),
+                    $item['fk_cl_rate'],
+                    intval($cl_amt) * intval($item['fk_cl_rate']),
+                    $item['fk_time'],
+                );
+                $i++;
+            }
+        }
+        $this->ajaxReturn($responce);
+    }
+    public function ajaxZjlfkyjSave(){
+        $Data = M('zjl_fkyj'); // 实例化Data数据模型
+
+        $oper = I('oper');
+        $id = I('id');
+        $pro_id = I('pro_id');
+
+
+        $fk_bs = I('fk_bs');
+        $fk_fb_rate = I('fk_fb_rate');
+        $fk_cl_rate = I('fk_cl_rate');
+        $fk_time = I('fk_time');
+
+        $condition = array();
+        switch ($oper) {
+            case "add"://
+                if( empty($pro_id) || empty($fk_bs) || empty($fk_time)){
+                    $this->ajaxReturn(array('state' => false, 'msg' => "字段不能为空"));
+                }
+                $condition["pro_id"] = $pro_id;
+                $condition["fk_bs"] = $fk_bs;
+                $condition["fk_fb_rate"] = $fk_fb_rate;
+                $condition["fk_cl_rate"] = $fk_cl_rate;
+                $condition['fk_time'] = $fk_time;
+
+                $result  = $Data->add($condition);
+                if(false === $result){
+                    $this->ajaxReturn(array('state' => false, 'msg' => "存盘失败,请检查数据库连接设置"));
+                }else{
+                    $this->ajaxReturn(array('state' => true, 'msg' => "存盘成功", 'id' => $result));
+                }
+                break;
+            case "edit"://
+                if(empty($id) || empty($pro_id) || empty($sk_bs) || empty($sk_rate) || empty($sk_time) ){
+                    $this->ajaxReturn(array('state' => false, 'msg' => "字段不能为空", 'id' => $id));
+                }
+                $condition["pro_id"] = $pro_id;
+                $condition["fk_bs"] = $fk_bs;
+                $condition["fk_fb_rate"] = $fk_fb_rate;
+                $condition["fk_cl_rate"] = $fk_cl_rate;
+                $condition['fk_time'] = $fk_time;
 
                 $condition['id'] = $id;
                 $result  = $Data->save($condition);
