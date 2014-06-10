@@ -173,7 +173,7 @@ function USER_FUN_GET_HT_TYPE_NAME(){
     );
     return $arr;
 }
-function USER_FUN_GET_VO_RESON_NAME(){
+function USER_FUN_GET_CUSTOMER_VO_RESON_NAME(){
     $vo_reson = array(
         'A' => "客户变更",
         'B' => "范围变更",
@@ -182,6 +182,19 @@ function USER_FUN_GET_VO_RESON_NAME(){
         'E' => "大厦或消防要求",
         'F' => "现场条件不符",
         'G' => "其它",
+    );
+    return $vo_reson;
+}
+function USER_FUN_GET_FB_VO_RESON_NAME(){
+    $vo_reson = array(
+        'A' => "客户要求-有VO",
+        'B' => "客户要求- 无VO",
+        'C' => "装修设计协调",
+        'D' => "机电设计协调",
+        'E' => "预算漏项或少算",
+        'F' => "工程现场变更",
+        'G' => "采购协调",
+        'H' => "其它",
     );
     return $vo_reson;
 }
