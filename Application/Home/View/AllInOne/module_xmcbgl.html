@@ -1,5 +1,9 @@
 <script type="text/javascript">
     $(document).ready(function() {
+        //-------------------------------------------------------------------------------------------
+        //多字段 合计
+        //--------------------------------------------------------------------------------------------
+        //hj
         function get_comm_hj(domDiv,hjType,domResult){
             var sum = 0.00;
             $("#" + domDiv + " [jb_hj=" + hjType + "]").each(function(){
@@ -7,6 +11,7 @@
             });
             $("#" + domResult).val(sum);
         }
+        //add blur
         function add_comm_hj_event(domDiv,hjType,domResult){
             $("#" + domDiv + " [jb_hj=" + hjType + "]").each(function(){
                $(this).on('blur',function(){
@@ -24,12 +29,13 @@
                            return;
                        }
                    }
-                   if("nkje" == hjType || "dwbj" == hjType || "sjcb" == hjType){
-                       get_comm_mll("module_xmcbgl","jb_kgmll");
-                       get_comm_mll("module_xmcbgl","jb_sjmll");
-                       get_comm_total_mll("module_xmcbgl");
-                   }
+                   //mll
+                   get_comm_mll("module_xmcbgl","jb_kgmll");
+                   get_comm_mll("module_xmcbgl","jb_sjmll");
+                   //hj
                    get_comm_hj(domDiv,hjType,domResult);
+                   //total
+                   get_comm_total_mll("module_xmcbgl");
                });
             });
         }
@@ -100,24 +106,88 @@
                 $("#ys_hj_sjmll").val(Math.round(fb_sjmll * 10000)/100 + "%");
             }
         }
-        //dwbj
-        add_comm_hj_event("module_xmcbgl","dwbj","ys_hj_dwbj");
-        get_comm_hj("module_xmcbgl","dwbj","ys_hj_dwbj");
-        //nkje
-        add_comm_hj_event("module_xmcbgl","nkje","ys_hj_nkje");
-        get_comm_hj("module_xmcbgl","nkje","ys_hj_nkje");
-        //sjcb
-        add_comm_hj_event("module_xmcbgl","sjcb","ys_hj_sjcb");
-        get_comm_hj("module_xmcbgl","sjcb","ys_hj_sjcb");
-        //customer vo,fb vo
-        add_comm_hj_event("module_xmcbgl","customer_vo","ys_hj_customer_vo");
-        add_comm_hj_event("module_xmcbgl","fb_vo","ys_hj_fb_vo");
-        //
-
-
-        //
         //-------------------------------------------------------------------------------------------
-        //子表
+        //单字段 合计
+        //--------------------------------------------------------------------------------------------
+        //add single blur
+        function add_single_hj_event(domDiv,hjType,domResult){
+            $("#" + domDiv + " [jb_single_hj=" + hjType + "]").each(function(){
+                $(this).on('blur',function(){
+                    if("nkje" == hjType){
+                        var cur_id = $(this).attr("id");
+                        var cur_dwbj_id = cur_id.substring(0,cur_id.lastIndexOf("_")) + "_dwbj";
+                        //alert(cur_dwbj_id);
+                        var nkje = parseFloat($(this).val()) || 0.00;
+                        //alert(nkje);
+                        var dwbj =  parseFloat($("#" + cur_dwbj_id).val()) || 0.00;
+                        //alert(dwbj);
+                        if(nkje >= dwbj){
+                            alert("内控金额 大于 对外报价！");
+                            $(this).focus();
+                            return;
+                        }
+                    }
+                    //single
+                    get_single_mll("module_xmcbgl","jb_single_kgmll");
+                    //hj
+                    $("#" + domResult).val(parseFloat($(this).val()) || 0.00);
+                    //total
+                    get_single_total_mll("module_xmcbgl");
+                });
+            });
+        }
+        //single mll
+        function get_single_mll(domDiv,mlltype){
+            $("#" + domDiv + " [" + mlltype + "]").each(function(){
+                if("jb_single_kgmll" == mlltype){
+                    var fb_type = $(this).attr(mlltype);
+                    var fb_dwbj = parseFloat($("#ys_" + fb_type + "_dwbj").val()) || 0.00;
+                    var fb_nkje = parseFloat($("#ys_" + fb_type + "_nkje").val()) || 0.00;
+                    var fb_kgmll = 0.00;
+                    if(fb_dwbj > 0.00 ){
+                        fb_kgmll = (parseFloat(fb_dwbj) - parseFloat(fb_nkje))/parseFloat(fb_dwbj) ;
+                    }
+                    //Math.round(x*100)/100
+                    $("#ys_" + fb_type + "_kgmll").val(Math.round(fb_kgmll * 10000)/100 + "%");
+                }else if("jb_sjmll" == mlltype){
+                    var fb_type = $(this).attr(mlltype);
+                    var fb_dwbj = parseFloat($("#ys_" + fb_type + "_dwbj").val()) || 0.00;
+                    var fb_customer_vo = parseFloat($("#ys_" + fb_type + "_customer_vo").val()) || 0.00;
+                    var fb_sjcb = parseFloat($("#ys_" + fb_type + "_sjcb").val()) || 0.00;
+                    var fb_fb_vo = parseFloat($("#ys_" + fb_type + "_fb_vo").val()) || 0.00;
+                    var fb_sjmll = 0.00;
+                    if(fb_dwbj > 0.00 ){
+                        fb_sjmll = (parseFloat(fb_dwbj) + parseFloat(fb_customer_vo) - parseFloat(fb_sjcb) - parseFloat(fb_fb_vo))/(parseFloat(fb_dwbj) + parseFloat(fb_customer_vo)) ;
+                    }
+                    //Math.round(x*100)/100
+                    $("#ys_" + fb_type + "_sjmll").val(Math.round(fb_sjmll * 10000)/100 + "%");
+                }
+            });
+        }
+        //single total_mll
+        function get_single_total_mll(domDiv){
+            //total kgmll
+            var fb_dwbj = $("#ys_hj_cg_dwbj").val() || 0.00;
+            var fb_nkje = $("#ys_hj_cg_nkje").val() || 0.00;
+            var fb_kgmll = 0.00;
+            if(fb_dwbj > 0.00 ){
+                fb_kgmll = (parseFloat(fb_dwbj) - parseFloat(fb_nkje))/parseFloat(fb_dwbj) ;
+            }
+            $("#ys_hj_cg_kgmll").val(Math.round(fb_kgmll * 10000)/100 + "%");
+            //total sjmll
+             var fb_customer_vo = $("#ys_hj_cg_customer_vo").val() || 0.00;
+             var fb_sjcb = $("#cg_hj_cg_sjcb").val() || 0.00;
+             var fb_fb_vo = $("#cg_hj_cg_vo").val() || 0.00;
+             var fb_sjmll = 0.00;
+             if(fb_dwbj > 0.00 ){
+                 fb_sjmll = (parseFloat(fb_dwbj) + parseFloat(fb_customer_vo) - parseFloat(fb_sjcb) - parseFloat(fb_fb_vo))/(parseFloat(fb_dwbj) + parseFloat(fb_customer_vo)) ;
+                 //Math.round(x*100)/100
+                 $("#cg_cg_all_sjmll").val(Math.round(fb_sjmll * 10000)/100 + "%");
+                 $("#cg_hj_cg_sjmll").val(Math.round(fb_sjmll * 10000)/100 + "%");
+             }
+        }
+        //-------------------------------------------------------------------------------------------
+        //弹窗: 子表1
         //-------------------------------------------------------------------------------------------
         function setVoJqGrid(domTableId,domPageId,srctype,cur_pro_id,cur_vo_type,domResultId){
             //console.log(cur_pro_id);
@@ -193,7 +263,7 @@
 
             //导航栏配置和CRUD函数
             jQuery(domTableId).jqGrid('navGrid',domPageId,
-                    {view:false,search:false,edit:false,add:false,del:true}
+                    {view:true,search:false,edit:false,add:false,del:true}
             );
             //
             var addparameters = {
@@ -317,6 +387,8 @@
                 return customer_vo_arr;
             }else if("fb" == srctype){
                 return fb_vo_arr;
+            }else if("zxcg" == srctype || "jdcg" == srctype){
+                return fb_vo_arr;
             }
             return {};
         }
@@ -354,7 +426,343 @@
             $(domDialogId).dialog(dialogOpts);
             //$(domDialogId).dialog('open');
         }
+        //-------------------------------------------------------------------------------------------
+        //弹窗: 子表2
+        //-------------------------------------------------------------------------------------------
+        function setCgAndVoJqGrid(domTableId,domPageId,srctype,cur_pro_id,domResultId){
+            //console.log(cur_pro_id);
+            //console.log(cur_vo_type);
+            var $gridobj = jQuery(domTableId).jqGrid({
+                url:'/index.php/Home/DbOpt/ajaxCgAndVoSearch',
+                datatype: "json",
+                mtype: 'POST',
+                postData: {pro_id:cur_pro_id,srctype:srctype},
+                colNames:['ID','名称','金额','原因','描述','VO1 金额','VO1 原因','VO1 描述','VO2 金额','VO2 原因','VO2 描述','VO3 金额','VO3 原因','VO3 描述'],
+                colModel:[
+                    {name:'id',index:'id',
+                        width:20,align:"right",
+                        sortable:true,
+                        editable:false,
+                        readonly:true,
+                        editoptions:{readonly:true,size:100}
+                    },
+                    {name:'cg_name',index:'cg_name',
+                        width:30,align:"right",
+                        sortable:true,
+                        editable:true, edittype:"text",editrules:{required:true},
+                        editoptions:{size:30},
+                        formoptions:{rowpos:2, label: "名称", elmprefix:"(*)"}
+                    },
+                    {name:'cg_je',index:'cg_je',
+                        width:30,align:"right",
+                        sortable:true,
+                        formatter: 'number',
+                        summaryType:'sum',
+                        editable:true, edittype:"text",editrules:{required:true},
+                        editoptions:{size:30},
+                        formoptions:{rowpos:3, label: "金额", elmprefix:"(*)"}
+                    },
+                    {name:'cg_reson',index:'cg_reson',
+                        width:30, align:"center",
+                        sortable:true,
+                        stype:'select',//查询类型
+                        editable:true,edittype:"select",
+                        editoptions:{
+                            value: get_vo_reson_array(srctype),
+                            defaultValue:"A"
+                        },
+                        editrules:{required:true},
+                        formoptions:{ rowpos:4,label: "原因",elmprefix:"(*)"}
+                    },
+                    {name:'cg_desc',index:'cg_desc',
+                        width:50,align:"right",
+                        sortable:true,
+                        editable:true, edittype:"text",editrules:{required:true},
+                        editoptions:{size:50},
+                        /*                  editable:true, edittype:"textarea",editrules:{required:true},
+                         editoptions:{rows:"3",cols:"30"},*/
+                        formoptions:{rowpos:5, label: "描述", elmprefix:"(*)"}
+                    },
+                    {name:'vo1_je',index:'vo1_je',
+                        width:30,align:"right",
+                        sortable:true,
+                        formatter: 'number',
+                        summaryType:'sum',
+                        editable:true, edittype:"text",editrules:{required:false},
+                        editoptions:{size:30},
+                        formoptions:{rowpos:6, label: "VO1 金额", elmprefix:"(*)"}
+                    },
+                    {name:'vo1_reson',index:'vo1_reson',
+                        width:30, align:"center",
+                        sortable:true,
+                        stype:'select',//查询类型
+                        editable:true,edittype:"select",
+                        editoptions:{
+                            value: get_vo_reson_array(srctype),
+                            defaultValue:"A"
+                        },
+                        editrules:{required:false},
+                        formoptions:{ rowpos:7,label: "VO1 原因",elmprefix:"(*)"}
+                    },
+                    {name:'vo1_desc',index:'vo1_desc',
+                        width:50,align:"right",
+                        sortable:true,
+                        editable:true, edittype:"text",editrules:{required:false},
+                        editoptions:{size:50},
+                        /*                  editable:true, edittype:"textarea",editrules:{required:true},
+                         editoptions:{rows:"3",cols:"30"},*/
+                        formoptions:{rowpos:8, label: "VO1 描述", elmprefix:"(*)"}
+                    },
+                    {name:'vo2_je',index:'vo2_je',
+                        width:30,align:"right",
+                        sortable:true,
+                        formatter: 'number',
+                        summaryType:'sum',
+                        editable:true, edittype:"text",editrules:{required:false},
+                        editoptions:{size:30},
+                        formoptions:{rowpos:9, label: "VO2 金额", elmprefix:"(*)"}
+                    },
+                    {name:'vo2_reson',index:'vo2_reson',
+                        width:30, align:"center",
+                        sortable:true,
+                        stype:'select',//查询类型
+                        editable:true,edittype:"select",
+                        editoptions:{
+                            value: get_vo_reson_array(srctype),
+                            defaultValue:"A"
+                        },
+                        editrules:{required:false},
+                        formoptions:{ rowpos:10,label: "VO2 原因",elmprefix:"(*)"}
+                    },
+                    {name:'vo2_desc',index:'vo2_desc',
+                        width:50,align:"right",
+                        sortable:true,
+                        editable:true, edittype:"text",editrules:{required:false},
+                        editoptions:{size:50},
+                        /*                  editable:true, edittype:"textarea",editrules:{required:true},
+                         editoptions:{rows:"3",cols:"30"},*/
+                        formoptions:{rowpos:11, label: "VO2 描述", elmprefix:"(*)"}
+                    },
+                    {name:'vo3_je',index:'vo3_je',
+                        width:30,align:"right",
+                        sortable:true,
+                        formatter: 'number',
+                        summaryType:'sum',
+                        editable:true, edittype:"text",editrules:{required:false},
+                        editoptions:{size:30},
+                        formoptions:{rowpos:12, label: "VO3 金额", elmprefix:"(*)"}
+                    },
+                    {name:'vo3_reson',index:'vo3_reson',
+                        width:30, align:"center",
+                        sortable:true,
+                        stype:'select',//查询类型
+                        editable:true,edittype:"select",
+                        editoptions:{
+                            value: get_vo_reson_array(srctype),
+                            defaultValue:"A"
+                        },
+                        editrules:{required:false},
+                        formoptions:{ rowpos:13,label: "VO3 原因",elmprefix:"(*)"}
+                    },
+                    {name:'vo3_desc',index:'vo3_desc',
+                        width:50,align:"right",
+                        sortable:true,
+                        editable:true, edittype:"text",editrules:{required:false},
+                        editoptions:{size:50},
+                        /*                  editable:true, edittype:"textarea",editrules:{required:true},
+                         editoptions:{rows:"3",cols:"30"},*/
+                        formoptions:{rowpos:14, label: "VO3 描述", elmprefix:"(*)"}
+                    }
+                ],
+                hiddengrid: false,
+                autowidth: true,
+                rownumbers: true,
+                rowNum:20,
+                rowList:[10,20,30],
+                pager: domPageId,
+                viewrecords: true,
+                sortorder: "desc",
+                forceFit : true,
+                editurl: '/index.php/Home/DbOpt/ajaxCgAndVoSave',
+                caption:"",
+                footerrow : true,
+                gridComplete: function() {
+                    var rowNum = parseInt(jQuery(domTableId).jqGrid('getGridParam','records',10));
+                    if(rowNum > 0){
+                        var cg_hj_je  = jQuery(domTableId).jqGrid('getCol','cg_je',false,'sum');
+                        var vo1_hj_je  = jQuery(domTableId).jqGrid('getCol','vo1_je',false,'sum');
+                        var vo2_hj_je  = jQuery(domTableId).jqGrid('getCol','vo2_je',false,'sum');
+                        var vo3_hj_je  = jQuery(domTableId).jqGrid('getCol','vo3_je',false,'sum');
+                        jQuery(domTableId).jqGrid('footerData',"set",{id:'合计:',cg_je:cg_hj_je,vo1_je:vo1_hj_je,vo2_je:vo2_hj_je,vo3_je:vo3_hj_je});
+                        //
+                        var it_arr = domResultId.split("_");
+                        var domSjcb = it_arr[0] + "_" + it_arr[1] + "_sjcb";
+                        var domVo = it_arr[0] + "_" + it_arr[1] + "_vo";
+                        $("#" + domSjcb).val(cg_hj_je);
+                        var vo_all = (parseFloat(vo1_hj_je) || 0.00) + (parseFloat(vo2_hj_je) || 0.00) + (parseFloat(vo3_hj_je) || 0.00);
+                        $("#" + domVo).val(vo_all);
+                    }
+                },
+                onSelectRow: function(id){
+                }
+            });
 
+            //导航栏配置和CRUD函数
+            jQuery(domTableId).jqGrid('navGrid',domPageId,
+                    {view:true,search:false,edit:false,add:false,del:true}
+            );
+            //
+            var addparameters = {
+                rowID : "new_row",
+                initdata : {},
+                position :"first",
+                useDefValues : false,
+                useFormatter : false,
+                addRowParams : {
+                    extraparam:{pro_id:cur_pro_id,srctype:srctype},
+                    successfunc : function(xhr){
+                        var result = eval('(' + xhr.responseText + ')');
+                        if(true == result.state){
+                            jQuery(domTableId).trigger("reloadGrid");
+                            return true;
+                        }else{
+                            jAlert(result.msg);
+                            return true;
+                        }
+                    }
+                }
+            }
+            //
+            var editparameters = {
+                "keys" : false,
+                "oneditfunc" : null,
+                "successfunc" : function(xhr){
+                    var result = eval('(' + xhr.responseText + ')');
+                    if(true == result.state){
+                        jQuery(domTableId).trigger("reloadGrid");
+                        return true;
+                    }else{
+                        jAlert(result.msg);
+                        return true;
+                    }
+                },
+                "url" : null,
+                "extraparam" : {pro_id:cur_pro_id,srctype:srctype},
+                "aftersavefunc" : null,
+                "errorfunc": null,
+                "afterrestorefunc" : null,
+                "restoreAfterError" : true,
+                "mtype" : "POST"
+            }
+            var parameters = {
+                edit: true,
+                editicon: "ui-icon-pencil",
+                add: true,
+                addicon:"ui-icon-plus",
+                save: true,
+                saveicon:"ui-icon-disk",
+                cancel: true,
+                cancelicon:"ui-icon-cancel",
+                addParams : addparameters,
+                editParams : editparameters
+            }
+            jQuery(domTableId).jqGrid('inlineNav',domPageId,parameters);
+            //其他配置
+            jQuery(domTableId).jqGrid('gridResize',{minWidth:350,maxWidth:1000,minHeight:80, maxHeight:350});
+            jQuery(domTableId).jqGrid('sortableRows');
+            /*        jQuery(domTableId).jqGrid('filterToolbar');
+             $gridobj[0].toggleToolbar();
+             if($(domPageId + ":contains(Toggle)").length < 1){
+             jQuery(domTableId).jqGrid('navButtonAdd',domPageId,{caption:"Toggle",title:"Toggle Search Toolbar", buttonicon :'ui-icon-pin-s',
+             onClickButton:function(){
+             $gridobj[0].toggleToolbar();
+             }
+             });
+             }*/
+        }
+        function showCgAndVOJqGriddialog(domDialogId,srctype,domResultId){
+            var title = "";
+            if("zxcg" == srctype){
+                title = "装修采购";
+            }else if("jdcg" == srctype){
+                title = "机电采购";
+            }
+            var dialogOpts = {
+                title: title,
+                bgiframe: true,
+                resizable: true,
+                width: 1600,
+                height:500,
+                //autoOpen: false,
+                modal: true,
+                overlay: {
+                    backgroundColor: '#000',
+                    opacity: 0.5
+                },
+                open: function() {
+                    setCgAndVoJqGrid("#" + srctype + "_dg","#p" + srctype + "_dg",srctype,$("#pro_id").val(),domResultId);
+                },
+                buttons: {
+                    "Ok": function() {
+                        $(this).dialog('close');
+                    } ,
+                    "Cancel": function() {
+                        $(this).dialog('close');
+                    }
+                }
+            }
+            $(domDialogId).dialog(dialogOpts);
+        }
+        function get_cg_and_vo_hj(){
+            var ret = $.get("/index.php/Home/DbOpt/ajaxGetCgAndVOJe?pro_id=" + $("#pro_id").val(), function(xhr){
+                //console.log(xhr);
+                $.each(xhr,function(index,element){
+                    //alert(index);
+                    //alert(element);
+                    $.each(element,function(index2,element2){
+                        $("#cg_" + index + "_" + index2).val(element2);
+                    });
+
+                });
+                //
+                get_comm_hj("module_xmcbgl","cg_sjcb","cg_hj_cg_sjcb");
+                get_comm_hj("module_xmcbgl","cg_vo","cg_hj_cg_vo");
+                //
+            });
+            return ret;
+        }
+        //add cg blur
+        function add_cg_hj_event(domDiv,hjType,domResult){
+            $("#" + domDiv + " [jb_hj=" + hjType + "]").each(function(){
+                $(this).on('blur',function(){
+                    //hj
+                    get_comm_hj(domDiv,hjType,domResult);
+                    //no mll,only have cg total mll
+                    //cg total
+                    get_single_total_mll("module_xmcbgl");
+                });
+            });
+        }
+        //-------------------------------------------------------------------------------------------
+        //init
+        //-------------------------------------------------------------------------------------------
+        //dwbj
+        add_comm_hj_event("module_xmcbgl","dwbj","ys_hj_dwbj");
+        get_comm_hj("module_xmcbgl","dwbj","ys_hj_dwbj");
+        //nkje
+        add_comm_hj_event("module_xmcbgl","nkje","ys_hj_nkje");
+        get_comm_hj("module_xmcbgl","nkje","ys_hj_nkje");
+        //sjcb
+        add_comm_hj_event("module_xmcbgl","sjcb","ys_hj_sjcb");
+        get_comm_hj("module_xmcbgl","sjcb","ys_hj_sjcb");
+        //customer vo,fb vo
+        add_comm_hj_event("module_xmcbgl","customer_vo","ys_hj_customer_vo");
+        add_comm_hj_event("module_xmcbgl","fb_vo","ys_hj_fb_vo");
+        //
+        //
+        //-------------------------------------------------------------------------------------------
+        //弹窗 1: click
+        //-------------------------------------------------------------------------------------------
         $('.module').on('click','[jb_field=jb_multi_save]',function(event){
             var domSrc = event.target.id;
             //alert(domSrc);
@@ -365,95 +773,30 @@
             return false;
         })
         //-------------------------------------------------------------------------------------------
-        //单字段 合计
-        //--------------------------------------------------------------------------------------------
-        function add_single_hj_event(domDiv,hjType,domResult){
-            $("#" + domDiv + " [jb_single_hj=" + hjType + "]").each(function(){
-                $(this).on('blur',function(){
-                    if("nkje" == hjType){
-                        var cur_id = $(this).attr("id");
-                        var cur_dwbj_id = cur_id.substring(0,cur_id.lastIndexOf("_")) + "_dwbj";
-                        //alert(cur_dwbj_id);
-                        var nkje = parseFloat($(this).val()) || 0.00;
-                        //alert(nkje);
-                        var dwbj =  parseFloat($("#" + cur_dwbj_id).val()) || 0.00;
-                        //alert(dwbj);
-                        if(nkje >= dwbj){
-                            alert("内控金额 大于 对外报价！");
-                            $(this).focus();
-                            return;
-                        }
-                    }
-                    if("nkje" == hjType || "dwbj" == hjType || "sjcb" == hjType){
-                        get_single_mll("module_xmcbgl","jb_single_kgmll");
-                        get_single_total_mll("module_xmcbgl");
-                        //get_comm_mll("module_xmcbgl","jb_sjmll");
-                        //get_comm_total_mll("module_xmcbgl");
-                    }
-                    $("#" + domResult).val(parseFloat($(this).val()) || 0.00);
-                });
-            });
-        }
-        //mll
-        function get_single_mll(domDiv,mlltype){
-            $("#" + domDiv + " [" + mlltype + "]").each(function(){
-                if("jb_single_kgmll" == mlltype){
-                    var fb_type = $(this).attr(mlltype);
-                    var fb_dwbj = parseFloat($("#ys_" + fb_type + "_dwbj").val()) || 0.00;
-                    var fb_nkje = parseFloat($("#ys_" + fb_type + "_nkje").val()) || 0.00;
-                    var fb_kgmll = 0.00;
-                    if(fb_dwbj > 0.00 ){
-                        fb_kgmll = (parseFloat(fb_dwbj) - parseFloat(fb_nkje))/parseFloat(fb_dwbj) ;
-                    }
-                    //Math.round(x*100)/100
-                    $("#ys_" + fb_type + "_kgmll").val(Math.round(fb_kgmll * 10000)/100 + "%");
-                }else if("jb_sjmll" == mlltype){
-                    var fb_type = $(this).attr(mlltype);
-                    var fb_dwbj = parseFloat($("#ys_" + fb_type + "_dwbj").val()) || 0.00;
-                    var fb_customer_vo = parseFloat($("#ys_" + fb_type + "_customer_vo").val()) || 0.00;
-                    var fb_sjcb = parseFloat($("#ys_" + fb_type + "_sjcb").val()) || 0.00;
-                    var fb_fb_vo = parseFloat($("#ys_" + fb_type + "_fb_vo").val()) || 0.00;
-                    var fb_sjmll = 0.00;
-                    if(fb_dwbj > 0.00 ){
-                        fb_sjmll = (parseFloat(fb_dwbj) + parseFloat(fb_customer_vo) - parseFloat(fb_sjcb) - parseFloat(fb_fb_vo))/(parseFloat(fb_dwbj) + parseFloat(fb_customer_vo)) ;
-                    }
-                    //Math.round(x*100)/100
-                    $("#ys_" + fb_type + "_sjmll").val(Math.round(fb_sjmll * 10000)/100 + "%");
-                }
-            });
-        }
-        //single total_mll
-        function get_single_total_mll(domDiv){
-            var fb_dwbj = $("#ys_hj_cg_dwbj").val() || 0.00;
-            var fb_nkje = $("#ys_hj_cg_nkje").val() || 0.00;
-            var fb_kgmll = 0.00;
-            if(fb_dwbj > 0.00 ){
-                fb_kgmll = (parseFloat(fb_dwbj) - parseFloat(fb_nkje))/parseFloat(fb_dwbj) ;
-            }
-            //Math.round(x*100)/100
-            $("#ys_hj_cg_kgmll").val(Math.round(fb_kgmll * 10000)/100 + "%");
-            //
-/*            var fb_customer_vo = $("#ys_hj_customer_vo").val() || 0.00;
-            var fb_sjcb = $("#ys_hj_sjcb").val() || 0.00;
-            var fb_fb_vo = $("#ys_hj_fb_vo").val() || 0.00;
-            var fb_sjmll = 0.00;
-            if(fb_dwbj > 0.00 ){
-                fb_sjmll = (parseFloat(fb_dwbj) + parseFloat(fb_customer_vo) - parseFloat(fb_sjcb) - parseFloat(fb_fb_vo))/(parseFloat(fb_dwbj) + parseFloat(fb_customer_vo)) ;
-                //Math.round(x*100)/100
-                $("#ys_hj_sjmll").val(Math.round(fb_sjmll * 10000)/100 + "%");
-            }*/
-        }
-        //------------------------------------------------------------------------------------
-        //dwbj
+        //弹窗 2: click
+        //-------------------------------------------------------------------------------------------
+        $('.module').on('click','[jb_field=jb_multi_cg_save]',function(event){
+            var domSrc = event.target.id;
+            //alert(domSrc);
+            var srctype = domSrc.split("_")[1];
+            showCgAndVOJqGriddialog("#" + srctype + "_dialog",srctype,domSrc);
+            return false;
+        })
+        //
+        //single dwbj
         add_single_hj_event("module_xmcbgl","dwbj","ys_hj_cg_dwbj");
         $("#ys_hj_cg_dwbj").val(parseFloat($("#ys_cg_all_dwbj").val()) || 0.00);
-        //nkje
+        //single nkje
         add_single_hj_event("module_xmcbgl","nkje","ys_hj_cg_nkje");
         $("#ys_hj_cg_nkje").val(parseFloat($("#ys_cg_all_nkje").val()) || 0.00);
-        //cg customer vo,fb vo
+        //single add hj blur
         add_single_hj_event("module_xmcbgl","customer_vo","ys_hj_cg_customer_vo");
+        //cg mulit add hj blur
+        add_cg_hj_event("module_xmcbgl","cg_sjcb","cg_hj_cg_sjcb");
+        add_cg_hj_event("module_xmcbgl","cg_vo","cg_hj_cg_vo");
         //
-        $.when(get_all_vo_hj("customer"),get_all_vo_hj("fb"))
+        //jquery promise init.
+        $.when(get_all_vo_hj("customer"),get_all_vo_hj("fb"),get_cg_and_vo_hj())
                 .done(function(){
                     get_comm_mll("module_xmcbgl","jb_kgmll");
                     get_comm_mll("module_xmcbgl","jb_sjmll");
@@ -461,7 +804,6 @@
                     //single
                     get_single_mll("module_xmcbgl","jb_single_kgmll");
                     get_single_total_mll("module_xmcbgl");
-
                 });
         //-------------------------------------------------------------------------------------------
     });
@@ -551,7 +893,16 @@
         <div id="fb_pav_dg"></div>
     </div>
 </div>
-
+<div id="cg_dialog">
+    <div id="zxcg_dialog">
+        <table id="zxcg_dg"></table>
+        <div id="pzxcg_dg"></div>
+    </div>
+    <div id="jdcg_dialog">
+        <table id="jdcg_dg"></table>
+        <div id="pjdcg_dg"></div>
+    </div>
+</div>
 <div id="module_xmcbgl" class="module">
     <h3><a href="#">项目成本管理</a></h3>
     <div>
@@ -592,10 +943,10 @@
                 <td><input type="text" id="ys_zx_dwbj" name="ys_zx_dwbj" jb_hj="dwbj" jb_field="jb_single_save"/></td>
                 <td><input type="text" id="ys_zx_customer_vo" name="ys_zx_customer_vo" jb_hj="customer_vo" jb_field="jb_multi_save"/></td>
                 <td><input type="text" id="ys_zx_nkje" name="ys_zx_nkje" jb_hj="nkje" jb_field="jb_single_save"/></td>
-                <td><input type="text" id="ys_zx_kgmll" name="ys_zx_kgmll" jb_kgmll="zx"/></td>
+                <td><input type="text" id="ys_zx_kgmll" name="ys_zx_kgmll" jb_kgmll="zx" readonly="true"/></td>
                 <td><input type="text" id="ys_zx_sjcb" name="ys_zx_sjcb" jb_hj="sjcb" jb_field="jb_single_save"/></td>
                 <td><input type="text" id="ys_zx_fb_vo" name="ys_zx_fb_vo" jb_hj="fb_vo" jb_field="jb_multi_save"/></td>
-                <td><input type="text" id="ys_zx_sjmll" name="ys_zx_sjmll" jb_sjmll="zx"/></td>
+                <td><input type="text" id="ys_zx_sjmll" name="ys_zx_sjmll" jb_sjmll="zx" readonly="true"/></td>
                 <td><input type="text" id="ys_zx_sm" name="ys_zx_sm" jb_field="jb_single_save"/></td>
             </tr>
             <tr>
@@ -603,10 +954,10 @@
                 <td><input type="text" id="ys_dq_dwbj" name="ys_dq_dwbj" jb_hj="dwbj" jb_field="jb_single_save"/></td>
                 <td><input type="text" id="ys_dq_customer_vo" name="ys_dq_customer_vo" jb_hj="customer_vo" jb_field="jb_multi_save"/></td>
                 <td><input type="text" id="ys_dq_nkje" name="ys_dq_nkje" jb_hj="nkje" jb_field="jb_single_save"/></td>
-                <td><input type="text" id="ys_dq_kgmll" name="ys_dq_kgmll" jb_kgmll="dq"/></td>
+                <td><input type="text" id="ys_dq_kgmll" name="ys_dq_kgmll" jb_kgmll="dq" readonly="true"/></td>
                 <td><input type="text" id="ys_dq_sjcb" name="ys_dq_sjcb" jb_hj="sjcb" jb_field="jb_single_save"/></td>
                 <td><input type="text" id="ys_dq_fb_vo" name="ys_dq_fb_vo" jb_hj="fb_vo" jb_field="jb_multi_save"/></td>
-                <td><input type="text" id="ys_dq_sjmll" name="ys_dq_sjmll" jb_sjmll="dq"/></td>
+                <td><input type="text" id="ys_dq_sjmll" name="ys_dq_sjmll" jb_sjmll="dq" readonly="true"/></td>
                 <td><input type="text" id="ys_dq_sm" name="ys_dq_sm" jb_field="jb_single_save"/></td>
             </tr>
             <tr>
@@ -625,10 +976,10 @@
                 <td><input type="text" id="ys_xf_dwbj" name="ys_xf_dwbj" jb_hj="dwbj" jb_field="jb_single_save"/></td>
                 <td><input type="text" id="ys_xf_customer_vo" name="ys_xf_customer_vo" jb_hj="customer_vo" jb_field="jb_multi_save"/></td>
                 <td><input type="text" id="ys_xf_nkje" name="ys_xf_nkje" jb_hj="nkje" jb_field="jb_single_save"/></td>
-                <td><input type="text" id="ys_xf_kgmll" name="ys_xf_kgmll" jb_kgmll="xf"/></td>
+                <td><input type="text" id="ys_xf_kgmll" name="ys_xf_kgmll" jb_kgmll="xf" readonly="true"/></td>
                 <td><input type="text" id="ys_xf_sjcb" name="ys_xf_sjcb" jb_hj="sjcb" jb_field="jb_single_save"/></td>
                 <td><input type="text" id="ys_xf_fb_vo" name="ys_xf_fb_vo" jb_hj="fb_vo" jb_field="jb_multi_save"/></td>
-                <td><input type="text" id="ys_xf_sjmll" name="ys_xf_sjmll" jb_sjmll="xf"/></td>
+                <td><input type="text" id="ys_xf_sjmll" name="ys_xf_sjmll" jb_sjmll="xf" readonly="true"/></td>
                 <td><input type="text" id="ys_xf_sm" name="ys_xf_sm" jb_field="jb_single_save"/></td>
             </tr>
             <tr>
@@ -636,10 +987,10 @@
                 <td><input type="text" id="ys_jps_dwbj" name="ys_jps_dwbj" jb_hj="dwbj" jb_field="jb_single_save"/></td>
                 <td><input type="text" id="ys_jps_customer_vo" name="ys_jps_customer_vo" jb_hj="customer_vo" jb_field="jb_multi_save"/></td>
                 <td><input type="text" id="ys_jps_nkje" name="ys_jps_nkje" jb_hj="nkje" jb_field="jb_single_save"/></td>
-                <td><input type="text" id="ys_jps_kgmll" name="ys_jps_kgmll" jb_kgmll="jps"/></td>
+                <td><input type="text" id="ys_jps_kgmll" name="ys_jps_kgmll" jb_kgmll="jps" readonly="true"/></td>
                 <td><input type="text" id="ys_jps_sjcb" name="ys_jps_sjcb" jb_hj="sjcb" jb_field="jb_single_save"/></td>
                 <td><input type="text" id="ys_jps_fb_vo" name="ys_jps_fb_vo" jb_hj="fb_vo" jb_field="jb_multi_save"/></td>
-                <td><input type="text" id="ys_jps_sjmll" name="ys_jps_sjmll" jb_sjmll="jps"/></td>
+                <td><input type="text" id="ys_jps_sjmll" name="ys_jps_sjmll" jb_sjmll="jps" readonly="true"/></td>
                 <td><input type="text" id="ys_jps_sm" name="ys_jps_sm" jb_field="jb_single_save"/></td>
             </tr>
             <tr>
@@ -647,10 +998,10 @@
                 <td><input type="text" id="ys_it_dwbj" name="ys_it_dwbj" jb_hj="dwbj" jb_field="jb_single_save"/></td>
                 <td><input type="text" id="ys_it_customer_vo" name="ys_it_customer_vo" jb_hj="customer_vo" jb_field="jb_multi_save"/></td>
                 <td><input type="text" id="ys_it_nkje" name="ys_it_nkje" jb_hj="nkje" jb_field="jb_single_save"/></td>
-                <td><input type="text" id="ys_it_kgmll" name="ys_it_kgmll" jb_kgmll="it"/></td>
+                <td><input type="text" id="ys_it_kgmll" name="ys_it_kgmll" jb_kgmll="it" readonly="true"/></td>
                 <td><input type="text" id="ys_it_sjcb" name="ys_it_sjcb" jb_hj="sjcb" jb_field="jb_single_save"/></td>
                 <td><input type="text" id="ys_it_fb_vo" name="ys_it_fb_vo"  jb_hj="fb_vo" jb_field="jb_multi_save"/></td>
-                <td><input type="text" id="ys_it_sjmll" name="ys_it_sjmll" jb_sjmll="it"/></td>
+                <td><input type="text" id="ys_it_sjmll" name="ys_it_sjmll" jb_sjmll="it" readonly="true"/></td>
                 <td><input type="text" id="ys_it_sm" name="ys_it_sm" jb_field="jb_single_save"/></td>
             </tr>
             <tr>
@@ -658,10 +1009,10 @@
                 <td><input type="text" id="ys_sec_dwbj" name="ys_sec_dwbj" jb_hj="dwbj" jb_field="jb_single_save"/></td>
                 <td><input type="text" id="ys_sec_customer_vo" name="ys_sec_customer_vo" jb_hj="customer_vo" jb_field="jb_multi_save"/></td>
                 <td><input type="text" id="ys_sec_nkje" name="ys_sec_nkje" jb_hj="nkje" jb_field="jb_single_save"/></td>
-                <td><input type="text" id="ys_sec_kgmll" name="ys_sec_kgmll" jb_kgmll="sec"/></td>
+                <td><input type="text" id="ys_sec_kgmll" name="ys_sec_kgmll" jb_kgmll="sec" readonly="true"/></td>
                 <td><input type="text" id="ys_sec_sjcb" name="ys_sec_sjcb" jb_hj="sjcb" jb_field="jb_single_save"/></td>
                 <td><input type="text" id="ys_sec_fb_vo" name="ys_sec_fb_vo" jb_hj="fb_vo" jb_field="jb_multi_save"/></td>
-                <td><input type="text" id="ys_sec_sjmll" name="ys_sec_sjmll" jb_sjmll="sec"/></td>
+                <td><input type="text" id="ys_sec_sjmll" name="ys_sec_sjmll" jb_sjmll="sec" readonly="true"/></td>
                 <td><input type="text" id="ys_sec_sm" name="ys_sec_sm" jb_field="jb_single_save"/></td>
             </tr>
             <tr>
@@ -669,10 +1020,10 @@
                 <td><input type="text" id="ys_av_dwbj" name="ys_av_dwbj" jb_hj="dwbj" jb_field="jb_single_save"/></td>
                 <td><input type="text" id="ys_av_customer_vo" name="ys_av_customer_vo" jb_hj="customer_vo"  jb_field="jb_multi_save"/></td>
                 <td><input type="text" id="ys_av_nkje" name="ys_av_nkje" jb_hj="nkje" jb_field="jb_single_save"/></td>
-                <td><input type="text" id="ys_av_kgmll" name="ys_av_kgmll" jb_kgmll="av"/></td>
+                <td><input type="text" id="ys_av_kgmll" name="ys_av_kgmll" jb_kgmll="av" readonly="true"/></td>
                 <td><input type="text" id="ys_av_sjcb" name="ys_av_sjcb" jb_hj="sjcb" jb_field="jb_single_save"/></td>
                 <td><input type="text" id="ys_av_fb_vo" name="ys_av_fb_vo" jb_hj="fb_vo" jb_field="jb_multi_save"/></td>
-                <td><input type="text" id="ys_av_sjmll" name="ys_av_sjmll" jb_sjmll="av"/></td>
+                <td><input type="text" id="ys_av_sjmll" name="ys_av_sjmll" jb_sjmll="av" readonly="true"/></td>
                 <td><input type="text" id="ys_av_sm" name="ys_av_sm" jb_field="jb_single_save"/></td>
             </tr>
             <tr>
@@ -698,32 +1049,32 @@
                 <td rowspan=4><input type="text" id="ys_cg_all_dwbj" name="ys_cg_all_dwbj" jb_single_hj="dwbj" jb_field="jb_single_save"/></td>
                 <td rowspan=4><input type="text" id="ys_cg_customer_vo" name="ys_cg_customer_vo" jb_single_hj="customer_vo" jb_field="jb_multi_save"/></td>
                 <td rowspan=4><input type="text" id="ys_cg_all_nkje" name="ys_cg_all_nkje" jb_single_hj="nkje" jb_field="jb_single_save"/></td>
-                <td rowspan=4><input type="text" id="ys_cg_all_kgmll" name="ys_cg_all_kgmll" jb_single_kgmll="cg_all" /></td>
-                <td><input type="text" id="ys_cl_sjcb" name="ys_zx_sjcb" jb_field="jb_single_save"/></td>
-                <td><input type="text" id="ys_cl_sjcbbh" name="ys_zx_sjcbbh" jb_field="jb_single_save"/></td>
-                <td><input type="text" id="ys_cl_sjml" name="ys_zx_sjml" jb_field="jb_single_save"/></td>
-                <td><input type="text" id="ys_cl_sm" name="ys_zx_sm" jb_field="jb_single_save"/></td>
+                <td rowspan=4><input type="text" id="ys_cg_all_kgmll" name="ys_cg_all_kgmll" jb_single_kgmll="cg_all" readonly="true"/></td>
+                <td><input type="text" id="cg_zxcg_sjcb" name="cg_zxcg_sjcb" jb_hj="cg_sjcb" jb_field="jb_multi_cg_save"/></td>
+                <td><input type="text" id="cg_zxcg_vo" name="cg_zxcg_vo" jb_hj="cg_vo" jb_field="jb_multi_cg_save"/></td>
+                <td rowspan=4><input type="text" id="cg_cg_all_sjmll" name="cg_cg_all_sjmll" readonly="true"/></td>
+                <td><input type="text" id="cg_zxclcg_sm" name="cg_zxclcg_sm" jb_field="jb_single_save"/></td>
             </tr>
             <tr>
                 <td>机电设备采购</td>
-                <td><input type="text" id="ys_jd_sjcb" name="ys_dq_sjcb" jb_field="jb_single_save"/></td>
-                <td><input type="text" id="ys_jd_sjcbbh" name="ys_dq_sjcbbh" jb_field="jb_single_save"/></td>
-                <td><input type="text" id="ys_jd_sjml" name="ys_dq_sjml" jb_field="jb_single_save"/></td>
-                <td><input type="text" id="ys_jd_sm" name="ys_dq_sm" jb_field="jb_single_save"/></td>
+                <td><input type="text" id="cg_jdcg_sjcb" name="cg_jdcg_sjcb" jb_hj="cg_sjcb" jb_field="jb_multi_cg_save"/></td>
+                <td><input type="text" id="cg_jdcg_vo" name="cg_jdcg_vo" jb_hj="cg_vo" jb_field="jb_multi_cg_save"/></td>
+
+                <td><input type="text" id="cg_jdsbcg_sm" name="cg_jdsbcg_sm" jb_field="jb_single_save"/></td>
             </tr>
             <tr>
                 <td>工厂库存及零星材料采购总金额</td>
-                <td><input type="text" id="ys__sjcb" name="ys_kt_sjcb" jb_field="jb_single_save"/></td>
-                <td><input type="text" id="ys__sjcbbh" name="ys_kt_sjcbbh" jb_field="jb_single_save"/></td>
-                <td><input type="text" id="ys__sjml" name="ys_kt_sjml" jb_field="jb_single_save"/></td>
-                <td><input type="text" id="ys__sm" name="ys_kt_sm" jb_field="jb_single_save"/></td>
+                <td><input type="text" id="cg_gckc_sjcb" name="cg_gckc_sjcb" jb_hj="cg_sjcb" jb_field="jb_single_save"/></td>
+                <td><input type="text" id="cg_gckc_sjcb_vo" name="cg_gckc_sjcb_vo" jb_hj="cg_vo" jb_field="jb_single_save"/></td>
+
+                <td><input type="text" id="cg_gckc_sm" name="cg_gckc_sm" jb_field="jb_single_save"/></td>
             </tr>
             <tr>
                 <td>工厂人工费</td>
-                <td><input type="text" id="ys_1xf_sjcb" name="ys_xf_sjcb" jb_field="jb_single_save"/></td>
-                <td><input type="text" id="ys_1xf_sjcbbh" name="ys_xf_sjcbbh" jb_field="jb_single_save"/></td>
-                <td><input type="text" id="ys_1xf_sjml" name="ys_xf_sjml" jb_field="jb_single_save"/></td>
-                <td><input type="text" id="ys_1xf_sm" name="ys_xf_sm" jb_field="jb_single_save"/></td>
+                <td><input type="text" id="cg_gcrgf_sjcb" name="cg_gcrgf_sjcb" jb_hj="cg_sjcb" jb_field="jb_single_save"/></td>
+                <td><input type="text" id="cg_gcrgf_sjcb_vo" name="cg_gcrgf_sjcb_vo" jb_hj="cg_vo" jb_field="jb_single_save"/></td>
+
+                <td><input type="text" id="cg_gcrgf_sm" name="cg_gcrgf_sm" jb_field="jb_single_save"/></td>
             </tr>
             <tr>
                 <td colspan="9">&nbsp;</td>
@@ -734,10 +1085,10 @@
                 <td><input type="text" id="ys_hj_cg_customer_vo" name="ys_hj_cg_customer_vo" readonly="true"/></td>
                 <td><input type="text" id="ys_hj_cg_nkje" name="ys_hj_cg_nkje" readonly="true"/></td>
                 <td><input type="text" id="ys_hj_cg_kgmll" name="ys_hj_cg_kgmll" readonly="true"/></td>
-                <td><input type="text" id="ys_1sjcb" name="ys_sjcb" jb_field="jb_single_save"/></td>
-                <td><input type="text" id="ys_1sjcbbh" name="ys_sjcbbh" jb_field="jb_single_save"/></td>
-                <td><input type="text" id="ys_1sjml" name="ys_sjml" jb_field="jb_single_save"/></td>
-                <td><input type="text" id="ys_1sm" name="ys_sm" jb_field="jb_single_save"/></td>
+                <td><input type="text" id="cg_hj_cg_sjcb" name="cg_hj_cg_sjcb" readonly="true"/></td>
+                <td><input type="text" id="cg_hj_cg_vo" name="cg_hj_cg_vo" readonly="true"/></td>
+                <td><input type="text" id="cg_hj_cg_sjmll" name="cg_hj_cg_sjmll" readonly="true"/></td>
+                <td></td>
             </tr>
         </table>
     </div>
