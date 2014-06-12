@@ -20,17 +20,61 @@ CREATE TABLE `jb_pro2user` (
 ) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC COMMENT='项目2用户表';
 
 
+DROP TABLE IF EXISTS `jb_cg_vo`;
+CREATE TABLE `jb_cg_vo` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `pro_id` char(30) NOT NULL COMMENT '项目ID',
+  `srctype` char(5) NOT NULL COMMENT '采购 类型:装修,机电',
+  `cg_name` char(30) NOT NULL COMMENT '采购 名称',
+  `cg_je`  double NOT NULL COMMENT '采购金额',
+  `cg_reson` char(1) NOT NULL COMMENT '采购 原因',
+  `cg_desc` char(200) NOT NULL COMMENT '采购 描述',
+  `vo1_je`  double NOT NULL COMMENT 'VO1 采购金额',
+  `vo1_reson` char(1) NOT NULL COMMENT 'VO1 采购 原因',
+  `vo1_desc` char(200) NOT NULL COMMENT 'VO1 采购 描述',
+  `vo2_je`  double NOT NULL COMMENT 'VO2 采购金额',
+  `vo2_reson` char(1) NOT NULL COMMENT 'VO2 采购 原因',
+  `vo2_desc` char(200) NOT NULL COMMENT 'VO2 采购 描述',
+  `vo3_je`  double NOT NULL COMMENT 'VO3 采购金额',
+  `vo3_reson` char(1) NOT NULL COMMENT 'VO3 采购 原因',
+  `vo3_desc` char(200) NOT NULL COMMENT 'VO3 采购 描述',
+
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=30 DEFAULT CHARSET=utf8 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC COMMENT='采购材料 VO 表';
 
 DROP TABLE IF EXISTS `jb_customer_vo`;
 CREATE TABLE `jb_customer_vo` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `pro_id` char(30) NOT NULL COMMENT '项目ID',
   `vo_type` char(5) NOT NULL COMMENT 'VO 类型',
-  `vo_desc` char(200) NOT NULL COMMENT 'VO 描述',
+  `vo_je`  double NOT NULL COMMENT 'VO价格',
   `vo_reson` char(1) NOT NULL COMMENT 'VO 原因',
+  `vo_desc` char(200) NOT NULL COMMENT 'VO 描述',
+
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=30 DEFAULT CHARSET=utf8 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC COMMENT='客户VO表';
 
+DROP TABLE IF EXISTS `jb_fb_vo`;
+CREATE TABLE `jb_fb_vo` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `pro_id` char(30) NOT NULL COMMENT '项目ID',
+  `vo_type` char(5) NOT NULL COMMENT 'VO 类型',
+  `vo_je`  double NOT NULL COMMENT 'VO价格',
+  `vo_reson` char(1) NOT NULL COMMENT 'VO 原因',
+  `vo_desc` char(200) NOT NULL COMMENT 'VO 描述',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=30 DEFAULT CHARSET=utf8 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC COMMENT='分包VO表';
+
+DROP TABLE IF EXISTS `jb_zjl_fkyj`;
+CREATE TABLE `jb_zjl_fkyj` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `pro_id` char(30) NOT NULL COMMENT '项目ID',
+  `fk_bs` char(5) NOT NULL COMMENT '预计付款笔数',
+  `fk_fb_rate` double DEFAULT NULL COMMENT '预计付款占分包合同比例',
+  `fk_cl_rate` double DEFAULT NULL COMMENT '预计付款占材料合同比例',
+  `fk_time` datetime DEFAULT NULL COMMENT '预计付款日期',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=30 DEFAULT CHARSET=utf8 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC COMMENT='资金流管理 付款预计表';
 
 DROP TABLE IF EXISTS `jb_zjl_sksj`;
 CREATE TABLE `jb_zjl_sksj` (
@@ -152,7 +196,11 @@ CREATE TABLE `jb_project` (
 #	`hr_hetong_daozhang_sub_detail` longtext COMMENT 'JSON格式: 序号,客户合同到账金额,到账时间',
 	`hr_follow_man` char(10) DEFAULT NULL COMMENT '到款跟踪负责人',
 	#'行政人事表';
-
+	
+	#合同管理表
+	`ht_xmcwbh` char(50) DEFAULT NULL COMMENT '项目财务编号',
+	#'合同管理表';
+	
 	#采购管理部	
 	#
 	`cg_clbp_wc_time` datetime DEFAULT NULL COMMENT '材料报批完成时间',
@@ -172,6 +220,16 @@ CREATE TABLE `jb_project` (
 #	`cg_cljg_next_mon_pay_amt` double DEFAULT NULL COMMENT '材料竣工次月付款金额',
 	`cg_clzb_pay_rate` double DEFAULT 0.05 COMMENT '材料质保期满后付款比例',
 #	`cg_clzb_pay_amt` double DEFAULT NULL COMMENT '材料质保期满后付款金额',
+	#
+	`cg_gckc_sjcb`  double DEFAULT NULL COMMENT '工厂库存及零星材料采购:实际成本',
+	`cg_gcrgf_sjcb` double DEFAULT NULL COMMENT '工厂人工费总金额:实际成本',
+	`cg_gckc_sjcb_vo`  double DEFAULT NULL COMMENT '工厂库存及零星材料采购:实际成本变化',
+	`cg_gcrgf_sjcb_vo` double DEFAULT NULL COMMENT '工厂人工费总金额:实际成本变化',
+	#
+	`cg_zxclcg_sm`    char(200) DEFAULT NULL COMMENT '装修材料采购:  相关说明',
+	`cg_jdsbcg_sm`    char(200) DEFAULT NULL COMMENT '机电设备采购:  相关说明',
+	`cg_gckc_sm`      char(200) DEFAULT NULL COMMENT '工厂库存及零星材料采购总金额:  相关说明',
+	`cg_gcrgf_sm`     char(200) DEFAULT NULL COMMENT '工厂人工费:  相关说明',
 	#
 	`cg_rlzy_cgr1`    tinyint(4) DEFAULT NULL COMMENT '人力资源:采购员1',
 	`cg_rlzy_cgr1_choose`  tinyint(4) DEFAULT NULL COMMENT '人力资源:采购员1 工作比例',
@@ -550,9 +608,63 @@ CREATE TABLE `jb_project` (
 #  `ys_fb_vo_all_amt` double DEFAULT NULL COMMENT '分包VO总金额',
 #  `ys_fb_js_all_amt` double DEFAULT NULL COMMENT '分包结算总金额',
 #  `ys_fb_cg_xc_rl_js_all_amt` double DEFAULT NULL COMMENT '分包采购现场及人力结算总金额',
-	`ys_qt_zjcb_amt` double DEFAULT NULL COMMENT '其他项目未能及时计入的项目直接成本',
+
+	#前期费用
+	`ys_qq_dwbj`  double DEFAULT NULL COMMENT '前期:对外报价',
+	`ys_qq_customer_vo`  double DEFAULT NULL COMMENT '前期:客户VO',
+	`ys_qq_nkje`  double DEFAULT NULL COMMENT '前期:内控金额',
+	`ys_qq_sm`  char(100) DEFAULT NULL COMMENT '前期:说明',
+	#对外报价
+	`ys_zx_dwbj`  double DEFAULT NULL COMMENT '装修:对外报价',
+	`ys_dq_dwbj`  double DEFAULT NULL COMMENT '电气:对外报价',
+	`ys_kt_dwbj`  double DEFAULT NULL COMMENT '空调:对外报价',
+	`ys_xf_dwbj`  double DEFAULT NULL COMMENT '消防:对外报价',
+	`ys_jps_dwbj` double DEFAULT NULL COMMENT '给排水:对外报价',
+	`ys_it_dwbj`  double DEFAULT NULL COMMENT 'IT:对外报价',
+	`ys_sec_dwbj` double DEFAULT NULL COMMENT 'SEC:对外报价',
+	`ys_av_dwbj`  double DEFAULT NULL COMMENT 'AV:对外报价',
+	#内控金额
+	`ys_zx_nkje`  double DEFAULT NULL COMMENT '装修:内控金额',
+	`ys_dq_nkje`  double DEFAULT NULL COMMENT '电气:内控金额',
+	`ys_kt_nkje`  double DEFAULT NULL COMMENT '空调:内控金额',
+	`ys_xf_nkje`  double DEFAULT NULL COMMENT '消防:内控金额',
+	`ys_jps_nkje` double DEFAULT NULL COMMENT '给排水:内控金额',
+	`ys_it_nkje`  double DEFAULT NULL COMMENT 'IT:内控金额',
+	`ys_sec_nkje` double DEFAULT NULL COMMENT 'SEC:内控金额',
+	`ys_av_nkje`  double DEFAULT NULL COMMENT 'AV:内控金额',
+	#实际成本
+	`ys_zx_sjcb`  double DEFAULT NULL COMMENT '装修:实际成本',
+	`ys_dq_sjcb`  double DEFAULT NULL COMMENT '电气:实际成本',
+	`ys_kt_sjcb`  double DEFAULT NULL COMMENT '空调:实际成本',
+	`ys_xf_sjcb`  double DEFAULT NULL COMMENT '消防:实际成本',
+	`ys_jps_sjcb` double DEFAULT NULL COMMENT '给排水:实际成本',
+	`ys_it_sjcb`  double DEFAULT NULL COMMENT 'IT:实际成本',
+	`ys_sec_sjcb` double DEFAULT NULL COMMENT 'SEC:实际成本',
+	`ys_av_sjcb`  double DEFAULT NULL COMMENT 'AV:实际成本',
+	#相关说明
+	`ys_zx_sm`   char(100) DEFAULT NULL COMMENT '装修:相关说明',
+	`ys_dq_sm`   char(100) DEFAULT NULL COMMENT '电气:相关说明',
+	`ys_kt_sm`   char(100) DEFAULT NULL COMMENT '空调:相关说明',
+	`ys_xf_sm`   char(100) DEFAULT NULL COMMENT '消防:相关说明',
+	`ys_jps_sm`  char(100) DEFAULT NULL COMMENT '给排水:相关说明',
+	`ys_it_sm`   char(100) DEFAULT NULL COMMENT 'IT:相关说明',
+	`ys_sec_sm`  char(100) DEFAULT NULL COMMENT 'SEC:相关说明',
+	`ys_av_sm`   char(100) DEFAULT NULL COMMENT 'AV:相关说明', 
+	#采购
+	`ys_cg_all_dwbj`  double DEFAULT NULL COMMENT '采购:对外报价',
+	`ys_cg_all_nkje`  double DEFAULT NULL COMMENT '采购:内控金额',
+	#直接人工成本
+	`ys_rg_dwbj`  double DEFAULT NULL COMMENT '直接人工成本:对外报价',
+	`ys_rg_nkje`  double DEFAULT NULL COMMENT '直接人工成本:内控金额',
+	`ys_rg_sm`    char(100) DEFAULT NULL COMMENT '直接人工成本:相关说明', 
+	#其他说明
+	`ys_qt_sm`    char(100) DEFAULT NULL COMMENT '其他:相关说明', 
+	
 #  `ys_sj_mll` double DEFAULT NULL COMMENT '实际毛利率',
 #	`ys_fb_fk_detail` longtext COMMENT '项目分包付款明细-JSON格式:  , 格式:数组, 数组每项包括：序号,比例,金额, 分包的付款由四部分组成：首付+进度+竣工结算+ 质保 ',
+
+	`ys_fb_ht_all_amt` double DEFAULT NULL COMMENT '分包合同总金额',
+
   `ys_zx_sub_detail` longtext COMMENT 'JSON格式: 装修相关信息 包括: 
 		1.装修工程合同报价,
 		2.装修工程合同内控,
@@ -591,6 +703,8 @@ CREATE TABLE `jb_project` (
 		1.预算总负责人,
 		2.预算负责人列表, 格式:JSON数组, 数组每项包括: 负责人序号,负责人占比(占比总和为100%),',
 	#预算管理部
+	
+	
 	  
 	`status` tinyint(4) NOT NULL DEFAULT '0' COMMENT '标识 1：新建 2:正常已经审核过 3.已经删除',
   PRIMARY KEY (`id`)

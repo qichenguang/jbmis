@@ -771,7 +771,7 @@
             //alert(vo_type);
             showVOJqGriddialog("#" + srctype + "_" + vo_type + "_dialog",srctype,vo_type,domSrc);
             return false;
-        })
+        });
         //-------------------------------------------------------------------------------------------
         //弹窗 2: click
         //-------------------------------------------------------------------------------------------
@@ -781,7 +781,7 @@
             var srctype = domSrc.split("_")[1];
             showCgAndVOJqGriddialog("#" + srctype + "_dialog",srctype,domSrc);
             return false;
-        })
+        });
         //
         //single dwbj
         add_single_hj_event("module_xmcbgl","dwbj","ys_hj_cg_dwbj");
@@ -794,6 +794,7 @@
         //cg mulit add hj blur
         add_cg_hj_event("module_xmcbgl","cg_sjcb","cg_hj_cg_sjcb");
         add_cg_hj_event("module_xmcbgl","cg_vo","cg_hj_cg_vo");
+        //
         //
         //jquery promise init.
         $.when(get_all_vo_hj("customer"),get_all_vo_hj("fb"),get_cg_and_vo_hj())
@@ -1027,7 +1028,7 @@
                 <td><input type="text" id="ys_av_sm" name="ys_av_sm" jb_field="jb_single_save"/></td>
             </tr>
             <tr>
-                <td colspan="9">&nbsp;</td>
+                <td colspan="10">&nbsp;</td>
             </tr>
             <tr>
                 <td><h3>小计：</h3></td>
@@ -1041,7 +1042,7 @@
                 <td></td>
             </tr>
             <tr>
-                <td colspan="9">&nbsp;</td>
+                <td colspan="10">&nbsp;</td>
             </tr>
             <tr>
                 <td rowspan=6>采购：</td>
@@ -1077,7 +1078,7 @@
                 <td><input type="text" id="cg_gcrgf_sm" name="cg_gcrgf_sm" jb_field="jb_single_save"/></td>
             </tr>
             <tr>
-                <td colspan="9">&nbsp;</td>
+                <td colspan="10">&nbsp;</td>
             </tr>
             <tr>
                 <td><h3>小计：</h3></td>
@@ -1088,6 +1089,57 @@
                 <td><input type="text" id="cg_hj_cg_sjcb" name="cg_hj_cg_sjcb" readonly="true"/></td>
                 <td><input type="text" id="cg_hj_cg_vo" name="cg_hj_cg_vo" readonly="true"/></td>
                 <td><input type="text" id="cg_hj_cg_sjmll" name="cg_hj_cg_sjmll" readonly="true"/></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>前期：</td>
+                <td>前期费用</td>
+                <td><input type="text" id="ys_qq_dwbj" name="ys_qq_dwbj" jb_field="jb_single_save"/></td>
+                <td><input type="text" id="ys_qq_customer_vo" name="ys_qq_customer_vo"  jb_field="jb_single_save"/></td>
+                <td><input type="text" id="ys_qq_nkje" name="ys_qq_nkje"  jb_field="jb_single_save"/></td>
+                <td><input type="text" id="ys_qq_kgmll" name="ys_qq_kgmll" jb_kgmll="qq" readonly="true"/></td>
+                <td><input type="text" id="ys_qq_sjcb" name="ys_qq_sjcb" jb_field="jb_multi_save"/></td>
+                <td><input type="text" id="ys_qq_vo" name="ys_qq_vo" jb_field="jb_multi_save"/></td>
+                <td><input type="text" id="ys_qq_sjmll" name="ys_qq_sjmll" jb_sjmll="qq" readonly="true"/></td>
+                <td><input type="text" id="ys_qq_sm" name="ys_qq_sm" jb_field="jb_single_save"/></td>
+            </tr>
+            <tr>
+                <td>直接人工成本：</td>
+                <td></td>
+                <td><input type="text" id="ys_rg_dwbj" name="ys_rg_dwbj" jb_hj="dwbj" jb_field="jb_single_save"/></td>
+                <td></td>
+                <td><input type="text" id="ys_rg_nkje" name="ys_rg_nkje" jb_hj="nkje" jb_field="jb_single_save"/></td>
+                <td><input type="text" id="ys_rg_kgmll" name="ys_rg_kgmll" jb_kgmll="rg" readonly="true"/></td>
+                <td><input type="text" id="ys_rg_sjcb" name="ys_rg_sjcb" jb_hj="sjcb" jb_field="jb_single_save"/></td>
+                <td></td>
+                <td><input type="text" id="ys_rg_sjmll" name="ys_rg_sjmll" jb_sjmll="rg" readonly="true"/></td>
+                <td><input type="text" id="ys_rg_sm" name="ys_rg_sm" jb_field="jb_single_save"/></td>
+            </tr>
+            <tr>
+                <td>其它：</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td><input type="text" id="ys_qt_sm" name="ys_qt_sm" jb_field="jb_single_save"/></td>
+            </tr>
+            <tr>
+                <td colspan="10">&nbsp;</td>
+            </tr>
+            <tr>
+                <td><h3>总计：</h3></td>
+                <td></td>
+                <td><input type="text" id="ys_zj_cg_dwbj" name="ys_zj_cg_dwbj" readonly="true"/></td></td>
+                <td><input type="text" id="ys_zj_cg_customer_vo" name="ys_zj_cg_customer_vo" readonly="true"/></td>
+                <td><input type="text" id="ys_zj_cg_nkje" name="ys_zj_cg_nkje" readonly="true"/></td>
+                <td><input type="text" id="ys_zj_cg_kgmll" name="ys_zj_cg_kgmll" readonly="true"/></td>
+                <td><input type="text" id="cg_zj_cg_sjcb" name="cg_zj_cg_sjcb" readonly="true"/></td>
+                <td><input type="text" id="cg_zj_cg_vo" name="cg_zj_cg_vo" readonly="true"/></td>
+                <td><input type="text" id="cg_zj_cg_sjmll" name="cg_zj_cg_sjmll" readonly="true"/></td>
                 <td></td>
             </tr>
         </table>

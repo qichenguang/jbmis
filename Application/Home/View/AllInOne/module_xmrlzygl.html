@@ -78,6 +78,9 @@
             $(this).val(0);
             alert("error! 请先选择前面的比例");
         });
+        $("#module_xmrlzygl tbody tr").click(function(){
+            $(this).hide();
+        });
     });
 </script>
 
@@ -103,9 +106,10 @@
                     <th>说明</th>
                 </tr>
             </thead>
+            <tbody>
             <!--市场部------------------------------------------------------------------------------------------------------------>
             <tr>
-                <td>市场部</td>
+                <td rowspan="2">市场部</td>
                 <td>市场经理</td>
                 <td><SELECT type="text" id="sc_rlzy_scjl" name="sc_rlzy_scjl"  jb_dep="sc"  jb_field="jb_single_save" />
                 </td>
@@ -115,7 +119,6 @@
                 </td>
             </tr>
             <tr>
-                <td>市场部</td>
                 <td>市场助理</td>
                 <td><SELECT type="text" id="sc_rlzy_sczl" name="sc_rlzy_sczl"  jb_dep="sc"  jb_field="jb_single_save" />
                 </td>
@@ -127,7 +130,7 @@
             <!--市场部------------------------------------------------------------------------------------------------------------>
             <!--预算部------------------------------------------------------------------------------------------------------------>
             <tr>
-                <td>预算部</td>
+                <td rowspan="3">预算部</td>
                 <td>预算员1</td>
                 <td><SELECT type="text" id="ys_rlzy_ysy1" name="ys_rlzy_ysy1"  jb_dep="ys"  jb_field="jb_single_save" />
                 </td>
@@ -151,7 +154,6 @@
                 </td>
             </tr>
             <tr>
-                <td>预算部</td>
                 <td>预算员2</td>
                 <td><SELECT type="text" id="ys_rlzy_ysy2" name="ys_rlzy_ysy2"  jb_dep="ys"  jb_field="jb_single_save" />
                 </td>
@@ -175,7 +177,6 @@
                 </td>
             </tr>
             <tr>
-                <td>预算部</td>
                 <td>预算员3</td>
                 <td><SELECT type="text" id="ys_rlzy_ysy3" name="ys_rlzy_ysy3"  jb_dep="ys"  jb_field="jb_single_save" />
                 </td>
@@ -824,6 +825,7 @@
                     <textarea id="cg_rlzy_cgr2_desc" name="cg_rlzy_cgr2_desc"  jb_field="jb_single_save" cols="50" rows="1"></textarea>
                 </td>
             </tr>
+            </tbody>
             <!--采购部------------------------------------------------------------------------------------------------------------>
         </table>
     </div>
