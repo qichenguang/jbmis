@@ -24,13 +24,6 @@ class AllInOneController extends Controller {
         //
         $dep_sx = USER_FUN_GET_DEPARTMENT_SX();
         $this->dep_sx = implode($dep_sx,",");
-        //
-        $module_arr = USER_FUN_GET_DEPATMENT_MODULE_ARRAY();
-
-        $dep_module_name = $module_arr[$_SESSION["department"]];
-        $this->dep_module_name = $dep_module_name;
-        $this->dep_module_id = array_keys($dep_module_name);
-        $this->dep_module = implode(array_keys($dep_module_name),",");
         //dump($this->dep_module);
         //
         $pro_id = I('pro_id');
@@ -39,6 +32,16 @@ class AllInOneController extends Controller {
         $project_detail = array();
         $Data   =   M("project");
         $project_detail = $Data->where($cond)->find();
+        //根据中标状态显示不同的模块
+        $cur_project_sc_zb_flag = $project_detail["sc_zb_flag"];
+        $this->cur_project_sc_zb_flag = $cur_project_sc_zb_flag;
+        $module_arr = USER_FUN_GET_DEPATMENT_MODULE_ARRAY($cur_project_sc_zb_flag);
+        $dep_module_name = $module_arr[$_SESSION["department"]];
+        $this->dep_module_name = $dep_module_name;
+        $this->dep_module_id = array_keys($dep_module_name);
+        $this->dep_module = implode(array_keys($dep_module_name),",");
+        //
+        //
         $this->project_rec_detail = json_encode($project_detail);
         $this->sc_pro_name = $project_detail["sc_pro_name"];
 

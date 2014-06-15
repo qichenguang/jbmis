@@ -1,5 +1,13 @@
 <script type="text/javascript">
     $(document).ready(function() {
+        //如果是落标状态，所有的字段 SC 都可以操作
+        var zb_flag = $("#cur_project_sc_zb_flag").val();
+        //alert(zb_flag);
+        if("A" == zb_flag){
+            $("#module_xmrlzygl :input").attr("disabled",false);
+            $("#module_xmrlzygl :input").removeClass("ui-state-disabled");
+        }
+        //
         $("#module_xmrlzygl SELECT[jb_choose]").on('change',function(event){
             var rate_limit = parseInt($(this).attr('jb_choose'));
             if(rate_limit > 0){
@@ -142,7 +150,6 @@
                 市场部助理	来自市场部		可输入文字说明	无需设置工作比例
 
         -->
-
         <table>
             <thead>
                 <tr>

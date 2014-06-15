@@ -32,9 +32,11 @@ $(document).ready(function() {
     function froozen_all_modules(lock){
         var dep_sx_arr = $("#dep_sx").val().split(",");
         var rec_json_str = $("#project_rec_detail").val();
-        console.log(rec_json_str);
+        //console.log(rec_json_str);
         var rec_obj = $.parseJSON(rec_json_str);
-        console.log(rec_obj);
+        //console.log(rec_obj);
+        //var zb_flag = rec_obj.sc_zb_flag;
+        //alert(zb_flag);
         var depcode = $("#user_department").val();
         $(".module [jb_field]").each(function() {
             var id = $(this).attr('id');
@@ -226,7 +228,9 @@ $(document).ready(function() {
             //alert(ctl.attr("id"));
             var depcode = $("#user_department").val();
             var id = ctl.attr("id");
-            if(id.substring(0,3) == (depcode + "_")){
+            var zb_flag = $("#cur_project_sc_zb_flag").val();
+            //落标后可以存其他部门字段
+            if(id.substring(0,3) == (depcode + "_") || "A" == zb_flag){
                 //alert(ctl.val());
                 var requestData = {pro_id: $("#pro_id").val(),fieldname: ctl.attr("id"),fieldvalue:ctl.val()};
                 //console.log(requestData);
@@ -240,6 +244,9 @@ $(document).ready(function() {
                     }else{
                         ctl.removeClass("ui-state-error");
                         ctl.css("background","#bbffaa");
+                        if("sc_zb_flag" == id){
+                            jAlert("请按 F5 刷新页面");
+                        }
                     }
                     //console.log(data);
                 }).fail(function(jqXHR) {

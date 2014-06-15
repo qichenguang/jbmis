@@ -284,7 +284,8 @@ function USER_FUN_GET_PROJECT_MODULE_NAME(){
     );
     return $mod;
 }
-function USER_FUN_GET_DEPATMENT_MODULE_ARRAY(){
+
+function USER_FUN_GET_DEPATMENT_MODULE_ARRAY($zb_flag){
     $dep = array();
     //sc
     $mod = USER_FUN_GET_PROJECT_MODULE_ARRAY();
@@ -351,5 +352,33 @@ function USER_FUN_GET_DEPATMENT_MODULE_ARRAY(){
     unset($mod['module_gczcgl']);
     $dep['ht']=$mod;
 
+    if("B" != $zb_flag){
+        $mod = array(
+            'module_xmjbxx'=> "项目基本信息",
+            'module_xmscfx'=> "项目市场分析",
+            'module_xmrlzygl'=> "项目人力资源管理",
+        );
+        $dep = array();
+        //sc
+        $dep['sc']=$mod;
+        //ys
+        $dep['ys']=$mod;
+        //sj
+        $dep['sj']=$mod;
+        //jd
+        $dep['jd']=$mod;
+        //gc
+        $dep['gc']=$mod;
+        //cg
+        $dep['cg']=$mod;
+        //sh
+        $dep['sh']=$mod;
+        //hr
+        $dep['hr']=$mod;
+        //ht
+        $dep['ht']=$mod;
+        //
+        return $dep;
+    }
     return $dep;
 }
