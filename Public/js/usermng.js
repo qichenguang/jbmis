@@ -42,7 +42,8 @@ $(document).ready(function() {
                         'sj':"设计管理部",
                         'sc':"市场管理部",
                         'ys':"预算管理部",
-                        'ht':"合同管理部"
+                        'ht':"合同管理部",
+                        'gl':"管理部"
                     },
                     defaultValue:"all"
                 },

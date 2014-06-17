@@ -1,11 +1,17 @@
 <script type="text/javascript">
     $(document).ready(function() {
-        //如果是落标状态，所有的字段 SC 都可以操作
         var zb_flag = $("#cur_project_sc_zb_flag").val();
         //alert(zb_flag);
         if("A" == zb_flag){
-            $("#module_xmrlzygl :input").attr("disabled",false);
-            $("#module_xmrlzygl :input").removeClass("ui-state-disabled");
+            var depcode = $("#user_department").val();
+            //如果是落标状态，所有的字段 SC 都可以操作
+            if("sc" == depcode){
+                $("#module_xmrlzygl :input").attr("disabled",false);
+                $("#module_xmrlzygl :input").removeClass("ui-state-disabled");
+            }else{
+                $("#module_xmrlzygl :input").attr("disabled",true);
+                $("#module_xmrlzygl :input").addClass("ui-state-disabled");
+            }
         }
         //
         $("#module_xmrlzygl SELECT[jb_choose]").on('change',function(event){

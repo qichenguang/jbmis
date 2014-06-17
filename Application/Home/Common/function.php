@@ -1,5 +1,13 @@
 <?php
 
+function USER_FUN_GET_GYS_FB_HT_LX_NAME(){
+    $arr = array(
+        'A' => "投标",
+        'B' => "询价",
+        'C' => "直接指定",
+        'D' => "客户指定");
+    return $arr;
+}
 function USER_FUN_GET_ZJL_SKSJ_BS_NAME(){
     $arr = array(
         '0.1'=>'首付款',
@@ -209,10 +217,11 @@ function USER_FUN_GET_DEPARTMENT_NAME(){
         'sc' => "市场管理部",
         'ys' => "预算管理部",
         'ht' => "合同管理部",
-        /*        管理部
+        'gl' => "管理部",
+        /*
                 分公司负责人
                 部门负责人（含财务部）
-                合同管理*/
+        */
     );
     return $dep;
 }
@@ -227,7 +236,8 @@ function USER_FUN_GET_DEPARTMENT_ARRAY(){
         6 => array('id' =>'sc', 'name'=> "市场管理部"),
         7 => array('id' =>'ys', 'name'=> "预算管理部"),
         8 => array('id' =>'ht', 'name'=> "合同管理部"),
-/*        管理部
+        9 => array('id' =>'gl', 'name'=> "管理部"),
+        /*
         分公司负责人
         部门负责人（含财务部）
         */
@@ -246,6 +256,7 @@ function USER_FUN_GET_DEPARTMENT_SX(){
         6 => 'sc',
         7 => 'ys',
         8 => 'ht',
+        9 => 'gl',
     );
     return $dep;
 }
@@ -351,6 +362,9 @@ function USER_FUN_GET_DEPATMENT_MODULE_ARRAY($zb_flag){
     unset($mod['module_ygjxgl']);
     unset($mod['module_gczcgl']);
     $dep['ht']=$mod;
+    //gl
+    $mod = USER_FUN_GET_PROJECT_MODULE_ARRAY();
+    $dep['gl']=$mod;
 
     if("B" != $zb_flag){
         $mod = array(
@@ -377,6 +391,8 @@ function USER_FUN_GET_DEPATMENT_MODULE_ARRAY($zb_flag){
         $dep['hr']=$mod;
         //ht
         $dep['ht']=$mod;
+        //gl
+        $dep['gl']=$mod;
         //
         return $dep;
     }

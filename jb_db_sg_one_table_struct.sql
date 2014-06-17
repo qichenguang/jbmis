@@ -38,6 +38,12 @@ CREATE TABLE `jb_cg_vo` (
   `vo3_je`  double NOT NULL COMMENT 'VO3 采购金额',
   `vo3_reson` char(1) NOT NULL COMMENT 'VO3 采购 原因',
   `vo3_desc` char(200) NOT NULL COMMENT 'VO3 采购 描述',
+  `ys_pj` char(1) NOT NULL COMMENT '评价：预算部',
+  `sj_pj` char(1) NOT NULL COMMENT '评价：设计部',
+  `jd_pj` char(1) NOT NULL COMMENT '评价：机电部',
+  `gc_pj` char(1) NOT NULL COMMENT '评价：工程部',
+  `cg_pj` char(1) NOT NULL COMMENT '评价：采购部',
+  `sh_pj` char(1) NOT NULL COMMENT '评价：售后部',
 
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=30 DEFAULT CHARSET=utf8 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC COMMENT='采购材料 VO 表';
@@ -103,6 +109,21 @@ CREATE TABLE `jb_gys` (
   `status` tinyint(4) NOT NULL DEFAULT '1' COMMENT '标识 1：新建 2:正常已经审核 3.已经删除',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=30 DEFAULT CHARSET=utf8 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC COMMENT='供应商表';
+
+DROP TABLE IF EXISTS `jb_gys_fbgl`;
+CREATE TABLE `jb_gys_fbgl` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `pro_id` char(30) NOT NULL COMMENT '项目ID',
+  `fb_lx` char(5) NOT NULL COMMENT '分包类型',
+  `ys_fb_ht_lx` char(1) NOT NULL COMMENT '分包合同类型',
+  `ys_pj` char(1) NOT NULL COMMENT '评价：预算部',
+  `sj_pj` char(1) NOT NULL COMMENT '评价：设计部',
+  `jd_pj` char(1) NOT NULL COMMENT '评价：机电部',
+  `gc_pj` char(1) NOT NULL COMMENT '评价：工程部',
+  `cg_pj` char(1) NOT NULL COMMENT '评价：采购部',
+  `sh_pj` char(1) NOT NULL COMMENT '评价：售后部',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=30 DEFAULT CHARSET=utf8 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC COMMENT='供应商管理 分包管理表';
 
 DROP TABLE IF EXISTS `jb_gys_fb`;
 CREATE TABLE `jb_gys_fb` (
