@@ -12,7 +12,7 @@ class AllInOneController extends Controller {
     public function index(){
         //trace($_SESSION["user_id"],"user_id=");
         $this->user_id = $_SESSION["user_id"];
-        $this->department = $_SESSION["department"];
+        $this->user_department = $_SESSION["department"];
         $this->userflag = $_SESSION['userflag'];
         //
         $this->display();
