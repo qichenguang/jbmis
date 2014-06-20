@@ -956,10 +956,10 @@ class AllInOneController extends Controller {
                 $responce["rows"][$i]['id']=$item["id"];
                 $responce["rows"][$i]['cell'] = array($item['id'],
                     $zjl_bs_arr[$item['fk_bs']],
-                    $item['fk_fb_rate'],
-                    intval($fb_amt) * intval($item['fk_fb_rate']),
-                    $item['fk_cl_rate'],
-                    intval($cl_amt) * intval($item['fk_cl_rate']),
+                    $item['fk_fb_rate_gc'],
+                    intval($fb_amt) * intval($item['fk_fb_rate_gc']),
+                    $item['fk_cl_rate_cg'],
+                    intval($cl_amt) * intval($item['fk_cl_rate_cg']),
                     $item['fk_time'],
                 );
                 $i++;
@@ -976,21 +976,20 @@ class AllInOneController extends Controller {
 
 
         $fk_bs = I('fk_bs');
-        $fk_fb_rate = I('fk_fb_rate');
-        $fk_cl_rate = I('fk_cl_rate');
-        $fk_time = I('fk_time');
+        $fk_fb_rate_gc = I('fk_fb_rate_gc');
+        $fk_cl_rate_cg = I('fk_cl_rate_cg');
+
 
         $condition = array();
         switch ($oper) {
             case "add"://
-                if( empty($pro_id) || empty($fk_bs) || empty($fk_time)){
+                if( empty($pro_id) || empty($fk_bs) ){
                     $this->ajaxReturn(array('state' => false, 'msg' => "字段不能为空"));
                 }
                 $condition["pro_id"] = $pro_id;
                 $condition["fk_bs"] = $fk_bs;
-                $condition["fk_fb_rate"] = $fk_fb_rate;
-                $condition["fk_cl_rate"] = $fk_cl_rate;
-                $condition['fk_time'] = $fk_time;
+                $condition["fk_fb_rate_gc"] = $fk_fb_rate_gc;
+                $condition["fk_cl_rate_cg"] = $fk_cl_rate_cg;
 
                 $result  = $Data->add($condition);
                 if(false === $result){
@@ -1000,14 +999,14 @@ class AllInOneController extends Controller {
                 }
                 break;
             case "edit"://
-                if(empty($id) || empty($pro_id) || empty($sk_bs) || empty($sk_rate) || empty($sk_time) ){
+                if(empty($id) || empty($pro_id) || empty($fk_bs)  ){
                     $this->ajaxReturn(array('state' => false, 'msg' => "字段不能为空", 'id' => $id));
                 }
                 $condition["pro_id"] = $pro_id;
                 $condition["fk_bs"] = $fk_bs;
-                $condition["fk_fb_rate"] = $fk_fb_rate;
-                $condition["fk_cl_rate"] = $fk_cl_rate;
-                $condition['fk_time'] = $fk_time;
+                $condition["fk_fb_rate_gc"] = $fk_fb_rate_gc;
+                $condition["fk_cl_rate_cg"] = $fk_cl_rate_cg;
+
 
                 $condition['id'] = $id;
                 $result  = $Data->save($condition);

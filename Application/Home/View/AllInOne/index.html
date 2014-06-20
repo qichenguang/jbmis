@@ -140,6 +140,25 @@
                 }
             });
         }
+        //west_search alert
+        if($("#west_alert_search").length >= 1){
+            $("#west_alert_search").button().click(function(event){
+                var tab = $('#tabs li:contains("报警查询")');
+                var curIndex = tab.index();
+                if(tab.html() != null ) {
+                    maintab.tabs('option', 'active',curIndex);
+                    maintab.tabs( "refresh" );
+                }
+                else {
+                    addTab(maintab,"","报警查询","/index.php/Home/Alert/alertsearch","");
+                    //
+                    var tab = $('#tabs li:contains("报警查询")');
+                    var curIndex = tab.index();
+                    maintab.tabs('option', 'active', curIndex);
+                    maintab.tabs( "refresh" );
+                }
+            });
+        }
 
         if($("#west_userlogout").length >= 1){
             $("#west_userlogout").button().click(function(event){

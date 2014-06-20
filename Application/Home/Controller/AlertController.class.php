@@ -2,6 +2,27 @@
 namespace Home\Controller;
 use Think\Controller;
 class AlertController extends Controller {
+    public function ajaxNotify(){
+        $depsx = I('depsx');
+        $cond = array();
+        $cond['depsx'] = array('LIKE', "%$depsx%");
+        $Data = M('alert'); // 实例化对象
+        $count = $Data->where($cond)->count();// 查询满足要求的总记录数
+
+        //
+        $cond['alert_time'] = array('gt', strtotime("-3 day"));
+        $day_3_count = $Data->where($cond)->count();// 查询满足要求的总记录数
+        //
+        $this->ajaxReturn(array('state' => true, 'msg' => "报警信息: 全部 $count 条, 最近3天共 $day_3_count 条,"));
+    }
+
+    public function alertsearch(){
+        layout(false);
+        layout(true);
+        //显示用户列表
+        $this->user_department = $_SESSION["department"];
+        $this->display();
+    }
     public function ajaxAlertSearch(){
         $pagenum = I('page',1); // get the requested page
         $limitnum = I('rows',20); // get how many rows we want to have into the grid
@@ -24,6 +45,7 @@ class AlertController extends Controller {
                         $cond[$k] = array('LIKE', "%$v%");
                         break;
                     case 'id':
+                    case 'pro_id':
                         $cond[$k] = $v;
                         break;
                 }
@@ -58,7 +80,7 @@ class AlertController extends Controller {
             foreach($list as $item){
                 $responce["rows"][$i]['id']=$item["id"];
                 $responce["rows"][$i]['cell'] = array($item['id'],
-                    $item['msg'],$item['depsx'],$item['alert_time'],);
+                    $item['pro_id'],$item['msg'],$item['depsx'],$item['alert_time'],);
                 $i++;
             }
         }

@@ -2,9 +2,6 @@
 namespace Home\Controller;
 use Think\Controller;
 class DbOptController extends Controller {
-    public function ajaxNotify(){
-        $this->ajaxReturn(array('state' => true, 'msg' => "更改成功,请按 F5 重新刷新页面"));
-    }
 
     public function ajaxGetAllVOJe(){
         $Model = M(); // 实例化对象

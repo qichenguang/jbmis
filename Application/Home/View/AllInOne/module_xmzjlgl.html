@@ -1,12 +1,29 @@
 <script type="text/javascript">
     $(document).ready(function() {
+        function checkOnlyOne(event){
+            var cur_id = event.target.id;
+            var $cur_sel = $("#" + cur_id);
+            var $cur_sel_text = $cur_sel.find('option:selected').text();
+            //alert($cur_sel.val());
+            //alert($cur_sel.find('option:selected').text());
+            var $table = $cur_sel.parent().parent().parent().parent();
+            var table_id = $table.attr("id");
+            //alert(table_id);
+            var $tb = $("#" + table_id + " td:contains(\"" + $cur_sel_text + "\")");
+            //console.log($tb);
+            //alert($tb);
+            if($tb.length >=2){
+                alert("已有改选项，请重新选择!");
+                $cur_sel.val(0);
+            }
+        }
         function getColModel_Id(){
             return {name:'id',index:'id',
                 width:20,align:"right",
                 sortable:true,
                 editable:false,
                 readonly:true,
-                editoptions:{readonly:true,size:100},
+                editoptions:{readonly:true,size:20},
                 formoptions:{rowpos:1, label: "id", elmprefix:"(*)"}
             };
         }
@@ -14,7 +31,7 @@
             return {
                 name:indexname,
                 index:indexname,
-                width:30,
+                width:20,
                 align:"right",
                 sortable:true,
                 editable:true, edittype:"text",
@@ -29,7 +46,7 @@
             return {
                 name:indexname,
                 index:indexname,
-                width:30,
+                width:20,
                 align:"right",
                 sortable:true,
                 editable:true, edittype:"text",
@@ -62,7 +79,7 @@
                     {
                         name: "sk_bs",
                         index: "sk_bs",
-                        width:40,
+                        width:20,
                         align:"right",
                         sortable:true,
                         stype:'select',//查询类型
@@ -71,19 +88,26 @@
                             value:{
                                 '0':'全部',
                                 '0.1':'首付款',
-                                '1':'进度款1',
-                                '2':'进度款2',
-                                '3':'进度款3',
-                                '4':'进度款4',
-                                '5':'进度款5',
-                                '6':'进度款6',
-                                '7':'进度款7',
-                                '8':'进度款8',
-                                '20':'竣工款',
-                                '30':'结算款',
+                                '2':'第2笔',
+                                '3':'第3笔',
+                                '4':'第4笔',
+                                '5':'第5笔',
+                                '6':'第6笔',
+                                '7':'第7笔',
+                                '8':'第8笔',
+                                '9':'竣工款',
+                                '10':'第10笔',
+                                '11':'第11笔',
+                                '12':'第12笔',
                                 '40':'质保金'
                             },
-                            defaultValue:"0"
+                            defaultValue:"0",
+                            dataEvents: [
+                                {
+                                    type: 'change', //change 下拉选择的时候
+                                    fn: checkOnlyOne
+                                }
+                            ]
                         },
                         editrules:{required:true},
                         formoptions:{ rowpos:2,label: "笔数" ,elmprefix:"(*)"}
@@ -93,7 +117,7 @@
                     {
                         name:"sk_je",
                         index:"sk_je",
-                        width:30,
+                        width:20,
                         align:"right",
                         sortable:true,
                         editable:true, edittype:"text",
@@ -115,7 +139,7 @@
                 rowList:[20,30,50],
                 pager: domPageId,
                 viewrecords: true,
-                sortorder: "desc",
+                sortorder: "asc",
                 forceFit : true,
                 editurl: save_url,
                 caption:caption_str,
@@ -130,20 +154,6 @@
                     }
                 },
                 onSelectRow: function(id){
-                    var rowid = jQuery(domTableId).jqGrid('getGridParam','selrow');
-                    if(rowid){
-                        var rowData = $(domTableId).jqGrid('getRowData',rowid);
-                        var domTableId_tag = domTableId.substring(1);
-                        if("ys" != $("#user_department").val()){
-                            $("#" + domTableId_tag + "_iladd").addClass('ui-state-disabled');
-                            $("#del_" + domTableId_tag).addClass('ui-state-disabled');
-                        }else{
-                            $("#" + domTableId_tag + "_iladd").removeClass('ui-state-disabled');
-                            $("#" + domTableId_tag + "_iledit").removeClass('ui-state-disabled');
-                            $("#del_" + domTableId_tag).removeClass('ui-state-disabled');
-                        }
-                    }
-
                 },
                 onCellSelect: function(){
                     //alert("cellselect");
@@ -246,7 +256,7 @@
                     {
                         name: "sk_bs",
                         index: "sk_bs",
-                        width:40,
+                        width:20,
                         align:"center",
                         sortable:true,
                         stype:'select',//查询类型
@@ -267,7 +277,13 @@
                                 '30':'结算款',
                                 '40':'质保金'
                             },
-                            defaultValue:"0"
+                            defaultValue:"0",
+                            dataEvents: [
+                                {
+                                    type: 'change', //change 下拉选择的时候
+                                    fn: checkOnlyOne
+                                }
+                            ]
                         },
                         editrules:{required:true},
                         formoptions:{ rowpos:2,label: "笔数" ,elmprefix:"(*)"}
@@ -279,7 +295,7 @@
                     {
                         name:"sk_je",
                         index:"sk_je",
-                        width:30,
+                        width:20,
                         align:"right",
                         sortable:true,
                         editable:true, edittype:"text",
@@ -301,7 +317,7 @@
                 rowList:[20,30,50],
                 pager: domPageId,
                 viewrecords: true,
-                sortorder: "desc",
+                sortorder: "asc",
                 forceFit : true,
                 editurl: save_url,
                 caption:caption_str,
@@ -316,20 +332,7 @@
                     }
                 },
                 onSelectRow: function(id){
-                    var rowid = jQuery(domTableId).jqGrid('getGridParam','selrow');
-                    if(rowid){
-                        var rowData = $(domTableId).jqGrid('getRowData',rowid);
-                        var domTableId_tag = domTableId.substring(1);
-                        if("ys" != $("#user_department").val()){
-                            $("#" + domTableId_tag + "_iladd").addClass('ui-state-disabled');
-                            $("#del_" + domTableId_tag).addClass('ui-state-disabled');
-                        }else{
-                            $("#" + domTableId_tag + "_iladd").removeClass('ui-state-disabled');
-                            $("#" + domTableId_tag + "_iledit").removeClass('ui-state-disabled');
-                            $("#del_" + domTableId_tag).removeClass('ui-state-disabled');
-                        }
-                    }
-
+                    //
                 },
                 onCellSelect: function(){
                     //alert("cellselect");
@@ -413,12 +416,12 @@
         }
         setZjlgl_Skyj_JqGrid("#zjlskyj","#pzjlskyj",$("#pro_id").val(),$("#user_id").val(),$("#user_department").val(),$("#ys_hetong_amt").val());
 
-        //--------------------------------------------------------------------------------------------------------
+        //--------------------------------------------------------------------------------------------------------------
         function setZjlgl_Fkyj_JqGrid(domTableId,domPageId,cur_pro_id,cur_user_id,cur_dep_id,cur_fb_amt,cur_cl_amt){
             var caption_str = "付款预计";
             var search_url = '/index.php/Home/AllInOne/ajaxZjlfkyjSearch';
             var save_url = '/index.php/Home/AllInOne/ajaxZjlfkyjSave';
-            var colNames = ['ID','笔数','预计付款占分包合同比例','分包付款金额','预计付款占材料合同比例','材料付款金额','时间'];
+            var colNames = ['ID','笔数','预计付款占分包合同比例','分包付款金额','预计付款占材料合同比例','材料付款金额'];
             //
             var $zjlskyjgridobj = jQuery(domTableId).jqGrid({
                 url: search_url,
@@ -432,7 +435,7 @@
                     {
                         name: "fk_bs",
                         index: "fk_bs",
-                        width:40,
+                        width:30,
                         align:"center",
                         sortable:true,
                         stype:'select',//查询类型
@@ -453,18 +456,24 @@
                                 '30':'竣工结算款次月',
                                 '40':'质保金'
                             },
-                            defaultValue:"0"
+                            defaultValue:"0",
+                            dataEvents: [
+                                {
+                                    type: 'change', //change 下拉选择的时候
+                                    fn: checkOnlyOne
+                                }
+                            ]
                         },
                         editrules:{required:true},
                         formoptions:{ rowpos:2,label: "笔数" ,elmprefix:"(*)"}
                     }
                     ,
-                    getColModel_Je("fk_fb_rate",3,"预计付款占分包合同比例",false)
+                    getColModel_Je("fk_fb_rate_gc",3,"预计付款占分包合同比例",false)
                     ,
                     {
                         name:"fk_fb_je",
                         index:"fk_fb_je",
-                        width:30,
+                        width:20,
                         align:"right",
                         sortable:true,
                         editable:true, edittype:"text",
@@ -477,12 +486,12 @@
                         formoptions:{rowpos:4, label: "分包付款金额", elmprefix:"(*)"}
                     }
                     ,
-                    getColModel_Je("fk_cl_rate",3,"预计付款占材料合同比例",false)
+                    getColModel_Je("fk_cl_rate_cg",5,"预计付款占材料合同比例",false)
                     ,
                     {
                         name:"fk_cl_je",
                         index:"fk_cl_je",
-                        width:30,
+                        width:20,
                         align:"right",
                         sortable:true,
                         editable:true, edittype:"text",
@@ -492,10 +501,8 @@
                         },
                         formatter: 'number',
                         summaryType:'sum',
-                        formoptions:{rowpos:4, label: "材料付款金额", elmprefix:"(*)"}
+                        formoptions:{rowpos:6, label: "材料付款金额", elmprefix:"(*)"}
                     }
-                    ,
-                    getColModel_Time("fk_time",4,"日期")
                 ],
                 hiddengrid: false,
                 autowidth: true,
@@ -504,7 +511,7 @@
                 rowList:[20,30,50],
                 pager: domPageId,
                 viewrecords: true,
-                sortorder: "desc",
+                sortorder: "asc",
                 forceFit : true,
                 editurl: save_url,
                 caption:caption_str,
@@ -520,20 +527,7 @@
                     }
                 },
                 onSelectRow: function(id){
-                    var rowid = jQuery(domTableId).jqGrid('getGridParam','selrow');
-                    if(rowid){
-                        var rowData = $(domTableId).jqGrid('getRowData',rowid);
-                        var domTableId_tag = domTableId.substring(1);
-                        if("ys" != $("#user_department").val()){
-                            $("#" + domTableId_tag + "_iladd").addClass('ui-state-disabled');
-                            $("#del_" + domTableId_tag).addClass('ui-state-disabled');
-                        }else{
-                            $("#" + domTableId_tag + "_iladd").removeClass('ui-state-disabled');
-                            $("#" + domTableId_tag + "_iledit").removeClass('ui-state-disabled');
-                            $("#del_" + domTableId_tag).removeClass('ui-state-disabled');
-                        }
-                    }
-
+                    //
                 },
                 onCellSelect: function(){
                     //alert("cellselect");
@@ -577,7 +571,26 @@
             //
             var editparameters = {
                 "keys" : false,
-                "oneditfunc" : null,
+                "oneditfunc" : function(rowid){
+                    //alert(rowid);
+                    var dep_sx = $("#user_department").val();
+                    //alert(dep_sx);
+                    var $cur_all_text = $("#zjlfkyj :text" );
+                    //console.log($cur_all_text);
+                    $cur_all_text.each(function(index,elem){
+                        //alert(elem);
+                        //console.log(elem);
+                        var $cur_sel = $(elem);
+                        var cur_name = $cur_sel.attr("name");
+                        //alert(cur_name);
+                        if(cur_name.indexOf(dep_sx) != -1){
+                            //cur dep ok. can edit.
+                        }else{
+                            $cur_sel.attr("disabled",true);
+                            $cur_sel.attr("readonly",true);
+                        }
+                    });
+                },
                 "successfunc" : function(xhr){
                     var result = eval('(' + xhr.responseText + ')');
                     if(true == result.state){
