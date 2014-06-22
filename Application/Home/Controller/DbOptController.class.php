@@ -2,7 +2,7 @@
 namespace Home\Controller;
 use Think\Controller;
 class DbOptController extends Controller {
-
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     public function ajaxGetAllVOJe(){
         $Model = M(); // 实例化对象
         $pro_id = I('pro_id');
@@ -25,7 +25,6 @@ class DbOptController extends Controller {
         }
         $this->ajaxReturn($responce);
     }
-
     public function ajaxVoSearch(){
         $pagenum = I('page',1); // get the requested page
         $limitnum = I('rows',20); // get how many rows we want to have into the grid
@@ -96,7 +95,6 @@ class DbOptController extends Controller {
         }
         $this->ajaxReturn($responce);
     }
-
     public function ajaxVoSave(){
         //
         $srctype = I('srctype');
@@ -175,8 +173,7 @@ class DbOptController extends Controller {
                 break;
         }
     }
-
-    ////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     public function ajaxGetCgAndVOJe(){
         $Model = M(); // 实例化对象
         $pro_id = I('pro_id');
@@ -260,7 +257,6 @@ class DbOptController extends Controller {
         }
         $this->ajaxReturn($responce);
     }
-
     public function ajaxCgAndVoSave(){
         //
         $srctype = I('srctype');
@@ -360,9 +356,7 @@ class DbOptController extends Controller {
                 break;
         }
     }
-
-    //
-    //
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     public function ajaxGysclglSearch(){
         $pagenum = I('page',1); // get the requested page
         $limitnum = I('rows',20); // get how many rows we want to have into the grid
@@ -472,7 +466,6 @@ class DbOptController extends Controller {
         }
         $this->ajaxReturn($responce);
     }
-
     public function ajaxGysclglSave(){
         $Data = M('cg_vo'); // 实例化Data数据模型
 
@@ -523,8 +516,7 @@ class DbOptController extends Controller {
                 break;
         }
     }
-
-    //------------------------------------------------------------------------------------------------------------------
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     public function ajaxGysfbglSearch(){
         $pagenum = I('page',1); // get the requested page
         $limitnum = I('rows',20); // get how many rows we want to have into the grid
@@ -685,7 +677,6 @@ class DbOptController extends Controller {
         }
         $this->ajaxReturn($responce);
     }
-
     public function ajaxGysfbglSave(){
         $Data = M('gys_fbgl'); // 实例化Data数据模型
 
@@ -729,4 +720,5 @@ class DbOptController extends Controller {
                 break;
         }
     }
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 }

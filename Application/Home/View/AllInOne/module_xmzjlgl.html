@@ -414,6 +414,7 @@
             jQuery(domTableId).jqGrid('gridResize',{minWidth:1500,maxWidth:2000,minHeight:500, maxHeight:1000});
             jQuery(domTableId).jqGrid('sortableRows');
         }
+
         setZjlgl_Skyj_JqGrid("#zjlskyj","#pzjlskyj",$("#pro_id").val(),$("#user_id").val(),$("#user_department").val(),$("#ys_hetong_amt").val());
 
         //--------------------------------------------------------------------------------------------------------------
@@ -594,6 +595,7 @@
                 "successfunc" : function(xhr){
                     var result = eval('(' + xhr.responseText + ')');
                     if(true == result.state){
+                        jQuery(domTableId).trigger("reloadGrid");
                         return true;
                     }else{
                         jAlert(result.msg);
@@ -672,5 +674,34 @@
             <table id="zjlfkyj"></table>
             <div id="pzjlfkyj"></div>
         </div>
+        <br>
+        <br>
+        <div>
+            <div id="chartContainer">FusionCharts XT will load here!</div>
+            <script type="text/javascript"><!--
+            //var myChart = new FusionCharts( "__PUBLIC__/js/Lib/FusionCharts/Charts/Column3D.swf",
+            var myChart = new FusionCharts( "__PUBLIC__/js/Lib/FusionCharts/Charts/Line.swf",
+                    "myChartId", "1400", "500", "0", "1" );
+            myChart.setJSONData( {
+                "chart":
+                {
+                    "caption" : "Weekly Sales Summary" ,
+                    "xAxisName" : "Week",
+                    "yAxisName" : "Sales",
+                    "numberPrefix" : "$"
+                },
+                "data" :
+                        [
+                            { "label" : "Week 1", "value" : "14400" },
+                            { "label" : "Week 2", "value" : "19600" },
+                            { "label" : "Week 3", "value" : "24000" },
+                            { "label" : "Week 4", "value" : "15700" }
+                        ]
+            } );
+            myChart.render("chartContainer");
+            // -->
+            </script>
+        </div>
     </div>
+
 </div>

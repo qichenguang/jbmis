@@ -988,8 +988,9 @@ class AllInOneController extends Controller {
                 }
                 $condition["pro_id"] = $pro_id;
                 $condition["fk_bs"] = $fk_bs;
-                $condition["fk_fb_rate_gc"] = $fk_fb_rate_gc;
-                $condition["fk_cl_rate_cg"] = $fk_cl_rate_cg;
+                //只能增加笔数
+                //$condition["fk_fb_rate_gc"] = $fk_fb_rate_gc;
+                //$condition["fk_cl_rate_cg"] = $fk_cl_rate_cg;
 
                 $result  = $Data->add($condition);
                 if(false === $result){
