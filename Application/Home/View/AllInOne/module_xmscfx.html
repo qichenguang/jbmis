@@ -1,5 +1,26 @@
 <script type="text/javascript">
     $(document).ready(function() {
+/*
+        //
+        $("#sc_pro_trade_base").on('change',function(){
+            $("#sc_pro_trade").val($(this).find('option:selected').text());
+        });
+        //
+        $("#sc_compety_company_base").on('change',function(){
+            $('#sc_compety_company').tagit('removeAll');
+            var cur_sel_arr= $(this).val();
+            $.each(cur_sel_arr,function(index,elem){
+                $('#sc_compety_company').tagit('createTag',elem);
+            });
+        });
+        //
+        $('#sc_compety_company').tagit();
+        $('#aaa').on('click',function(){
+            alert($("#sc_compety_company").val());
+        });
+        //
+*/
+
     });
 </script>
 <div id="module_xmscfx"  class="module">
@@ -10,8 +31,11 @@
         落标原因	来自市场部	中标原因	来自市场部-->
         <table>
             <tr>
-                <td>项目行业:
-                    <select id="sc_pro_trade_base" name="sc_pro_trade_base" jb_field="jb_single_save" >
+                <td>
+                    项目行业:
+                    <div>
+                    选择:
+                    <select id="sc_pro_trade_base" name="sc_pro_trade_base" >
                         <option value="0"  selected="selected">请选择</option>
                         <option value="A">IT</option>
                         <option value="B">金融</option>
@@ -27,7 +51,8 @@
                         <option value="其它">其它</option>
                     </select>
                     <br>
-                    其它:<INPUT type="text" id="sc_pro_trade_ot" name="sc_pro_trade_ot"  jb_field="jb_single_save" />
+                    <INPUT type="text" id="sc_pro_trade" name="sc_pro_trade"  jb_field="jb_single_save" />
+                    </div>
                 </td>
                 <td>客户类别1:
                     <select id="sc_cus_t_1" name="sc_cus_t_1" jb_field="jb_single_save" >
@@ -39,7 +64,10 @@
                 </td>
             </tr>
             <tr>
-                <td>竞争对手:
+                <td>
+                    竞争对手:
+                    <div>
+                    选择:
                     <select id="sc_compety_company_base" name="sc_compety_company_base" multiple="multiple" jb_field="multiple" >
                         <option value="A">EDG</option>
                         <option value="B">MOSSER</option>
@@ -49,8 +77,9 @@
                         <option value="F">格林贝斯</option>
                     </select>
                     <br>
-                    其它:<INPUT type="text" id="sc_compety_company_ot" name="sc_compety_company_ot"  jb_field="" />
-                    <span id="sc_compety_company" jb_field="jb_select_save" >...</span>
+                    其它:<INPUT type="text" id="sc_compety_company_ot" name="sc_compety_company_ot" jb_field=""/>
+                    <a id="sc_compety_company" jb_field="jb_select_save" >...存盘...</a>
+                    </div>
                 </td>
                 <td>中标策略分析会:
                     <select id="sc_tbcl_fxh" name="sc_tbcl_fxh"  jb_field="jb_select_save" >
@@ -62,6 +91,8 @@
             </tr>
             <tr>
                 <td>落标原因:
+                    <div>
+                    选择:
                     <select id="sc_lb_reason_base" name="sc_lb_reason_base" multiple="multiple" jb_field="multiple" >
                         <option value="A">以前工程做的不好</option>
                         <option value="B">装饰设计原因</option>
@@ -73,9 +104,12 @@
                     </select>
                     <br>
                     其它:<textarea id="sc_lb_reason_ot" name="sc_lb_reason_ot"  jb_field="" ></textarea>
-                    <a id="sc_lb_reason" jb_field="jb_select_save" >...</a>
+                    <a id="sc_lb_reason" jb_field="jb_select_save" >...存盘...</a>
+                    </div>
                 </td>
                 <td>中标原因:
+                    <div>
+                    选择:
                     <select id="sc_zb_reason_base" name="sc_zb_reason_base" multiple="multiple" jb_field="multiple" >
                         <option value="A">以前工程客户满意度高</option>
                         <option value="B">装饰设计原因</option>
@@ -86,7 +120,8 @@
                     </select>
                     <br>
                     其它:<textarea id="sc_zb_reason_ot" name="sc_zb_reason_ot"  jb_field="" ></textarea>
-                    <a id="sc_zb_reason" jb_field="jb_select_save" >...</a>
+                    <a id="sc_zb_reason" jb_field="jb_select_save" >...存盘...</a>
+                    </div>
                 </td>
             </tr>
         </table>

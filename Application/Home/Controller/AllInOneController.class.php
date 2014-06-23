@@ -44,7 +44,7 @@ class AllInOneController extends Controller {
         //
         $this->project_rec_detail = json_encode($project_detail);
         $this->sc_pro_name = $project_detail["sc_pro_name"];
-
+        //MYD
         $myd_list = USER_FUN_GET_MYD_LIST_NAME();
         $this->myd_list = $myd_list;
 
@@ -58,6 +58,8 @@ class AllInOneController extends Controller {
         }
         $this->all_dep_username = json_encode($responce);
         //
+        $this->gc_kg_jh_time = $project_detail["gc_kg_jh_time"];;
+        $this->gc_xmwg_khys_jh_time = $project_detail["gc_xmwg_khys_jh_time"];;
         //layout(flase);
         $this->display();
     }

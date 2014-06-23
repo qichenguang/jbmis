@@ -1,13 +1,11 @@
 <script type="text/javascript">
     $(document).ready(function() {
-
         function calcMydRate (event){
             var cur_id = event.target.id;
             var $cur_sel = $("#" + cur_id);
             var cur_id_arr = cur_id.split("_");
             var cur_row_num = cur_id_arr[0];
             //alert(cur_row_num);
-
             var all = 0;
             var over_c = 0;
             $("#" + cur_row_num + " td select").each(function(index,elem){
@@ -26,13 +24,14 @@
             var rate = (over_c/4)*100 + "%";
             $("#" + cur_row_num + "_pj_pj").val(rate);
         }
+        //
         function getColModel_Id(){
             return {name:'id',index:'id',
                     width:20,align:"right",
                     sortable:true,
                     editable:false,
                     readonly:true,
-                    editoptions:{readonly:true,size:100},
+                    editoptions:{readonly:true,size:20},
                 formoptions:{rowpos:1, label: "id", elmprefix:"(*)"}
             };
         }
@@ -124,7 +123,7 @@
                     getColModel_Pj("sh_pj",9,"售后部评价")
                     ,
                     {name:'pj_pj',index:'pj_pj',
-                        width:30,align:"right",
+                        width:20,align:"right",
                         sortable:true,
                         editable:true, edittype:"text",editrules:{required:false},
                         editoptions:{size:"20"},
@@ -227,7 +226,7 @@
             jQuery(domTableId).jqGrid('gridResize',{minWidth:1500,maxWidth:2000,minHeight:500, maxHeight:1000});
             jQuery(domTableId).jqGrid('sortableRows');
 
-/*            jQuery(domTableId).jqGrid('filterToolbar');
+/*          jQuery(domTableId).jqGrid('filterToolbar');
             if($(domPageId + ":contains(Toggle)").length < 1){
                 jQuery(domTableId).jqGrid('navButtonAdd',domPageId,{caption:"Toggle",title:"Toggle Search Toolbar", buttonicon :'ui-icon-pin-s',
                     onClickButton:function(){
@@ -292,7 +291,7 @@
                     getColModel_Pj("sh_pj",11,"售后部评价")
                     ,
                     {name:'pj_pj',index:'pj_pj',
-                        width:30,align:"right",
+                        width:20,align:"right",
                         sortable:true,
                         editable:true, edittype:"text",editrules:{required:false},
                         editoptions:{size:"20"},

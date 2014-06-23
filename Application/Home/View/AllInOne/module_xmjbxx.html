@@ -1,5 +1,8 @@
 <script type="text/javascript">
     $(document).ready(function() {
+        $("#sc_mag_company_base").on('change',function(){
+            $("#sc_mag_company").val($(this).val());
+        });
     });
 </script>
 <div id="module_xmjbxx"  class="module">
@@ -22,9 +25,9 @@
             </tr>
 
             <tr>
-                <td>财务编号：</td>
+                <td>财务编号：<input type="text" id="ht_xmcwbh" name="ht_xmcwbh" jb_field="jb_single_save"/></td>
                 <td>项目实施分公司:
-                    <select id="sc_ss_fgs" name="sc_ss_fgs" jb_field="jb_select_save"  >
+                    <select id="sc_ss_fgs" name="sc_ss_fgs" jb_field="jb_single_save"  >
                         <option value="0" selected="selected">请选择</option>
                         <option value="A">北京公司</option>
                         <option value="B">上海分公司</option>
@@ -49,17 +52,19 @@
             </tr>
             <tr>
                 <td>管理公司:
-                    <select id="sc_mag_company_base" name="sc_mag_company_base" jb_field="single" >
-                        <option value="A" >None</option>
-                        <option value="B">JLL</option>
-                        <option value="C">CBRE</option>
-                        <option value="D">DTZ</option>
-                        <option value="E">ECH</option>
-                        <option value="F">CUSHMAN</option>
+                    <div>
+                    选择:
+                    <select id="sc_mag_company_base" name="sc_mag_company_base">
+                        <option value="None" >None</option>
+                        <option value="JLL">JLL</option>
+                        <option value="CBRE">CBRE</option>
+                        <option value="DTZ">DTZ</option>
+                        <option value="ECH">ECH</option>
+                        <option value="CUSHMAN">CUSHMAN</option>
                     </select>
                     <br>
-                    其它:<INPUT type="text" id="sc_mag_company_ot" name="sc_mag_company_ot"  jb_field="" />
-                    <a id="sc_mag_company" jb_field="jb_select_save" >...</a>
+                    <INPUT type="text" id="sc_mag_company" name="sc_mag_company"  jb_field="jb_single_save" />
+                    </div>
                 </td>
                 <td>中标状态:
                     <select id="sc_zb_flag" name="sc_zb_flag"  jb_field="jb_single_save" >
@@ -97,8 +102,8 @@
             </tr>
 
             <tr>
-                <td>开工日期:<input type="text"  id="gc_jhkg_time" name="gc_jhkg_time"  jb_time_field="" jb_field="jb_single_save" /></td>
-                <td>完工日期:<input type="text"  id="gc_jhjg_time" name="gc_jhjg_time"  jb_time_field="" jb_field="jb_single_save" /></td>
+                <td>开工日期:{$gc_kg_jh_time}</td>
+                <td>完工日期:{$gc_xmwg_khys_jh_time}</td>
             </tr>
             <tr>
                 <td>项目面积:<input type="text"  id="ys_xm_mj" name="ys_xm_mj"   jb_field="jb_single_save" /></td>
