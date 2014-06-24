@@ -918,12 +918,9 @@ class AllInOneController extends Controller {
             $sarr = I('param.');
             foreach( $sarr as $k=>$v) {
                 switch ($k) {
-                    case 'zxcl_name':
-                        $cond[$k] = array('LIKE', "%$v%");
-                        break;
                     case 'id':
                     case 'pro_id':
-                    case 'sk_bs':
+                    case 'fk_bs':
                         if("all" != $v){
                             $cond[$k] = $v;
                         }
@@ -980,6 +977,7 @@ class AllInOneController extends Controller {
         $fk_bs = I('fk_bs');
         $fk_fb_rate_gc = I('fk_fb_rate_gc');
         $fk_cl_rate_cg = I('fk_cl_rate_cg');
+        $fk_time = I('fk_time');
 
 
         $condition = array();
@@ -1009,7 +1007,7 @@ class AllInOneController extends Controller {
                 $condition["fk_bs"] = $fk_bs;
                 $condition["fk_fb_rate_gc"] = $fk_fb_rate_gc;
                 $condition["fk_cl_rate_cg"] = $fk_cl_rate_cg;
-
+                $condition["fk_time"] = $fk_time;
 
                 $condition['id'] = $id;
                 $result  = $Data->save($condition);

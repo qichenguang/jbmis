@@ -237,7 +237,7 @@
         }
         setZjlglSksjJqGrid("#zjlsksj","#pzjlsksj",$("#pro_id").val(),$("#user_id").val(),$("#user_department").val());
 
-        //
+        //skyj
         function setZjlgl_Skyj_JqGrid(domTableId,domPageId,cur_pro_id,cur_user_id,cur_dep_id,cur_ht_amt){
             var caption_str = "收款预计";
             var search_url = '/index.php/Home/AllInOne/ajaxZjlskyjSearch';
@@ -414,15 +414,14 @@
             jQuery(domTableId).jqGrid('gridResize',{minWidth:1500,maxWidth:2000,minHeight:500, maxHeight:1000});
             jQuery(domTableId).jqGrid('sortableRows');
         }
-
         setZjlgl_Skyj_JqGrid("#zjlskyj","#pzjlskyj",$("#pro_id").val(),$("#user_id").val(),$("#user_department").val(),$("#ys_hetong_amt").val());
 
-        //--------------------------------------------------------------------------------------------------------------
+        //fkyj --------------------------------------------------------------------------------------------------------------
         function setZjlgl_Fkyj_JqGrid(domTableId,domPageId,cur_pro_id,cur_user_id,cur_dep_id,cur_fb_amt,cur_cl_amt){
             var caption_str = "付款预计";
             var search_url = '/index.php/Home/AllInOne/ajaxZjlfkyjSearch';
             var save_url = '/index.php/Home/AllInOne/ajaxZjlfkyjSave';
-            var colNames = ['ID','笔数','预计付款占分包合同比例','分包付款金额','预计付款占材料合同比例','材料付款金额'];
+            var colNames = ['ID','笔数','预计付款占分包合同比例','分包付款金额','预计付款占材料合同比例','材料付款金额','时间'];
             //
             var $zjlskyjgridobj = jQuery(domTableId).jqGrid({
                 url: search_url,
@@ -504,6 +503,9 @@
                         summaryType:'sum',
                         formoptions:{rowpos:6, label: "材料付款金额", elmprefix:"(*)"}
                     }
+                    ,
+                    getColModel_Time("fk_time",7,"日期")
+
                 ],
                 hiddengrid: false,
                 autowidth: true,
@@ -587,8 +589,10 @@
                         if(cur_name.indexOf(dep_sx) != -1){
                             //cur dep ok. can edit.
                         }else{
-                            $cur_sel.attr("disabled",true);
-                            $cur_sel.attr("readonly",true);
+                            if("fk_time" != cur_name){
+                                $cur_sel.attr("disabled",true);
+                                $cur_sel.attr("readonly",true);
+                            }
                         }
                     });
                 },
@@ -636,7 +640,7 @@
 <div id="module_xmzjlgl"  class="module">
     <h3><a href="#">项目资金流管理</a></h3>
     <div>
-        <div class="divtab">
+        <div>
             <!--
             项目合同金额	来自预算部	客户合同到账金额
             项目结算金额	来自预算部	客户合同到账金额占结算金额比例
