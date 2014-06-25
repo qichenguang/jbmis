@@ -13,9 +13,8 @@ class AlertController extends Controller {
         $cond['alert_time'] = array('gt', strtotime("-3 day"));
         $day_3_count = $Data->where($cond)->count();// 查询满足要求的总记录数
         //
-        $this->ajaxReturn(array('state' => true, 'msg' => "报警信息: 全部 $count 条, 最近3天共 $day_3_count 条,"));
+        $this->ajaxReturn(array('state' => true, 'count'=> $day_3_count,'msg' => "报警信息: 全部 $count 条, 最近3天共 $day_3_count 条,"));
     }
-
     public function alertsearch(){
         layout(false);
         layout(true);
@@ -403,7 +402,7 @@ class AlertController extends Controller {
             }
         }
     }
-    //
+    //成本管理
     private function getCommCbglLowRate($item,$alert_arr){
         $fb_lx_arr = USER_FUN_GET_VO_TYPE_NAME();
         //1.任一分包横轴项目实际发生成本大于内控金额

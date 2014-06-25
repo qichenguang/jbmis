@@ -59,7 +59,8 @@ class AllInOneController extends Controller {
         $this->all_dep_username = json_encode($responce);
         //
         $this->gc_kg_jh_time = $project_detail["gc_kg_jh_time"];;
-        $this->gc_xmwg_khys_jh_time = $project_detail["gc_xmwg_khys_jh_time"];;
+        $this->gc_xmwg_khys_jh_time = $project_detail["gc_xmwg_khys_jh_time"];
+        $this->ys_hetong_amt = $project_detail["ys_hetong_amt"];
         //layout(flase);
         $this->display();
     }
@@ -823,7 +824,7 @@ class AllInOneController extends Controller {
                 $responce["rows"][$i]['cell'] = array($item['id'],
                     $zjl_bs_arr[$item['sk_bs']],
                     $item['sk_rate'],
-                    intval($hetong_amt) * intval($item['sk_rate']),
+                    floatval($hetong_amt) * floatval($item['sk_rate']),
                     $item['sk_time'],
                 );
                 $i++;
@@ -956,9 +957,9 @@ class AllInOneController extends Controller {
                 $responce["rows"][$i]['cell'] = array($item['id'],
                     $zjl_bs_arr[$item['fk_bs']],
                     $item['fk_fb_rate_gc'],
-                    intval($fb_amt) * intval($item['fk_fb_rate_gc']),
+                    floatval($fb_amt) * floatval($item['fk_fb_rate_gc']),
                     $item['fk_cl_rate_cg'],
-                    intval($cl_amt) * intval($item['fk_cl_rate_cg']),
+                    floatval($cl_amt) * floatval($item['fk_cl_rate_cg']),
                     $item['fk_time'],
                 );
                 $i++;

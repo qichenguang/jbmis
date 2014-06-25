@@ -139,7 +139,7 @@
         //single mll
         function get_single_mll(domDiv,mlltype){
             $("#" + domDiv + " [" + mlltype + "]").each(function(){
-                if("jb_single_kgmll" == mlltype){
+                if("jb_single_kgmll" == mlltype || "jb_qq_kgmll" == mlltype || "jb_rg_kgmll" == mlltype){
                     var fb_type = $(this).attr(mlltype);
                     var fb_dwbj = parseFloat($("#ys_" + fb_type + "_dwbj").val()) || 0.00;
                     var fb_nkje = parseFloat($("#ys_" + fb_type + "_nkje").val()) || 0.00;
@@ -149,17 +149,25 @@
                     }
                     //Math.round(x*100)/100
                     $("#ys_" + fb_type + "_kgmll").val(Math.round(fb_kgmll * 10000)/100 + "%");
-                }else if("jb_sjmll" == mlltype){
+                }else if("jb_sjmll" == mlltype || "jb_qq_sjmll" == mlltype || "jb_rg_sjmll" == mlltype){
                     var fb_type = $(this).attr(mlltype);
                     var fb_dwbj = parseFloat($("#ys_" + fb_type + "_dwbj").val()) || 0.00;
                     var fb_customer_vo = parseFloat($("#ys_" + fb_type + "_customer_vo").val()) || 0.00;
                     var fb_sjcb = parseFloat($("#ys_" + fb_type + "_sjcb").val()) || 0.00;
                     var fb_fb_vo = parseFloat($("#ys_" + fb_type + "_fb_vo").val()) || 0.00;
+                    if("jb_qq_sjmll" == mlltype || "jb_rg_sjmll" == mlltype){
+                        fb_fb_vo = parseFloat($("#ys_" + fb_type + "_vo").val()) || 0.00;
+                    }
                     var fb_sjmll = 0.00;
                     if(fb_dwbj > 0.00 ){
                         fb_sjmll = (parseFloat(fb_dwbj) + parseFloat(fb_customer_vo) - parseFloat(fb_sjcb) - parseFloat(fb_fb_vo))/(parseFloat(fb_dwbj) + parseFloat(fb_customer_vo)) ;
                     }
                     //Math.round(x*100)/100
+/*                    alert(fb_type);
+                    alert(fb_dwbj);
+                    alert(fb_customer_vo);
+                    alert(fb_sjcb);
+                    alert(fb_fb_vo);*/
                     $("#ys_" + fb_type + "_sjmll").val(Math.round(fb_sjmll * 10000)/100 + "%");
                 }
             });
@@ -186,7 +194,39 @@
                  $("#cg_hj_cg_sjmll").val(Math.round(fb_sjmll * 10000)/100 + "%");
              }
         }
+        //--------------------------------------------------------------------------------------------------------------
         //-------------------------------------------------------------------------------------------
+        //单字段 合计
+        //--------------------------------------------------------------------------------------------
+        //add single 前期 blur
+        function add_single_type_hj_event(domDiv,lineType,hjType,domResult){
+            $("#" + domDiv + " [jb_" + lineType + "_hj=" + hjType + "]").each(function(){
+                $(this).on('blur',function(){
+                    if("nkje" == hjType){
+                        var cur_id = $(this).attr("id");
+                        var cur_dwbj_id = cur_id.substring(0,cur_id.lastIndexOf("_")) + "_dwbj";
+                        //alert(cur_dwbj_id);
+                        var nkje = parseFloat($(this).val()) || 0.00;
+                        //alert(nkje);
+                        var dwbj =  parseFloat($("#" + cur_dwbj_id).val()) || 0.00;
+                        //alert(dwbj);
+                        if(nkje >= dwbj){
+                            alert("内控金额 大于 对外报价！");
+                            $(this).focus();
+                            return;
+                        }
+                    }
+                    //single
+                    get_single_mll("module_xmcbgl","jb_" + lineType + "_kgmll");
+                    get_single_mll("module_xmcbgl","jb_" + lineType + "_sjmll");
+                    //hj
+                    //$("#" + domResult).val(parseFloat($(this).val()) || 0.00);
+                    //total
+                    //get_single_total_mll("module_xmcbgl");
+                });
+            });
+        }
+        //--------------------------------------------------------------------------------------------------------------
         //弹窗: 子表1
         //-------------------------------------------------------------------------------------------
         function setVoJqGrid(domTableId,domPageId,srctype,cur_pro_id,cur_vo_type,domResultId){
@@ -347,7 +387,6 @@
              });
              }*/
         }
-
         function get_fb_type_str(dep_sx){
             var fb_arr = {
                 'zx':"装修",
@@ -387,7 +426,7 @@
                 return customer_vo_arr;
             }else if("fb" == srctype){
                 return fb_vo_arr;
-            }else if("zxcg" == srctype || "jdcg" == srctype){
+            }else if("zxcg" == srctype || "jdcg" == srctype || "qq" == srctype){
                 return fb_vo_arr;
             }
             return {};
@@ -686,6 +725,8 @@
                 title = "装修采购";
             }else if("jdcg" == srctype){
                 title = "机电采购";
+            }else if("qq" == srctype){
+                title = "前期费用";
             }
             var dialogOpts = {
                 title: title,
@@ -719,14 +760,23 @@
                 $.each(xhr,function(index,element){
                     //alert(index);
                     //alert(element);
-                    $.each(element,function(index2,element2){
-                        $("#cg_" + index + "_" + index2).val(element2);
-                    });
+                    if("zxcg" == index || "jdcg" == index){
+                        $.each(element,function(index2,element2){
+                            $("#cg_" + index + "_" + index2).val(element2);
+                        });
+                    }else if("qq" == index){
+                        $.each(element,function(index2,element2){
+                            $("#ys_" + index + "_" + index2).val(element2);
+                        });
+                    }
 
                 });
                 //
                 get_comm_hj("module_xmcbgl","cg_sjcb","cg_hj_cg_sjcb");
                 get_comm_hj("module_xmcbgl","cg_vo","cg_hj_cg_vo");
+                //
+                get_single_mll("module_xmcbgl","jb_qq_kgmll");
+                get_single_mll("module_xmcbgl","jb_qq_sjmll");
                 //
             });
             return ret;
@@ -782,6 +832,16 @@
             showCgAndVOJqGriddialog("#" + srctype + "_dialog",srctype,domSrc);
             return false;
         });
+/*        //-------------------------------------------------------------------------------------------
+        //弹窗 3: click
+        //-------------------------------------------------------------------------------------------
+        $('.module').on('click','[jb_field=jb_multi_qq_save]',function(event){
+            var domSrc = event.target.id;
+            //alert(domSrc);
+            var srctype = domSrc.split("_")[1];
+            showCgAndVOJqGriddialog("#" + srctype + "_dialog",srctype,domSrc);
+            return false;
+        });*/
         //
         //single dwbj
         add_single_hj_event("module_xmcbgl","dwbj","ys_hj_cg_dwbj");
@@ -794,8 +854,16 @@
         //cg mulit add hj blur
         add_cg_hj_event("module_xmcbgl","cg_sjcb","cg_hj_cg_sjcb");
         add_cg_hj_event("module_xmcbgl","cg_vo","cg_hj_cg_vo");
-        //
-        //
+        //qq add hj blur
+        add_single_type_hj_event("module_xmcbgl","qq","dwbj","");
+        add_single_type_hj_event("module_xmcbgl","qq","customer_vo","");
+        add_single_type_hj_event("module_xmcbgl","qq","nkje","");
+        add_single_type_hj_event("module_xmcbgl","qq","sjcb","");
+        add_single_type_hj_event("module_xmcbgl","qq","qq_vo","");
+        //rg add hj blur
+        add_single_type_hj_event("module_xmcbgl","rg","dwbj","");
+        add_single_type_hj_event("module_xmcbgl","rg","nkje","");
+        add_single_type_hj_event("module_xmcbgl","rg","sjcb","");
         //jquery promise init.
         $.when(get_all_vo_hj("customer"),get_all_vo_hj("fb"),get_cg_and_vo_hj())
                 .done(function(){
@@ -805,6 +873,12 @@
                     //single
                     get_single_mll("module_xmcbgl","jb_single_kgmll");
                     get_single_total_mll("module_xmcbgl");
+                    //qq
+                    get_single_mll("module_xmcbgl","jb_qq_kgmll");
+                    get_single_mll("module_xmcbgl","jb_qq_sjmll");
+                    //rg
+                    get_single_mll("module_xmcbgl","jb_rg_kgmll");
+                    get_single_mll("module_xmcbgl","jb_rg_sjmll");
                 });
         //-------------------------------------------------------------------------------------------
     });
@@ -902,6 +976,10 @@
     <div id="jdcg_dialog">
         <table id="jdcg_dg"></table>
         <div id="pjdcg_dg"></div>
+    </div>
+    <div id="qq_dialog">
+        <table id="qq_dg"></table>
+        <div id="pqq_dg"></div>
     </div>
 </div>
 <div id="module_xmcbgl" class="module">
@@ -1094,25 +1172,25 @@
             <tr>
                 <td>前期：</td>
                 <td>前期费用</td>
-                <td><input type="text" id="ys_qq_dwbj" name="ys_qq_dwbj" jb_field="jb_single_save"/></td>
-                <td><input type="text" id="ys_qq_customer_vo" name="ys_qq_customer_vo"  jb_field="jb_single_save"/></td>
-                <td><input type="text" id="ys_qq_nkje" name="ys_qq_nkje"  jb_field="jb_single_save"/></td>
-                <td><input type="text" id="ys_qq_kgmll" name="ys_qq_kgmll" jb_kgmll="qq" readonly="true"/></td>
-                <td><input type="text" id="ys_qq_sjcb" name="ys_qq_sjcb" jb_field="jb_multi_save"/></td>
-                <td><input type="text" id="ys_qq_vo" name="ys_qq_vo" jb_field="jb_multi_save"/></td>
-                <td><input type="text" id="ys_qq_sjmll" name="ys_qq_sjmll" jb_sjmll="qq" readonly="true"/></td>
+                <td><input type="text" id="ys_qq_dwbj" name="ys_qq_dwbj" jb_qq_hj="dwbj" jb_field="jb_single_save"/></td>
+                <td><input type="text" id="ys_qq_customer_vo" name="ys_qq_customer_vo" jb_qq_hj="customer_vo" jb_field="jb_single_save"/></td>
+                <td><input type="text" id="ys_qq_nkje" name="ys_qq_nkje"  jb_qq_hj="nkje" jb_field="jb_single_save"/></td>
+                <td><input type="text" id="ys_qq_kgmll" name="ys_qq_kgmll" jb_qq_kgmll="qq" readonly="true"/></td>
+                <td><input type="text" id="ys_qq_sjcb" name="ys_qq_sjcb" jb_qq_hj="sjcb" jb_field="jb_multi_cg_save"/></td>
+                <td><input type="text" id="ys_qq_vo" name="ys_qq_vo" jb_qq_hj="qq_vo" jb_field="jb_multi_cg_save"/></td>
+                <td><input type="text" id="ys_qq_sjmll" name="ys_qq_sjmll" jb_qq_sjmll="qq" readonly="true"/></td>
                 <td><input type="text" id="ys_qq_sm" name="ys_qq_sm" jb_field="jb_single_save"/></td>
             </tr>
             <tr>
                 <td>直接人工成本：</td>
                 <td></td>
-                <td><input type="text" id="ys_rg_dwbj" name="ys_rg_dwbj" jb_hj="dwbj" jb_field="jb_single_save"/></td>
+                <td><input type="text" id="ys_rg_dwbj" name="ys_rg_dwbj" jb_rg_hj="dwbj" jb_field="jb_single_save"/></td>
                 <td></td>
-                <td><input type="text" id="ys_rg_nkje" name="ys_rg_nkje" jb_hj="nkje" jb_field="jb_single_save"/></td>
-                <td><input type="text" id="ys_rg_kgmll" name="ys_rg_kgmll" jb_kgmll="rg" readonly="true"/></td>
-                <td><input type="text" id="ys_rg_sjcb" name="ys_rg_sjcb" jb_hj="sjcb" jb_field="jb_single_save"/></td>
+                <td><input type="text" id="ys_rg_nkje" name="ys_rg_nkje" jb_rg_hj="nkje" jb_field="jb_single_save"/></td>
+                <td><input type="text" id="ys_rg_kgmll" name="ys_rg_kgmll" jb_rg_kgmll="rg" readonly="true"/></td>
+                <td><input type="text" id="ys_rg_sjcb" name="ys_rg_sjcb" jb_rg_hj="sjcb" jb_field="jb_single_save"/></td>
                 <td></td>
-                <td><input type="text" id="ys_rg_sjmll" name="ys_rg_sjmll" jb_sjmll="rg" readonly="true"/></td>
+                <td><input type="text" id="ys_rg_sjmll" name="ys_rg_sjmll" jb_rg_sjmll="rg" readonly="true"/></td>
                 <td><input type="text" id="ys_rg_sm" name="ys_rg_sm" jb_field="jb_single_save"/></td>
             </tr>
             <tr>

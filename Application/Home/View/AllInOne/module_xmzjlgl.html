@@ -151,6 +151,7 @@
                     if(rowNum > 0){
                         var sk_je  = jQuery(domTableId).jqGrid('getCol','sk_je',false,'sum');
                         jQuery(domTableId).jqGrid('footerData',"set",{sk_bs:'合计:',sk_je:sk_je});
+                        $("#custom_hetong_dzje").text(sk_je);
                     }
                 },
                 onSelectRow: function(id){
@@ -634,7 +635,58 @@
             jQuery(domTableId).jqGrid('gridResize',{minWidth:1500,maxWidth:2000,minHeight:500, maxHeight:1000});
             jQuery(domTableId).jqGrid('sortableRows');
         }
-        setZjlgl_Fkyj_JqGrid("#zjlfkyj","#pzjlfkyj",$("#pro_id").val(),$("#user_id").val(),$("#user_department").val(),1000,1000);
+
+
+        //get fb and cg hetong sjcb
+        function get_fb_and_cg_all_sjcb(){
+            var ret = $.get("/index.php/Home/DbOpt/ajaxGetFbAndCgSjcb?pro_id=" + $("#pro_id").val(), function(xhr){
+                console.log(xhr);
+                setZjlgl_Fkyj_JqGrid("#zjlfkyj","#pzjlfkyj",$("#pro_id").val(),$("#user_id").val(),$("#user_department").val(),xhr.fb,xhr.cg);
+                var ret_fusion = $.get("/index.php/Home/Fusion/ajaxGetMonthZjl?pro_id=" + $("#pro_id").val() + "&hetong_amt=" + $("#ys_hetong_amt").val() + "&fb_amt=" + xhr.fb + "&cl_amt=" + xhr.cg, function(response){
+                    var zjlChart = new FusionCharts( "__PUBLIC__/js/Lib/FusionCharts/Charts/MSColumn2D.swf",// MSColumn2D.swf  MSBar2D.swf
+                            "zjlChartId", "1400", "500", "0", "1" );
+                    zjlChart.setJSONData({
+                        "chart":
+                        {
+                            "caption": "项目资金流月份统计",
+                            "showlabels": "1",
+                            "showvalues": "1",
+                            "decimals": "0",
+                            "numberprefix": "",
+                            "placevaluesinside": "1",
+                            "rotatevalues": "1"
+
+/*                           "caption" : "项目资金流月份统计" ,
+                            "xAxisName" : "月份",
+                            "yAxisName" : "金额",
+                            "numberPrefix" : ""*/
+                        },
+                        "categories":response.categories,
+                        "dataset" :response.dataset
+                    });
+                    zjlChart.render("zjlchartContainer");
+                });
+            });
+            return ret;
+        }
+        function get_hetong_js_zje(){
+            var ret = $.get("/index.php/Home/DbOpt/ajaxGetHtJsZje?pro_id=" + $("#pro_id").val(), function(xhr){
+                $("#hetong_js_zje").text(xhr.dwbj + xhr.customer_vo);
+                $("#fb_hetong_zje").text(xhr.fb_sjcb);
+            });
+            return ret;
+        }
+
+        //jquery promise init.
+        $.when(get_fb_and_cg_all_sjcb(),get_hetong_js_zje())
+                .done(function(){
+                    //
+                    var all_je = parseFloat($("#hetong_js_zje").text());
+                    var dz_je = parseFloat($("#custom_hetong_dzje").text());
+                    var dz_rate = Math.round((dz_je/all_je)*10000)/100;
+                    $("#custom_hetong_dzje_rate").text(' ' + dz_rate + '%');
+
+                });
     });
 </script>
 <div id="module_xmzjlgl"  class="module">
@@ -648,18 +700,25 @@
             <table>
                 <tr >
                     <td>项目合同金额：
-                        <INPUT type="text" id="ys_hetong_amt" name="ys_hetong_amt"  jb_field="jb_single_save" />
+                        {$ys_hetong_amt}
                     </td>
                     <td>客户合同到账金额:
-
+                        <span id="custom_hetong_dzje"></span>
                     </td>
                 </tr>
                 <tr>
                     <td>项目结算金额：
-
+                        <span id="hetong_js_zje"></span>
                     </td>
                     <td>客户合同到账金额占结算金额比例:
-
+                        <span id="custom_hetong_dzje_rate"></span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>分包合同总金额：
+                        <span id="fb_hetong_zje"></span>
+                    </td>
+                    <td>
                     </td>
                 </tr>
             </table>
@@ -681,30 +740,7 @@
         <br>
         <br>
         <div>
-            <div id="chartContainer">FusionCharts XT will load here!</div>
-            <script type="text/javascript"><!--
-            //var myChart = new FusionCharts( "__PUBLIC__/js/Lib/FusionCharts/Charts/Column3D.swf",
-            var myChart = new FusionCharts( "__PUBLIC__/js/Lib/FusionCharts/Charts/Line.swf",
-                    "myChartId", "1400", "500", "0", "1" );
-            myChart.setJSONData( {
-                "chart":
-                {
-                    "caption" : "Weekly Sales Summary" ,
-                    "xAxisName" : "Week",
-                    "yAxisName" : "Sales",
-                    "numberPrefix" : "$"
-                },
-                "data" :
-                        [
-                            { "label" : "Week 1", "value" : "14400" },
-                            { "label" : "Week 2", "value" : "19600" },
-                            { "label" : "Week 3", "value" : "24000" },
-                            { "label" : "Week 4", "value" : "15700" }
-                        ]
-            } );
-            myChart.render("chartContainer");
-            // -->
-            </script>
+            <div id="zjlchartContainer">FusionCharts XT will load here!</div>
         </div>
     </div>
 

@@ -3,6 +3,98 @@ namespace Home\Controller;
 use Think\Controller;
 class DbOptController extends Controller {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    public function ajaxGetHtJsZje(){
+        $pro_id = I('pro_id');
+        //
+        $Data = M("project");
+        $cond['pro_id'] = $pro_id;
+        $project_rec = $Data->where($cond)->find();
+
+        //dwbj
+        $fb_lx_arr = USER_FUN_GET_VO_TYPE_NAME();
+        $fb_dwbj_all = 0.0;
+        $cg_dwbj_all = $project_rec['ys_cg_all_dwbj'];
+        $fb_sjcb_all = 0.0;
+        foreach($fb_lx_arr as $fb_lx => $fb_lx_name){
+            $key_dwbj = "ys_" . $fb_lx . "_dwbj";
+            $dwbj = $project_rec[$key_dwbj];
+            //
+            if(!empty($dwbj)){
+                if(floatval($dwbj) > 0.01 ){
+                    $fb_dwbj_all += floatval($dwbj);
+                }
+            }
+            //
+            $key_sjcb = "ys_" . $fb_lx . "_sjcb";
+            $sjcb = $project_rec[$key_sjcb];
+            //
+            if(!empty($sjcb)){
+                if(floatval($sjcb) > 0.01 ){
+                    $fb_sjcb_all += floatval($sjcb);
+                }
+            }
+        }
+        //custom vo
+        $custom_all_vo = 0.0;
+        $tablename = "jb_customer_vo";
+        $list = M()->query("SELECT SUM(vo_je) as it_sum FROM `" . $tablename . "` WHERE pro_id='" . $pro_id . "' ");
+        if(!empty($list)){
+            foreach($list as $item){
+                $custom_all_vo += $item["it_sum"];
+            }
+        }
+
+        $responce = array();
+        $responce['dwbj'] = $fb_dwbj_all + $cg_dwbj_all;
+        $responce['fb_sjcb'] = $fb_sjcb_all;
+        $responce['customer_vo'] = $custom_all_vo;
+        trace($fb_dwbj_all,"fb_dwbj_all");
+        trace($fb_sjcb_all,"fb_sjcb_all");
+        trace($cg_dwbj_all,"cg_dwbj_all");
+        trace($custom_all_vo,"custom_all_vo");
+        $this->ajaxReturn($responce);
+    }
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    public function ajaxGetFbAndCgSjcb(){
+        //
+        $pro_id = I('pro_id');
+        //
+        $Data = M("project");
+        $cond['pro_id'] = $pro_id;
+        $project_rec = $Data->where($cond)->find();
+
+        //fb
+        $fb_lx_arr = USER_FUN_GET_VO_TYPE_NAME();
+        $fb_sjcb_all = 0.0;
+        $cg_sjcb_all = 0.0;
+        foreach($fb_lx_arr as $fb_lx => $fb_lx_name){
+            $key_sjcb = "ys_" . $fb_lx . "_sjcb";
+            $sjcb = $project_rec[$key_sjcb];
+            //
+            if(!empty($sjcb)){
+                if(floatval($sjcb) > 0.01 ){
+                    $fb_sjcb_all += floatval($sjcb);
+                }
+            }
+        }
+        //cg
+        if(true){
+            $Data = M("cg_vo");
+            $cond['pro_id'] = $pro_id;
+            $cg_je = $Data->where($cond)->sum('cg_je');
+            $cg_gckc_sjcb = $project_rec["cg_gckc_sjcb"];
+            $cg_gcrgf_sjcb = $project_rec["cg_gcrgf_sjcb"];
+            $sjcb = floatval($cg_je) + floatval($cg_gckc_sjcb) + floatval($cg_gcrgf_sjcb);
+            if($sjcb > 0.01){
+                $cg_sjcb_all = $sjcb;
+            }
+        }
+        $responce = array();
+        $responce['fb'] = $fb_sjcb_all;
+        $responce['cg'] = $cg_sjcb_all;
+        $this->ajaxReturn($responce);
+    }
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     public function ajaxGetAllVOJe(){
         $Model = M(); // 实例化对象
         $pro_id = I('pro_id');
@@ -25,6 +117,23 @@ class DbOptController extends Controller {
         }
         $this->ajaxReturn($responce);
     }
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    public function ajaxGetCgAndVOJe(){
+        $Model = M(); // 实例化对象
+        $pro_id = I('pro_id');
+        //
+        $tablename = "jb_cg_vo";
+        $list = $Model->query("SELECT srctype,SUM(cg_je) as it_sum,SUM(vo1_je) as it_1_sum,SUM(vo2_je) as it_2_sum,SUM(vo3_je) as it_3_sum FROM `" . $tablename . "` WHERE pro_id='" . $pro_id . "' GROUP BY srctype ");
+        $responce = array();
+        //
+        if(!empty($list)){
+            foreach($list as $item){
+                $responce[$item["srctype"]]=array("sjcb" => $item["it_sum"],"vo" => ($item["it_1_sum"] + $item["it_2_sum"] + $item["it_3_sum"]));
+            }
+        }
+        $this->ajaxReturn($responce);
+    }
+    ///customer vo and fb vo ///////////////////////////////////////////////////////////////////////////////////////////
     public function ajaxVoSearch(){
         $pagenum = I('page',1); // get the requested page
         $limitnum = I('rows',20); // get how many rows we want to have into the grid
@@ -174,22 +283,6 @@ class DbOptController extends Controller {
         }
     }
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    public function ajaxGetCgAndVOJe(){
-        $Model = M(); // 实例化对象
-        $pro_id = I('pro_id');
-
-        $tablename = "jb_cg_vo";
-
-        $list = $Model->query("SELECT srctype,SUM(cg_je) as it_sum,SUM(vo1_je) as it_1_sum,SUM(vo2_je) as it_2_sum,SUM(vo3_je) as it_3_sum FROM `" . $tablename . "` WHERE pro_id='" . $pro_id . "' GROUP BY srctype ");
-        $responce = array();
-
-        if(!empty($list)){
-            foreach($list as $item){
-                $responce[$item["srctype"]]=array("sjcb" => $item["it_sum"],"vo" => ($item["it_1_sum"] + $item["it_2_sum"] + $item["it_3_sum"]));
-            }
-        }
-        $this->ajaxReturn($responce);
-    }
     public function ajaxCgAndVoSearch(){
         $pagenum = I('page',1); // get the requested page
         $limitnum = I('rows',20); // get how many rows we want to have into the grid

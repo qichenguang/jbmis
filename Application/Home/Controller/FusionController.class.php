@@ -3,19 +3,144 @@ namespace Home\Controller;
 use Think\Controller;
 class FusionController extends Controller {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    public function ajaxGetMonZjl(){
-        $Model = M(); // 实例化对象
+    public function ajaxGetMonthZjl(){
         $pro_id = I('pro_id');
-
-        $Model = M('');
-        $list = $Model->query("SELECT vo_type,SUM(vo_je) as it_sum FROM `" . $tablename . "` WHERE pro_id='" . $pro_id . "' GROUP BY vo_type ");
-        $responce = array();
-
+        $hetong_amt = I('hetong_amt');
+        $fb_amt = I('fb_amt');
+        $cl_amt = I('cl_amt');
+        //
+        $month_arr = array();
+        //
+        $cond['pro_id'] = $pro_id;
+        $M_SKSJ = M('zjl_sksj');
+        $list =  $M_SKSJ->where($cond)->select();
+        $sksj_arr = array();
         if(!empty($list)){
             foreach($list as $item){
-                $responce[$item["vo_type"]]=$item["it_sum"];
+                $je = $item['sk_je'];
+                $month = date ( "Y-m", strtotime($item['sk_time']));
+                $tmp_arr = array('je' => $je,'month' => $month);
+                $sksj_arr[] = $tmp_arr;
+                //
+                $month_arr[$month] = $month;
             }
         }
+        //
+        $M_SKYJ = M('zjl_skyj');
+        $list =  $M_SKYJ->where($cond)->select();
+        $skyj_arr = array();
+        if(!empty($list)){
+            foreach($list as $item){
+                $je = floatval($hetong_amt) * floatval($item['sk_rate']);
+                $month = date ( "Y-m", strtotime($item['sk_time']));
+                $tmp_arr = array('je' => $je,'month' => $month);
+                $skyj_arr[] = $tmp_arr;
+                //
+                $month_arr[$month] = $month;
+            }
+        }
+        //
+        $M_FKYJ = M('zjl_fkyj'); // 实例化User对象
+        $list =  $M_FKYJ->where($cond)->select();
+        $fkyj_arr = array();
+        if(!empty($list)){
+            foreach($list as $item){
+                $je = floatval($fb_amt) * floatval($item['fk_fb_rate_gc']);
+                $je += floatval($cl_amt) * floatval($item['fk_cl_rate_cg']);
+                $month = date ( "Y-m", strtotime($item['fk_time']));
+                //trace($item['fk_time']);
+                //trace($month);
+                $tmp_arr = array('je' => $je,'month' => $month);
+                $fkyj_arr[] = $tmp_arr;
+                //
+                $month_arr[$month] = $month;
+            }
+        }
+        //
+        $categories = array();
+        $category = array();
+        foreach($month_arr as $key => $value){
+            $tmp = array();
+            $tmp['label'] = $key;
+            $category[] = $tmp;
+        }
+        $categories['category'] = $category;
+        //
+        $dataset = array();
+        //
+        $sksj_dataset = array();
+        $sksj_dataset['seriesname'] = "收款实计";
+        $sksj_data = array();
+        foreach($month_arr as $key => $value){
+            $tmp = array();
+            $tmp['value'] = "0.0";
+            foreach($sksj_arr as $item){
+                if($item['month'] == $key){
+                    $tmp['value']  += floatval($item['je']);
+                }
+            }
+            $sksj_data[] = $tmp;
+        }
+        $sksj_dataset['data'] = $sksj_data;
+        $dataset[] = $sksj_dataset;
+        //
+        $skyj_dataset = array();
+        $skyj_dataset['seriesname'] = "收款预计";
+        $skyj_data = array();
+        foreach($month_arr as $key => $value){
+            $tmp = array();
+            $tmp['value'] = "0.0";
+            foreach($skyj_arr as $item){
+                if($item['month'] == $key){
+                    $tmp['value']  += floatval($item['je']);
+                }
+            }
+            $skyj_data[] = $tmp;
+        }
+        $skyj_dataset['data'] = $skyj_data;
+        $dataset[] = $skyj_dataset;
+        //
+        $fkyj_dataset = array();
+        $fkyj_dataset['seriesname'] = "付款预计";
+        $fkyj_data = array();
+        foreach($month_arr as $key => $value){
+            $tmp = array();
+            $tmp['value'] = "0.0";
+            foreach($fkyj_arr as $item){
+                if($item['month'] == $key){
+                    $tmp['value']  += floatval($item['je']);
+                }
+            }
+            $fkyj_data[] = $tmp;
+        }
+        $fkyj_dataset['data'] = $fkyj_data;
+        $dataset[] = $fkyj_dataset;
+        //
+        $yj_dataset = array();
+        $yj_dataset['seriesname'] = "现金流预计";
+        $yj_data = array();
+        foreach($month_arr as $key => $value){
+            $tmp = array();
+            $tmp['value'] = "0.0";
+            foreach($skyj_arr as $item){
+                if($item['month'] == $key){
+                    $tmp['value']  += floatval($item['je']);
+                }
+            }
+            foreach($fkyj_arr as $item){
+                if($item['month'] == $key){
+                    $tmp['value']  -= floatval($item['je']);
+                }
+            }
+            $yj_data[] = $tmp;
+        }
+        $yj_dataset['data'] = $yj_data;
+        $dataset[] = $yj_dataset;
+        //
+        $responce = array();
+        $responce['categories'] = $categories;
+        $responce['dataset'] = $dataset;
+        trace($responce);
         $this->ajaxReturn($responce);
     }
 
@@ -226,6 +351,7 @@ class FusionController extends Controller {
         }
         return $newluokuan;
     }
+    //时间管理
     public function ajaxGetSjgl(){
         $pro_id = I('pro_id');
         $cond['pro_id'] = $pro_id;
@@ -264,7 +390,7 @@ class FusionController extends Controller {
 
             $data[] = $item;
         }
-        trace($data,"data");
+        //trace($data,"data");
         $this->ajaxReturn($data);
     }
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
