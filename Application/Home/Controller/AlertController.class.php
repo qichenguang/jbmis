@@ -100,11 +100,13 @@ class AlertController extends Controller {
             $alert_arr[] = $this->getOverTime1($item);$alert_arr[] = $this->getOverTime5($item);$alert_arr[] = $this->getOverTime9($item);
             $alert_arr[] = $this->getOverTime2($item);$alert_arr[] = $this->getOverTime6($item);$alert_arr[] = $this->getOverTime10($item);
             $alert_arr[] = $this->getOverTime3($item);$alert_arr[] = $this->getOverTime7($item);$alert_arr[] = $this->getOverTime11($item);
-            $alert_arr[] = $this->getOverTime4($item);$alert_arr[] = $this->getOverTime8($item);$alert_arr[] = $this->getOverTime12($item);
+            $alert_arr[] = $this->getOverTime4($item);$alert_arr[] = $this->getOverTime8($item);
             //Low Myd
             $this->getCommLowMyd($item,$alert_arr);
+            //成本管理
             $this->getCommCbglLowRate($item,$alert_arr);
-            //
+
+            //报警信息 插入 Alet 表
             $condition = array();
             $condition["pro_id"] = $item["pro_id"];
             $condition["alert_time"] = date('Y-m-d');
@@ -310,22 +312,8 @@ class AlertController extends Controller {
         }
         return null;
     }
-    //10. 材料报批完成时间 晚于 项目实际开工时间 + 1 周
+    //10. 实际消防报批提交时间 晚于 计划消防报批提交时间 + 1周
     private function getOverTime10($item){
-        $timeAStr = $item["cg_clbp_wc_time"];
-        $timeBStr = $item["gc_kg_sj_time"];
-
-        $ret = $this->getCommOverTime($timeAStr,0,$timeBStr,3600*24*7,"gt");
-        if($ret){
-            return array(
-                "title" => "材料报批完成时间 晚于 项目实际开工时间 + 1周",
-                'dep' => array('cg','ys','gc','jd','sj'),
-            );
-        }
-        return null;
-    }
-    //11. 实际消防报批提交时间 晚于 计划消防报批提交时间 + 1周
-    private function getOverTime11($item){
         $timeAStr = $item["gc_xfbptj_sj_time"];
         $timeBStr = $item["gc_xfbptj_jh_time"];
 
@@ -338,8 +326,8 @@ class AlertController extends Controller {
         }
         return null;
     }
-    //12. 项目质保期到
-    private function getOverTime12($item){
+    //11. 项目质保期到
+    private function getOverTime11($item){
         $timeAStr = $item["gc_zbqm_time"];
         $ret = false;
         if(!empty($timeStrA)){

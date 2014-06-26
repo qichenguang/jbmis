@@ -3,6 +3,304 @@ namespace Home\Controller;
 use Think\Controller;
 class FusionController extends Controller {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    private function getProjectRecCbDetail($item){
+        $r = array();
+        //1.查询：customer_vo
+        $customer_vo_arr = array();
+        $list = M()->query("SELECT vo_type,SUM(vo_je) as it_sum FROM `jb_customer_vo` WHERE pro_id='" . $item['pro_id'] . "' GROUP BY vo_type ");
+        if(!empty($list)){
+            foreach($list as $cur){
+                $customer_vo_arr[$cur["vo_type"]]=$cur["it_sum"];
+            }
+        }
+        //2.查询：fb_vo
+        $fb_vo_arr = array();
+        $list = M()->query("SELECT vo_type,SUM(vo_je) as it_sum FROM `jb_fb_vo` WHERE pro_id='" . $item['pro_id'] . "' GROUP BY vo_type ");
+        if(!empty($list)){
+            foreach($list as $cur){
+                $fb_vo_arr[$cur["vo_type"]]=$cur["it_sum"];
+            }
+        }
+        //3.查询：cg_vo
+        $cg_sjcb_all = 0.0;
+        $cg_sjcb_vo_all = 0.0;
+        $qq_sjcb_all = 0.0;
+        $qq_sjcb_vo_all = 0.0;
+        if(true){
+            $cond['pro_id'] = $item['pro_id'];
+            $tablename = "jb_cg_vo";
+            $list = M()->query("SELECT srctype,SUM(cg_je) as it_sum,SUM(vo1_je) as it_1_sum,SUM(vo2_je) as it_2_sum,SUM(vo3_je) as it_3_sum FROM `jb_cg_vo` WHERE pro_id='" . $item['pro_id'] . "' group by srctype ");
+            //
+            $cg_je = 0.0;
+            $cg_vo = 0.0;
+            $qq_je = 0.0;
+            $qq_vo = 0.0;
+            if(!empty($list)){
+                foreach($list as $cur){
+                    if($cur['srctype'] != "qq"){
+                        $cg_je += $cur["it_sum"];
+                        $cg_vo += $cur["it_1_sum"] + $cur["it_2_sum"] + $cur["it_3_sum"];
+                    }else{
+                        $qq_je += $cur["it_sum"];
+                        $qq_vo += $cur["it_1_sum"] + $cur["it_2_sum"] + $cur["it_3_sum"];
+                    }
+                }
+            }
+            $cg_gckc_sjcb = $item["cg_gckc_sjcb"];
+            $cg_gcrgf_sjcb = $item["cg_gcrgf_sjcb"];
+            $cg_sjcb = floatval($cg_je) + floatval($cg_gckc_sjcb) + floatval($cg_gcrgf_sjcb);
+            if($cg_sjcb > 0.01){
+                $cg_sjcb_all = $cg_sjcb;
+            }
+            //
+            $cg_gckc_sjcb_vo = $item["cg_gckc_sjcb_vo"];
+            $cg_gcrgf_sjcb_vo = $item["cg_gcrgf_sjcb_vo"];
+            $cg_sjcb_vo = floatval($cg_vo) + floatval($cg_gckc_sjcb_vo) + floatval($cg_gcrgf_sjcb_vo);
+            if($cg_sjcb_vo > 0.01){
+                $cg_sjcb_vo_all = $cg_sjcb_vo;
+            }
+            //
+            if($qq_je > 0.01){
+                $qq_sjcb_all = $qq_je;
+            }
+            if($qq_vo > 0.01){
+                $qq_sjcb_vo_all = $qq_vo;
+            }
+        }
+        //分包
+        $fb_lx_arr = USER_FUN_GET_VO_TYPE_NAME();
+        foreach($fb_lx_arr as $key => $value){
+            $tmp = array();
+            $tmp['name'] = $value;
+            //dwbj
+            $key_dwbj = "ys_" . $key . "_dwbj";
+            $dwbj = $item[$key_dwbj];
+            $tmp['dwbj'] = $dwbj;
+            //nkje
+            $key_nkje = "ys_" . $key . "_nkje";
+            $nkje = $item[$key_nkje];
+            $tmp['nkje'] = $nkje;
+            //sjcb
+            $key_sjcb = "ys_" . $key . "_sjcb";
+            $sjcb = $item[$key_sjcb];
+            $tmp['sjcb'] = $sjcb;
+            //customer_vo
+            $tmp['customer_vo'] = $customer_vo_arr[$key];
+            //fb_vo
+            $tmp['self_vo'] = $fb_vo_arr[$key];
+            //
+            $r[$key] = $tmp;
+        }
+        //采购
+        if(true){
+            $key = 'cg';
+            $name = "采购";
+            $tmp = array();
+            $tmp['name'] = $name;
+            //dwbj : ys_cg_all_dwbj
+            $key_dwbj = "ys_" . $key . "_all_dwbj";
+            $dwbj = $item[$key_dwbj];
+            $tmp['dwbj'] = $dwbj;
+            //nkje : ys_cg_all_nkje
+            $key_nkje = "ys_" . $key . "_all_nkje";
+            $nkje = $item[$key_nkje];
+            $tmp['nkje'] = $nkje;
+            //customer_vo
+            $tmp['customer_vo'] = $customer_vo_arr[$key];
+            //sjcb
+            $tmp['sjcb'] = $cg_sjcb_all;
+            //fb_vo
+            $tmp['self_vo'] = $cg_sjcb_vo_all;
+            //
+            $r[$key] = $tmp;
+        }
+        //前期
+        if(true){
+            $key = 'qq';
+            $name = "前期";
+            $tmp = array();
+            $tmp['name'] = $name;
+            //dwbj
+            $key_dwbj = "ys_" . $key . "_dwbj";
+            $dwbj = $item[$key_dwbj];
+            $tmp['dwbj'] = $dwbj;
+            //customer_vo
+            $key_customer_vo = "ys_" . $key . "_customer_vo";
+            $customer_vo = $item[$key_customer_vo];
+            $tmp['customer_vo'] = $customer_vo;
+            //nkje
+            $key_nkje = "ys_" . $key . "_nkje";
+            $nkje = $item[$key_nkje];
+            $tmp['nkje'] = $nkje;
+            //sjcb
+            $tmp['sjcb'] = $qq_sjcb_all;
+            //vo
+            $tmp['self_vo'] = $qq_sjcb_vo_all;
+            //
+            $r[$key] = $tmp;
+        }
+        //直接人工成本
+        if(true){
+            $key = 'rg';
+            $name = "直接人工成本";
+            $tmp = array();
+            $tmp['name'] = $name;
+            //dwbj
+            $key_dwbj = "ys_" . $key . "_dwbj";
+            $dwbj = $item[$key_dwbj];
+            $tmp['dwbj'] = $dwbj;
+            //customer_vo
+            $tmp['customer_vo'] = 0.0;
+            //nkje
+            $key_nkje = "ys_" . $key . "_nkje";
+            $nkje = $item[$key_nkje];
+            $tmp['nkje'] = $nkje;
+            //sjcb
+            $key_sjcb = "ys_" . $key . "_sjcb";
+            $sjcb = $item[$key_sjcb];
+            $tmp['sjcb'] = $sjcb;
+            //vo
+            $tmp['self_vo'] = 0.0;
+            //
+            $r[$key] = $tmp;
+        }
+        return $r;
+    }
+    //成本管理
+    public function ajaxGetCbgl(){
+        $pro_id = I('pro_id');
+        $cond['pro_id'] = $pro_id;
+        $Data   =   M("project");
+        $project_detail = array();
+        $project_detail = $Data->where($cond)->find();
+        $r = $this->getProjectRecCbDetail($project_detail);
+        trace($r);
+
+        $responce = array();
+        //图形1
+        if(true){
+            //x轴
+            $categories = array();
+            $category = array();
+            //
+            foreach($r as $key => $value){
+                $tmp = array();
+                $tmp['label'] = $value['name'];
+                $category[] = $tmp;
+            }
+            $categories['category'] = $category;
+            //Y轴
+            $dataset = array();
+            //left
+            $left_dataset = array();
+            $left_dataset['seriesname'] = "内控金额";
+            $left_dataset["parentyaxis"] = "P";
+            $left_data = array();
+            foreach($r as $key => $je_arr){
+                $tmp = array();
+                $tmp['value'] = floatval($je_arr["nkje"]);
+                $left_data[] = $tmp;
+            }
+            $left_dataset['data'] = $left_data;
+            $dataset[] = $left_dataset;
+            //right
+            $right_dataset = array();
+            $right_dataset['seriesname'] = "实际发生成本";
+            $right_dataset["parentyaxis"] = "P";
+            $right_data = array();
+            foreach($r as $key => $je_arr){
+                $tmp = array();
+                $tmp['value'] = floatval($je_arr["sjcb"]) + floatval($je_arr["self_vo"]);
+                $right_data[] = $tmp;
+            }
+            $right_dataset['data'] = $right_data;
+            $dataset[] = $right_dataset;
+            //第二条 Y轴
+            $y2_dataset = array();
+            $y2_dataset['seriesname'] = "比率";
+            $y2_dataset['renderas'] = "line";
+            $y2_dataset["parentyaxis"] = "S";
+            $y2_data = array();
+            foreach($r as $key => $je_arr){
+                $tmp = array();
+                $je1 = floatval($je_arr["nkje"]);
+                $je2 = floatval($je_arr["sjcb"]) + floatval($je_arr["self_vo"]);
+                $tmp['value'] = ($je2/$je1);
+                $y2_data[] = $tmp;
+            }
+            $y2_dataset['data'] = $y2_data;
+            $dataset[] = $y2_dataset;
+
+            //return
+            $responce['categories1'] = $categories;
+            $responce['dataset1'] = $dataset;
+        }
+
+        //图形2
+        if(true){
+            //x轴
+            $categories = array();
+            $category = array();
+            //
+            foreach($r as $key => $value){
+                $tmp = array();
+                $tmp['label'] = $value['name'];
+                $category[] = $tmp;
+            }
+            $categories['category'] = $category;
+            //Y轴
+            $dataset = array();
+            //left
+            $left_dataset = array();
+            $left_dataset['seriesname'] = "对外报价加客户VO";
+            $left_dataset["parentyaxis"] = "P";
+            $left_data = array();
+            foreach($r as $key => $je_arr){
+                $tmp = array();
+                $tmp['value'] = floatval($je_arr["dwbj"]) + floatval($je_arr["customer_vo"]);
+                $left_data[] = $tmp;
+            }
+            $left_dataset['data'] = $left_data;
+            $dataset[] = $left_dataset;
+            //right
+            $right_dataset = array();
+            $right_dataset['seriesname'] = "实际成本加实际成本变化";
+            $right_dataset["parentyaxis"] = "P";
+            $right_data = array();
+            foreach($r as $key => $je_arr){
+                $tmp = array();
+                $tmp['value'] = floatval($je_arr["sjcb"]) + floatval($je_arr["self_vo"]);
+                $right_data[] = $tmp;
+            }
+            $right_dataset['data'] = $right_data;
+            $dataset[] = $right_dataset;
+            //第二条 Y轴
+            $y2_dataset = array();
+            $y2_dataset['seriesname'] = "比率";
+            $y2_dataset['renderas'] = "line";
+            $y2_dataset["parentyaxis"] = "S";
+            $y2_data = array();
+            foreach($r as $key => $je_arr){
+                $tmp = array();
+                $je1 = floatval($je_arr["dwbj"]) + floatval($je_arr["customer_vo"]);
+                $je2 = floatval($je_arr["sjcb"]) + floatval($je_arr["self_vo"]);
+                $tmp['value'] = ($je2/$je1);
+                $y2_data[] = $tmp;
+            }
+            $y2_dataset['data'] = $y2_data;
+            $dataset[] = $y2_dataset;
+
+            //return
+
+            $responce['categories2'] = $categories;
+            $responce['dataset2'] = $dataset;
+        }
+        //
+        trace($responce);
+        $this->ajaxReturn($responce);
+    }
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //每月资金流
     public function ajaxGetMonthZjl(){
         $pro_id = I('pro_id');
         $hetong_amt = I('hetong_amt');
@@ -143,7 +441,49 @@ class FusionController extends Controller {
         trace($responce);
         $this->ajaxReturn($responce);
     }
+    //时间管理：项目时间里程碑
+    public function ajaxGetSjgl(){
+        $pro_id = I('pro_id');
+        $cond['pro_id'] = $pro_id;
+        $Data   =   M("project");
+        $project_detail = array();
+        $project_detail = $Data->where($cond)->find();
+        $nodes = $this->getAllSjNode($project_detail);
+        $data = array();
+        for($i=0;$i<count($nodes);$i++){
+            $node = $nodes[$i];
+            $item = array();
+            $item['label'] = $node['label'];
+            $item["toolTip"] = $node['label'];
+            if(false == $node['have_jh']){
+                $item['value'] = "0";
+            }else{
+                if(empty($node['jh']) || empty($node['sj'])){
+                    $item['value'] = "0";
+                }else{
+                    $inter = strtotime($node['sj']) - strtotime($node['jh']);
+                    $inter_day = round($inter /(3600*24));
+                    $item['value'] = $inter_day;
+                    $item["toolTip"] = $node['label'] . " 实际时间比计划时间";
+                    if($inter_day > 0){
+                        $item["toolTip"] .= "早 $inter_day 天";
+                    }else{
+                        $item["toolTip"] .= "晚 " . abs($inter_day) . " 天";
+                    }
+                }
+            }
+            $item["showLabel"] = "1";
+            //
+            //$item['label'] = $this->mb_strrev($item['label']);
+            //$item["label"] =  $item["value"];
+            //$item["value"] = $item['toolTip'];
 
+            $data[] = $item;
+        }
+        //trace($data,"data");
+        $this->ajaxReturn($data);
+    }
+    //项目时间里程碑
     private function getAllSjNode($r){
         $nodes = array();
 
@@ -341,9 +681,8 @@ class FusionController extends Controller {
         //trace($nodes,"nodes");
         return $nodes;
     }
-
     //含汉字的字符串前后颠倒顺序
-    function mb_strrev( $mb_str ) {
+    private function mb_strrev( $mb_str ) {
         $newluokuan = "";
         $n = mb_strlen("$mb_str","UTF-8");
         for ($i=$n;$i>=0;$i--){
@@ -351,47 +690,6 @@ class FusionController extends Controller {
         }
         return $newluokuan;
     }
-    //时间管理
-    public function ajaxGetSjgl(){
-        $pro_id = I('pro_id');
-        $cond['pro_id'] = $pro_id;
-        $Data   =   M("project");
-        $project_detail = array();
-        $project_detail = $Data->where($cond)->find();
-        $nodes = $this->getAllSjNode($project_detail);
-        $data = array();
-        for($i=0;$i<count($nodes);$i++){
-            $node = $nodes[$i];
-            $item = array();
-            $item['label'] = $node['label'];
-            $item["toolTip"] = $node['label'];
-            if(false == $node['have_jh']){
-                $item['value'] = "0";
-            }else{
-                if(empty($node['jh']) || empty($node['sj'])){
-                    $item['value'] = "0";
-                }else{
-                    $inter = strtotime($node['sj']) - strtotime($node['jh']);
-                    $inter_day = round($inter /(3600*24));
-                    $item['value'] = $inter_day;
-                    $item["toolTip"] = $node['label'] . " 实际时间比计划时间";
-                    if($inter_day > 0){
-                        $item["toolTip"] .= "早 $inter_day 天";
-                    }else{
-                        $item["toolTip"] .= "晚 " . abs($inter_day) . " 天";
-                    }
-                }
-            }
-            $item["showLabel"] = "1";
-            //
-            //$item['label'] = $this->mb_strrev($item['label']);
-            //$item["label"] =  $item["value"];
-            //$item["value"] = $item['toolTip'];
 
-            $data[] = $item;
-        }
-        //trace($data,"data");
-        $this->ajaxReturn($data);
-    }
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 }

@@ -36,6 +36,8 @@
                    get_comm_hj(domDiv,hjType,domResult);
                    //total
                    get_comm_total_mll("module_xmcbgl");
+                   //zj
+                   get_total_zj("module_xmcbgl");
                });
             });
         }
@@ -133,6 +135,8 @@
                     $("#" + domResult).val(parseFloat($(this).val()) || 0.00);
                     //total
                     get_single_total_mll("module_xmcbgl");
+                    //zj
+                    get_total_zj("module_xmcbgl");
                 });
             });
         }
@@ -194,6 +198,62 @@
                  $("#cg_hj_cg_sjmll").val(Math.round(fb_sjmll * 10000)/100 + "%");
              }
         }
+        //zj total
+        function get_total_zj(domDiv){
+            //fb
+            var fb_dwbj = $("#ys_hj_dwbj").val() || 0.00;
+            var fb_customer_vo = $("#ys_hj_customer_vo").val() || 0.00;
+            var fb_nkje = $("#ys_hj_nkje").val() || 0.00;
+            var fb_sjcb = $("#ys_hj_sjcb").val() || 0.00;
+            var fb_vo = $("#ys_hj_fb_vo").val() || 0.00;
+            //cg
+            var cg_dwbj = $("#ys_hj_cg_dwbj").val() || 0.00;
+            var cg_customer_vo = $("#ys_hj_cg_customer_vo").val() || 0.00;
+            var cg_nkje = $("#ys_hj_cg_nkje").val() || 0.00;
+            var cg_sjcb = $("#cg_hj_cg_sjcb").val() || 0.00;
+            var cg_vo = $("#cg_hj_cg_vo").val() || 0.00;
+            //qq
+            var qq_dwbj = $("#ys_qq_dwbj").val() || 0.00;
+            var qq_customer_vo = $("#ys_qq_customer_vo").val() || 0.00;
+            var qq_nkje = $("#ys_qq_nkje").val() || 0.00;
+            var qq_sjcb = $("#ys_qq_sjcb").val() || 0.00;
+            var qq_vo = $("#ys_qq_vo").val() || 0.00;
+            //rg
+            var rg_dwbj = $("#ys_rg_dwbj").val() || 0.00;
+            var rg_customer_vo = 0.00;
+            var rg_nkje = $("#ys_rg_nkje").val() || 0.00;
+            var rg_sjcb = $("#ys_rg_sjcb").val() || 0.00;
+            var rg_vo = 0.00;
+            //
+            var zj_dwbj = parseFloat(fb_dwbj) + parseFloat(cg_dwbj) + parseFloat(qq_dwbj) + parseFloat(rg_dwbj);
+            var zj_customer_vo = parseFloat(fb_customer_vo) + parseFloat(cg_customer_vo) + parseFloat(qq_customer_vo) + parseFloat(rg_customer_vo);
+            var zj_nkje = parseFloat(fb_nkje) + parseFloat(cg_nkje) + parseFloat(qq_nkje) + parseFloat(rg_nkje);
+            var zj_sjcb = parseFloat(fb_sjcb) + parseFloat(cg_sjcb) + parseFloat(qq_sjcb) + parseFloat(rg_sjcb);
+            var zj_vo = parseFloat(fb_vo) + parseFloat(cg_vo) + parseFloat(qq_vo) + parseFloat(rg_vo);
+            //
+            var zj_kgmll = 0.00;
+            if(zj_dwbj > 0.00 ){
+                zj_kgmll = (parseFloat(zj_dwbj) - parseFloat(zj_nkje))/parseFloat(zj_dwbj) ;
+            }
+            //total sjmll
+            var zj_sjmll = 0.00;
+            if(zj_dwbj > 0.00 ){
+                zj_sjmll = (parseFloat(zj_dwbj) + parseFloat(zj_customer_vo) - parseFloat(zj_sjcb) - parseFloat(zj_vo))/(parseFloat(zj_dwbj) + parseFloat(zj_customer_vo)) ;
+                //Math.round(x*100)/100
+            }
+            //set
+            $("#zj_dwbj").val(zj_dwbj);
+            $("#zj_customer_vo").val(zj_customer_vo);
+            $("#zj_nkje").val(zj_nkje);
+            $("#zj_sjcb").val(zj_sjcb);
+            $("#zj_vo").val(zj_vo);
+            $("#zj_kgmll").val(Math.round(zj_kgmll * 10000)/100 + "%");
+            $("#zj_sjmll").val(Math.round(zj_sjmll * 10000)/100 + "%");
+            //
+            $("#span_zj_htjs").text(zj_dwbj + zj_customer_vo);
+            $("#span_zj_kgmll").text(Math.round(zj_kgmll * 10000)/100 + "%");
+            $("#span_zj_sjmll").text(Math.round(zj_sjmll * 10000)/100 + "%");
+        }
         //--------------------------------------------------------------------------------------------------------------
         //-------------------------------------------------------------------------------------------
         //单字段 合计
@@ -219,10 +279,12 @@
                     //single
                     get_single_mll("module_xmcbgl","jb_" + lineType + "_kgmll");
                     get_single_mll("module_xmcbgl","jb_" + lineType + "_sjmll");
-                    //hj
+                    //no hj
                     //$("#" + domResult).val(parseFloat($(this).val()) || 0.00);
-                    //total
+                    //no total
                     //get_single_total_mll("module_xmcbgl");
+                    //zj
+                    get_total_zj("module_xmcbgl");
                 });
             });
         }
@@ -790,6 +852,8 @@
                     //no mll,only have cg total mll
                     //cg total
                     get_single_total_mll("module_xmcbgl");
+                    //zj
+                    get_total_zj("module_xmcbgl");
                 });
             });
         }
@@ -879,6 +943,54 @@
                     //rg
                     get_single_mll("module_xmcbgl","jb_rg_kgmll");
                     get_single_mll("module_xmcbgl","jb_rg_sjmll");
+                    //zj
+                    get_total_zj("module_xmcbgl");
+                });
+        //
+        //get fb and cg hetong sjcb
+        function get_cbgl_chart_need_data(){
+                var ret = $.get("/index.php/Home/Fusion/ajaxGetCbgl?pro_id=" + $("#pro_id").val(), function(response){
+                    var cbgl_1_Chart = new FusionCharts( "__PUBLIC__/js/Lib/FusionCharts/Charts/MSCombiDY2D.swf",// MSCombiDY2D.swf MSColumn2D.swf  MSBar2D.swf
+                            "cbgl_1_ChartId", "1400", "500", "0", "1" );
+                    cbgl_1_Chart.setJSONData({
+                        "chart":
+                        {
+                            "caption": "成本管理1",
+                            "showlabels": "1",
+                            "showvalues": "1",
+                            "decimals": "0",
+                            "numberprefix": "",
+                            "placevaluesinside": "1",
+                            "rotatevalues": "1"
+                        },
+                        "categories":response.categories1,
+                        "dataset" :response.dataset1
+                    });
+                    cbgl_1_Chart.render("cbgl_1_chartContainer");
+                    //-------------------------------------------------------------------------------------------------------------
+                    var cbgl_2_Chart = new FusionCharts( "__PUBLIC__/js/Lib/FusionCharts/Charts/MSCombiDY2D.swf",// MSCombiDY2D.swf MSColumn2D.swf  MSBar2D.swf
+                            "cbgl_2_ChartId", "1400", "500", "0", "1" );
+                    cbgl_2_Chart.setJSONData({
+                        "chart":
+                        {
+                            "caption": "成本管理2",
+                            "showlabels": "1",
+                            "showvalues": "1",
+                            "decimals": "0",
+                            "numberprefix": "",
+                            "placevaluesinside": "1",
+                            "rotatevalues": "1"
+                        },
+                        "categories":response.categories2,
+                        "dataset" :response.dataset2
+                    });
+                    cbgl_2_Chart.render("cbgl_2_chartContainer");
+                });
+            return ret;
+        }
+        $.when(get_cbgl_chart_need_data())
+                .done(function(){
+                   //
                 });
         //-------------------------------------------------------------------------------------------
     });
@@ -990,17 +1102,17 @@
                 <td>项目财务编号：</td>
                 <td><input type="text" id="ht_xmcwbh" name="ht_xmcwbh" jb_field="" readonly="true" /></td>
                 <td>合同金额：</td>
-                <td><input type="text" id="ys_hetong_amt" name="ys_hetong_amt" /></td>
+                <td>{$ys_hetong_amt}</td>
                 <td>合同结算总金额：</td>
-                <td><input type="text" id="ys_hetong_js_amt" name="ys_hetong_js_amt" /></td>
+                <td><span id="span_zj_htjs"></span></td>
             </tr>
             <tr>
                 <td>投标毛利率：</td>
                 <td><input type="text" id="ys_tb_mll" name="ys_tb_mll" jb_field="jb_single_save"/></td>
                 <td>开工毛利率：</td>
-                <td><input type="text" id="ys_kg_mlldouble" name="ys_tb_mll" /></td>
+                <td><span id="span_zj_kgmll"></span></td>
                 <td>实际毛利率：</td>
-                <td><input type="text" id="ys_sj_mlldouble" name="ys_sj_mlldouble" /></td>
+                <td><span id="span_zj_sjmll"></span></td>
             </tr>
         </table>
         <table>
@@ -1211,15 +1323,23 @@
             <tr>
                 <td><h3>总计：</h3></td>
                 <td></td>
-                <td><input type="text" id="ys_zj_cg_dwbj" name="ys_zj_cg_dwbj" readonly="true"/></td></td>
-                <td><input type="text" id="ys_zj_cg_customer_vo" name="ys_zj_cg_customer_vo" readonly="true"/></td>
-                <td><input type="text" id="ys_zj_cg_nkje" name="ys_zj_cg_nkje" readonly="true"/></td>
-                <td><input type="text" id="ys_zj_cg_kgmll" name="ys_zj_cg_kgmll" readonly="true"/></td>
-                <td><input type="text" id="cg_zj_cg_sjcb" name="cg_zj_cg_sjcb" readonly="true"/></td>
-                <td><input type="text" id="cg_zj_cg_vo" name="cg_zj_cg_vo" readonly="true"/></td>
-                <td><input type="text" id="cg_zj_cg_sjmll" name="cg_zj_cg_sjmll" readonly="true"/></td>
+                <td><input type="text" id="zj_dwbj" name="zj_dwbj" readonly="true"/></td></td>
+                <td><input type="text" id="zj_customer_vo" name="zj_customer_vo" readonly="true"/></td>
+                <td><input type="text" id="zj_nkje" name="zj_nkje" readonly="true"/></td>
+                <td><input type="text" id="zj_kgmll" name="zj_kgmll" readonly="true"/></td>
+                <td><input type="text" id="zj_sjcb" name="zj_sjcb" readonly="true"/></td>
+                <td><input type="text" id="zj_vo" name="zj_vo" readonly="true"/></td>
+                <td><input type="text" id="zj_sjmll" name="zj_sjmll" readonly="true"/></td>
                 <td></td>
             </tr>
         </table>
+        <br>
+        <div>
+            <div id="cbgl_1_chartContainer">FusionCharts XT will load here!</div>
+        </div>
+        <br>
+        <div>
+            <div id="cbgl_2_chartContainer">FusionCharts XT will load here!</div>
+        </div>
     </div>
 </div>
