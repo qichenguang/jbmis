@@ -50,16 +50,21 @@
     <script src="__PUBLIC__/js/Lib/jquery.sexy-combo/jquery.sexy-combo.js" type="text/javascript"></script>
     <!--tag-it-->
     <script src="__PUBLIC__/js/Lib/tag-it/js/tag-it.js" type="text/javascript"></script>
-
+    <!--Zebra_TransForm-->
+    <!--<script src="__PUBLIC__/js/Lib/Zebra_TransForm/zebra_transform.js" type="text/javascript"></script>-->
+    <!--easydropdown-->
+    <!--<script src="__PUBLIC__/js/Lib/easydropdown/jquery.easydropdown.min.js" type="text/javascript"></script>-->
+    <!--chosen-->
+    <!--<script src="__PUBLIC__/js/Lib/chosen/chosen.jquery.js" type="text/javascript"></script>-->
     <script type="text/javascript">
         $.jgrid.no_legacy_api = true;
         $.jgrid.useJSON = true;
     </script>
 
     <link rel="stylesheet" href="__PUBLIC__/style/base.css" type="text/css" />
+    <link rel="stylesheet" href="__PUBLIC__/style/style.css" type="text/css" />
     <!--jquery  ui custom  css -->
     <!--<link rel="stylesheet" type="text/css" media="screen" href="__PUBLIC__/style/themes/redmond_1.8.24/jquery-ui.css" />-->
-
     <!--<link rel="stylesheet" type="text/css" media="screen" href="__PUBLIC__/style/themes/swanky-purse_1.10.4/jquery-ui-1.10.4.custom.css" />-->
     <!--<link rel="stylesheet" type="text/css" media="screen" href="__PUBLIC__/style/themes/smoothness_1.10.4/jquery-ui-1.10.4.custom.css" />-->
     <!--<link rel="stylesheet" type="text/css" media="screen" href="__PUBLIC__/style/themes/start_1.10.4/jquery-ui-1.10.4.custom.css" />-->
@@ -82,6 +87,12 @@
     <!--tag-it-->
     <link rel="stylesheet" type="text/css"  href="__PUBLIC__/js/Lib/tag-it/css/jquery.tagit.css" />
     <link rel="stylesheet" type="text/css"  href="__PUBLIC__/js/Lib/tag-it/css/tagit.ui-zendesk.css" />
+    <!--Zebra_TransForm-->
+    <!--<link rel="stylesheet" type="text/css"  href="__PUBLIC__/js/Lib/Zebra_TransForm/css/zebra_transform.css" />-->
+    <!--easydropdown-->
+    <!--<link rel="stylesheet" type="text/css"  href="__PUBLIC__/js/Lib/easydropdown/themes/easydropdown.css" />-->
+    <!--chosen-->
+    <!--<link rel="stylesheet" type="text/css"  href="__PUBLIC__/js/Lib/chosen/chosen.css" />-->
     <style type="text/css">
         /* Not PNotify specific, just make this page a little more presentable. */
         #switcher-container {
@@ -213,6 +224,223 @@
     font-family: Tahoma, sans-serif;
     text-align: right
 }
+
+table.gridtable {
+    font-family: verdana,arial,sans-serif;
+    font-size:11px;
+    color:#333333;
+    border-width: 1px;
+    border-color: #666666;
+    border-collapse: collapse;
+}
+table.gridtable th {
+    border-width: 1px;
+    padding: 8px;
+    border-style: solid;
+    border-color: #666666;
+    background-color: #dedede;
+}
+table.gridtable td {
+    border-width: 1px;
+    padding: 8px;
+    border-style: solid;
+    border-color: #666666;
+    background-color: #ffffff;
+}
+table.imagetable {
+    font-family: verdana,arial,sans-serif;
+    font-size:11px;
+    color:#333333;
+    border-width: 1px;
+    border-color: #999999;
+    border-collapse: collapse;
+}
+table.imagetable th {
+    background:#b5cfd2 url('__PUBLIC__/images/cell-blue.jpg');
+    border-width: 1px;
+    padding: 8px;
+    border-style: solid;
+    border-color: #999999;
+}
+table.imagetable td {
+    background:#dcddc0 url('__PUBLIC__/images/cell-grey.jpg');
+    border-width: 1px;
+    padding: 8px;
+    border-style: solid;
+    border-color: #999999;
+}
+
+.bordered {
+    border: solid #ccc 1px;
+    -moz-border-radius: 6px;
+    -webkit-border-radius: 6px;
+    border-radius: 6px;
+    -webkit-box-shadow: 0 1px 1px #ccc;
+    -moz-box-shadow: 0 1px 1px #ccc;
+    box-shadow: 0 1px 1px #ccc;
+}
+
+.bordered tr:hover {
+    background: #fbf8e9;
+    -o-transition: all 0.1s ease-in-out;
+    -webkit-transition: all 0.1s ease-in-out;
+    -moz-transition: all 0.1s ease-in-out;
+    -ms-transition: all 0.1s ease-in-out;
+    transition: all 0.1s ease-in-out;
+}
+
+.bordered td, .bordered th {
+    border-left: 1px solid #ccc;
+    border-top: 1px solid #ccc;
+    padding: 10px;
+    text-align: left;
+}
+
+.bordered th {
+    background-color: #dce9f9;
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#ebf3fc), to(#dce9f9));
+    background-image: -webkit-linear-gradient(top, #ebf3fc, #dce9f9);
+    background-image:    -moz-linear-gradient(top, #ebf3fc, #dce9f9);
+    background-image:     -ms-linear-gradient(top, #ebf3fc, #dce9f9);
+    background-image:      -o-linear-gradient(top, #ebf3fc, #dce9f9);
+    background-image:         linear-gradient(top, #ebf3fc, #dce9f9);
+    -webkit-box-shadow: 0 1px 0 rgba(255,255,255,.8) inset;
+    -moz-box-shadow:0 1px 0 rgba(255,255,255,.8) inset;
+    box-shadow: 0 1px 0 rgba(255,255,255,.8) inset;
+    border-top: none;
+    text-shadow: 0 1px 0 rgba(255,255,255,.5);
+}
+
+.bordered td:first-child, .bordered th:first-child {
+    border-left: none;
+}
+
+.bordered th:first-child {
+    -moz-border-radius: 6px 0 0 0;
+    -webkit-border-radius: 6px 0 0 0;
+    border-radius: 6px 0 0 0;
+}
+
+.bordered th:last-child {
+    -moz-border-radius: 0 6px 0 0;
+    -webkit-border-radius: 0 6px 0 0;
+    border-radius: 0 6px 0 0;
+}
+
+.bordered th:only-child{
+    -moz-border-radius: 6px 6px 0 0;
+    -webkit-border-radius: 6px 6px 0 0;
+    border-radius: 6px 6px 0 0;
+}
+
+.bordered tr:last-child td:first-child {
+    -moz-border-radius: 0 0 0 6px;
+    -webkit-border-radius: 0 0 0 6px;
+    border-radius: 0 0 0 6px;
+}
+
+.bordered tr:last-child td:last-child {
+    -moz-border-radius: 0 0 6px 0;
+    -webkit-border-radius: 0 0 6px 0;
+    border-radius: 0 0 6px 0;
+}
+table.table1{
+    font-family: "Trebuchet MS", sans-serif;
+    font-size: 16px;
+    font-weight: bold;
+    line-height: 1.4em;
+    font-style: normal;
+    border-collapse:separate;
+}
+.table1 thead th{
+    padding:15px;
+    color:#fff;
+    text-shadow:1px 1px 1px #568F23;
+    border:1px solid #93CE37;
+    border-bottom:3px solid #9ED929;
+    background-color:#9DD929;
+    background:-webkit-gradient(
+        linear,
+        left bottom,
+        left top,
+        color-stop(0.02, rgb(123,192,67)),
+        color-stop(0.51, rgb(139,198,66)),
+        color-stop(0.87, rgb(158,217,41))
+    );
+    background: -moz-linear-gradient(
+        center bottom,
+        rgb(123,192,67) 2%,
+        rgb(139,198,66) 51%,
+        rgb(158,217,41) 87%
+    );
+    -webkit-border-top-left-radius:5px;
+    -webkit-border-top-right-radius:5px;
+    -moz-border-radius:5px 5px 0px 0px;
+    border-top-left-radius:5px;
+    border-top-right-radius:5px;
+}
+.table1 thead th:empty{
+    background:transparent;
+    border:none;
+}
+.table1 tbody th{
+    color:#fff;
+    text-shadow:1px 1px 1px #568F23;
+    background-color:#9DD929;
+    border:1px solid #93CE37;
+    border-right:3px solid #9ED929;
+    padding:0px 10px;
+    background:-webkit-gradient(
+        linear,
+        left bottom,
+        right top,
+        color-stop(0.02, rgb(158,217,41)),
+        color-stop(0.51, rgb(139,198,66)),
+        color-stop(0.87, rgb(123,192,67))
+    );
+    background: -moz-linear-gradient(
+        left bottom,
+        rgb(158,217,41) 2%,
+        rgb(139,198,66) 51%,
+        rgb(123,192,67) 87%
+    );
+    -moz-border-radius:5px 0px 0px 5px;
+    -webkit-border-top-left-radius:5px;
+    -webkit-border-bottom-left-radius:5px;
+    border-top-left-radius:5px;
+    border-bottom-left-radius:5px;
+}
+.table1 tfoot td{
+    color: #9CD009;
+    font-size:32px;
+    text-align:center;
+    padding:10px 0px;
+    text-shadow:1px 1px 1px #444;
+}
+.table1 tfoot th{
+    color:#666;
+}
+.table1 tbody td{
+    padding:10px;
+    text-align:center;
+    background-color:#DEF3CA;
+    border: 2px solid #E7EFE0;
+    -moz-border-radius:2px;
+    -webkit-border-radius:2px;
+    border-radius:2px;
+    color:#666;
+    text-shadow:1px 1px 1px #fff;
+}
+.table1 tbody span.check::before{
+    content : url(../images/check0.png)
+}
+
+
+select { width:150px; height:24px;}
+#sleHid { display:block; width:150px; overflow:hidden; }
+#sleBG { width:150px; height:24px; border:#61AC36 1px solid; border-right:none; background:url(arrow.gif) #fff no-repeat 62px 1px; display:block;}
+
+
     </style>
 
 

@@ -1,5 +1,4 @@
 <script type="text/javascript">
-
     $(document).ready(function() {
         function calcMydNum(name){
             var all = 0;
@@ -26,13 +25,14 @@
         calcMydNum("sg");
         calcMydNum("sh");
 
+        document.getElementById("sh_sh_myd_1_desc").style.height = document.getElementById("sh_sh_myd_1_desc").scrollHeight + 1 + 'px';
     });
 </script>
 <div id="module_khbyd"  class="module">
     <h3><a href="#">客户满意度管理</a></h3>
     <div>
         <volist name="myd_list" id="vo" >
-        <table>
+        <table jb_table="bordered">
             <thead>
                 <tr>
                     <th>{$vo.name}平均值</th>
@@ -96,7 +96,7 @@
                             </select>
                         </td>
                         <td>
-                            <textarea id="sh_sh_myd_{$key}_desc" name="sh_sh_myd_{$key}_desc"  jb_field="jb_single_save" ></textarea>
+                            <textarea id="sh_sh_myd_{$key}_desc" name="sh_sh_myd_{$key}_desc"  jb_field="jb_single_save"  placeholder="请输入:" maxlength="500"  onpropertychange="this.style.height = this.scrollHeight;" oninput="this.style.height = this.scrollHeight;" style="overflow:visible" ></textarea>
                         </td>
                     </tr>
                 </if>

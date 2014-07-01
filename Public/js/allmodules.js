@@ -46,7 +46,7 @@ $(document).ready(function() {
             var cur_pos_2 = id.substring(2,3);
             //console.log(cur_dep_code,cur_pos_2);
             if(($.inArray(cur_dep_code, dep_sx_arr) >=0) && cur_pos_2 == "_"){
-                var curVal = "没有值";
+                var curVal = "";
                 if(rec_obj[id] === undefined || rec_obj[id] == null){
                     //
                 }else{
@@ -57,7 +57,7 @@ $(document).ready(function() {
                 if($(this).attr("jb_field") == "multiple" || $(this).attr("jb_field") == "single"){
                     //alert(curVal);
                     //var result = eval('[' + curVal + ']');
-                    if("没有值" == curVal){
+                    if("" == curVal){
                         curVal = "[]";
                     }
                     //alert(curVal);
@@ -135,7 +135,7 @@ $(document).ready(function() {
         }
     });
     //3.2   初始化控件 textarea
-    var textareaOptions = {
+/*    var textareaOptions = {
         'maxCharacterSize': 50,
         'originalStyle': 'originalTextareaInfo',
         'warningStyle' : 'warningTextareaInfo',
@@ -145,10 +145,40 @@ $(document).ready(function() {
     $('.module textarea').each(function(){
         $(this).textareaCount(textareaOptions);
     });
-    $('.module textarea').elastic();
+    $('.module textarea').elastic();*/
+
     //4.
     froozen_all_modules(true);
     froozen_all_modules(false);
+    //------------------------------------------------------------------------------------------------------------------
+    $(".module textarea").each(function(index,elem){
+        $(this).attr({placeholder:"请输入:",maxlength:"500",cols:"50", rows:"1"});
+        $(this).css({overflow:"visible"});
+        $(this).on("input propertychange",function(){
+            this.style.posHeight = this.scrollHeight;
+        });
+        this.style.height = this.scrollHeight + 1 + 'px';
+    });
+    $(".module input").each(function(index,elem){
+        $(this).attr({placeholder:"请输入:",maxlength:"50"});
+        var id = $(this).attr("id");
+        //alert(id.substring(0,3));
+        var dep = id.substring(0,3);
+        if(dep == "sc_" || dep == "ys_" || dep == "sj_" || dep == "jd_" || dep == "ht_" || dep == "sh_" || dep == "hr_"
+            || dep == "cg_" || dep == "gc_" || dep == "zj_"){
+            $(this).addClass("recurly");
+        }
+    });
+    $(".module table[jb_table]").each(function(index,elem){
+        var cls = $(this).attr("jb_table");
+        //alert(cls); bordered table1
+        $(this).addClass("bordered");
+    });
+/*    $(".module select").each(function(index,elem){
+        //alert(cls); bordered table1
+        $(this).addClass("dropdown");
+    });*/
+    //------------------------------------------------------------------------------------------------------------------
     //5.
     if($("#lock").length >= 1){
         $("#lock").button().click(function(event){
