@@ -29,7 +29,7 @@ $(document).ready(function() {
         });
     }
 
-    function froozen_all_modules(lock){
+    function froozen_all_modules(lock,useReadonlyNotEnable){
         var dep_sx_arr = $("#dep_sx").val().split(",");
         var rec_json_str = $("#project_rec_detail").val();
         //console.log(rec_json_str);
@@ -71,16 +71,24 @@ $(document).ready(function() {
                     $(this).multiselect("refresh");
                 }
                 //judge dep and enable it.
-                $(this).attr("disabled",true);
-                $(this).addClass("ui-state-disabled");
+                if(true == useReadonlyNotEnable){
+                    $(this).attr("readonly",true);
+                }else{
+                    $(this).attr("disabled",true);
+                    //$(this).addClass("ui-state-disabled");
+                }
                 //
                 if($(this).attr("jb_field") == "multiple" || $(this).attr("jb_field") == "single"){
                     $(this).multiselect("disable");
                 }
                 if(false == lock){
                     if(id.substring(0,3) == (depcode + "_")){
-                        $(this).attr("disabled",false);
-                        $(this).removeClass("ui-state-disabled");
+                        if(true == useReadonlyNotEnable){
+                            $(this).attr("readonly",false);
+                        }else{
+                            $(this).attr("disabled",false);
+                            //$(this).removeClass("ui-state-disabled");
+                        }
                         //
                         if($(this).attr("jb_field") == "multiple" || $(this).attr("jb_field") == "single"){
                             $(this).multiselect("enable");
@@ -126,7 +134,7 @@ $(document).ready(function() {
             var $curSelectObj = $(this);
             $(this).empty();
             var head="请选择";
-            var ui = "<option value='0' selected='selected' >" + head + "</option>";
+            var ui = "<option value='' selected='selected' >" + head + "</option>";
             $(this).append(ui);
             $.each(dep_obj[dep],function(i,item){
                 var ui="<option value='"+ item['id'] +"'>" + item['user_name'] + "</option>"
@@ -148,8 +156,8 @@ $(document).ready(function() {
     $('.module textarea').elastic();*/
 
     //4.
-    froozen_all_modules(true);
-    froozen_all_modules(false);
+    froozen_all_modules(true,false);
+    froozen_all_modules(false,false);
     //------------------------------------------------------------------------------------------------------------------
     $(".module textarea").each(function(index,elem){
         $(this).attr({placeholder:"请输入:",maxlength:"500",cols:"50", rows:"1"});
