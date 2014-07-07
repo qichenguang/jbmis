@@ -450,11 +450,43 @@ class FusionController extends Controller {
         $project_detail = $Data->where($cond)->find();
         $nodes = $this->getAllSjNode($project_detail);
         $data = array();
+        $cur_day_set_flag = false;
         for($i=0;$i<count($nodes);$i++){
             $node = $nodes[$i];
             $item = array();
+            if(!$cur_day_set_flag){
+                if(!empty($node['jh'])){
+                    $now = time();
+                    $now_str = date ( "Y-m-d", $now );
+                    $jh = strtotime($node['jh']);
+                    if(intval($now) < intval($jh) ){
+                        $cur_day_set_flag = true;
+                        //
+                        $item_tmp = array();
+                        $item_tmp["vline"] = true;
+                        $item_tmp["label"] = $now_str;
+                        $item_tmp["showLabel"] = "1";
+                        $data[] = $item_tmp;
+                    }
+                }
+                if(!$cur_day_set_flag && !empty($node['sj'])){
+                    $now = time();
+                    $now_str = date ( "Y-m-d", $now );
+                    $sj = strtotime($node['sj']);
+                    if(intval($now) < intval($sj)){
+                        $cur_day_set_flag = true;
+                        //
+                        $item_tmp = array();
+                        $item_tmp["vline"] = true;
+                        $item_tmp["label"] = $now_str;
+                        $item_tmp["showLabel"] = "1";
+                        $data[] = $item_tmp;
+                    }
+                }
+            }
+
             $item['label'] = $node['label'];
-            $item["toolTip"] = $node['label'];
+            $item["tooltext"] = $node['label'] . " \n计划: " . $node['jh'] . "\n实际: " . $node['sj'];
             if(false == $node['have_jh']){
                 $item['value'] = "0";
             }else{
@@ -464,20 +496,15 @@ class FusionController extends Controller {
                     $inter = strtotime($node['sj']) - strtotime($node['jh']);
                     $inter_day = round($inter /(3600*24));
                     $item['value'] = $inter_day;
-                    $item["toolTip"] = $node['label'] . " 实际时间比计划时间";
+                    $item["tooltext"] = $node['label'] . " \n计划: " . $node['jh'] . "\n实际: " . $node['sj'] . "\n实际时间比计划时间";
                     if($inter_day > 0){
-                        $item["toolTip"] .= "早 $inter_day 天";
+                        $item["tooltext"] .= "早 $inter_day 天";
                     }else{
-                        $item["toolTip"] .= "晚 " . abs($inter_day) . " 天";
+                        $item["tooltext"] .= "晚 " . abs($inter_day) . " 天";
                     }
                 }
             }
             $item["showLabel"] = "1";
-            //
-            //$item['label'] = $this->mb_strrev($item['label']);
-            //$item["label"] =  $item["value"];
-            //$item["value"] = $item['toolTip'];
-
             $data[] = $item;
         }
         //trace($data,"data");

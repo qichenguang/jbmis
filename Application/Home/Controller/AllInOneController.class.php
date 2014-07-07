@@ -57,7 +57,6 @@ class AllInOneController extends Controller {
             $responce[$item['department']][] = array('id' => $item["id"],'user_name' => $item['user_name']);
         }
         $this->all_dep_username = json_encode($responce);
-
         //--------------------------------------------------------------------------------------------------------------
         //得到分包商信息
         $Data = M('fbs'); // 实例化Data数据模型
@@ -80,9 +79,47 @@ class AllInOneController extends Controller {
         $this->all_gys_name = json_encode($responce);
         $_SESSION['all_gys_name'] = $this->all_gys_name;
         //--------------------------------------------------------------------------------------------------------------
-        $this->gc_kg_jh_time = $project_detail["gc_kg_jh_time"];;
+        $this->gc_kg_jh_time = $project_detail["gc_kg_jh_time"];
+        $this->gc_kg_sj_time = $project_detail["gc_kg_sj_time"];
+        if(empty($this->gc_kg_sj_time)){
+            $this->gc_kg_sj_time = $this->gc_kg_jh_time;
+        }
+        //
         $this->gc_xmwg_khys_jh_time = $project_detail["gc_xmwg_khys_jh_time"];
+        $this->gc_xmwg_khys_sj_time = $project_detail["gc_xmwg_khys_sj_time"];
+        if(empty($this->gc_xmwg_khys_sj_time)){
+            $this->gc_xmwg_khys_sj_time = $this->gc_xmwg_khys_jh_time;
+        }
+        //--------------------------------------------------------------------------------------------------------------
         $this->ys_hetong_amt = $project_detail["ys_hetong_amt"];
+        //--------------------------------------------------------------------------------------------------------------
+        $this->gc_zbqm_time = $project_detail["gc_zbqm_time"];
+        $this->cur_project_status = ($this->cur_project_sc_zb_flag == "A") ? "落标" : "中标";
+        if(!empty($this->gc_kg_sj_time)){
+            $kg = strtotime($this->gc_kg_sj_time);
+            $now = time();
+            if($now < $kg){
+                $this->cur_project_status = "未开工";
+            }
+            if(!empty($this->gc_xmwg_khys_sj_time)){
+                $wg = strtotime($this->gc_xmwg_khys_sj_time);
+                if($now >= $kg && $now < $wg){
+                    $this->cur_project_status = "施工中";
+                }
+                if(!empty($this->gc_zbqm_time)){
+                    $zbqm = strtotime($this->gc_zbqm_time);
+                    if($now >= $wg && $now < $zbqm){
+                        $this->cur_project_status = "已完工";
+                    }
+                    if($now >= $zbqm){
+                        $this->cur_project_status = "质保期满";
+                    }
+                }
+            }
+
+        }
+
+
         //layout(flase);
         $this->display();
     }
