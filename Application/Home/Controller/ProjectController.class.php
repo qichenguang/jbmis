@@ -24,6 +24,7 @@ class ProjectController extends Controller {
                     $this->ajaxReturn(array('state' => false, 'msg' => "$pro_id 已经有相同 项目ID 存在"));
                 }
                 $condition['sc_pro_name'] = $sc_pro_name;
+                $condition["status"] = 1;
                 $result  = $Data->add($condition);
                 if(false === $result){
                     $this->ajaxReturn(array('state' => false, 'msg' => "存盘失败,请检查数据库连接设置"));
@@ -69,7 +70,7 @@ class ProjectController extends Controller {
 
     public function _before_ajaxProjectmngSearch(){
         $department = $_SESSION['department'];
-        if("sc" != $department){
+        if("hr" != $department){
             $this->error("没有权限!");
         }
     }
@@ -137,7 +138,7 @@ class ProjectController extends Controller {
 
     public function _before_projectmng(){
         $department = $_SESSION['department'];
-        if("sc" != $department){
+        if("hr" != $department){
             $this->error("没有权限!");
         }
     }
@@ -157,10 +158,10 @@ class ProjectController extends Controller {
             $this->ajaxReturn(array('state' => false, 'msg' => "存盘失败,请检查数据库连接设置", 'pro_id' => $search_pro_id));
         }
         //
-        trace($search_pro_id);
-        trace($pro2user_all_str);
+        //trace($search_pro_id);
+        //trace($pro2user_all_str);
         $rec_arr = explode("|",$pro2user_all_str);
-        trace($rec_arr);
+        //trace($rec_arr);
         if(empty($rec_arr)){
             $this->ajaxReturn(array('state' => false, 'msg' => "存盘失败,没有需要存储的记录", 'pro_id' => $search_pro_id));
         }

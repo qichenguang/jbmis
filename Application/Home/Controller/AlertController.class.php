@@ -392,7 +392,7 @@ class AlertController extends Controller {
     }
     //成本管理
     private function getCommCbglLowRate($item,$alert_arr){
-        $fb_lx_arr = USER_FUN_GET_VO_TYPE_NAME();
+        $fb_lx_arr = USER_FUN_GET_FBS_TYPE_NAME();
         //1.任一分包横轴项目实际发生成本大于内控金额
         foreach($fb_lx_arr as $fb_lx => $fb_lx_name){
             $key_sjcb = "ys_" . $fb_lx . "_sjcb";

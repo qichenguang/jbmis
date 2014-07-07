@@ -68,7 +68,7 @@ class FusionController extends Controller {
             }
         }
         //分包
-        $fb_lx_arr = USER_FUN_GET_VO_TYPE_NAME();
+        $fb_lx_arr = USER_FUN_GET_FBS_TYPE_NAME();
         foreach($fb_lx_arr as $key => $value){
             $tmp = array();
             $tmp['name'] = $value;

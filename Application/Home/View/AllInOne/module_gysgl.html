@@ -7,21 +7,21 @@
             var cur_row_num = cur_id_arr[0];
             //alert(cur_row_num);
             var all = 0;
-            var over_c = 0;
+            var over_b = 0;
             $("#" + cur_row_num + " td select").each(function(index,elem){
                 var cur = $(elem).val();
                 if($(elem).attr("id").indexOf("ys_fb_ht_lx") != -1){
                     return;
                 }
                 //alert(cur);
-                if(cur == "A" || cur == "B" || cur == "C"){
-                    over_c++;
+                if(cur == "A" || cur == "B"){
+                    over_b++;
                 }
                 all++;
             });
-            //var rate = (over_c/all)*100 + "%";
+            //var rate = (over_b/all)*100 + "%";
             //Math.round(x*10000)/100
-            var rate = (over_c/4)*100 + "%";
+            var rate = (over_b/4)*100 + "%";
             $("#" + cur_row_num + "_pj_pj").val(rate);
         }
         //
@@ -47,11 +47,35 @@
                 formoptions:{rowpos:rowpos, label: label, elmprefix:"(*)"}
             };
         }
+        function getColModel_Ht_lx(indexname,rowpos,label,require){
+            return {
+                name:indexname,
+                index:indexname,
+                width:30,
+                align:"center",
+                sortable:true,
+                stype:'select',//查询类型
+                editable:true,edittype:"select",
+                editoptions:{
+                    value:{
+                        '0':"请选择",
+                        'A':"投标",
+                        'B':"询价",
+                        'C':"直接指定",
+                        'D':"客户指定",
+                        'E':"长期协议"
+                    },
+                    defaultValue:"0"
+                },
+                editrules:{required: (typeof(require )== "undefined") ? false : require },
+                formoptions:{ rowpos:rowpos,label:label,elmprefix:"(*)"}
+            };
+        }
         function getColModel_Pj(indexname,rowpos,label,require){
             return {
                 name: indexname,
                 index: indexname,
-                width:40,
+                width:20,
                 align:"center",
                 sortable:true,
                 stype:'select',//查询类型
@@ -77,6 +101,62 @@
                 formoptions:{ rowpos:rowpos,label: label ,elmprefix:"(*)"}
             };
         }
+        function getColModel_Fbslist(indexname,rowpos,label,require){
+            var fbs_json_str = $("#all_fbs_name").val();
+            var fbs_json_obj = $.parseJSON(fbs_json_str);
+            var fbs_obj = { '0':"请选择"};
+            $.each(fbs_json_obj,function(index,elem){
+                //console.log(index,elem);
+                $.each(elem,function(index2,elem2){
+                    //console.log(index2,elem2);
+                    fbs_obj[elem2["id"]] = elem2["fbs_name"]
+                });
+            });
+            //console.log(fbs_obj);
+            return {
+                name: indexname,
+                index: indexname,
+                width:70,
+                align:"center",
+                sortable:true,
+                stype:'select',//查询类型
+                editable:true,edittype:"select",
+                editoptions:{
+                    value:fbs_obj,
+                    defaultValue:"0"
+                },
+                editrules:{required: (typeof(require )== "undefined") ? false : require },
+                formoptions:{ rowpos:rowpos,label: label ,elmprefix:"(*)"}
+            };
+        }
+        function getColModel_Gyslist(indexname,rowpos,label,require){
+            var gys_json_str = $("#all_gys_name").val();
+            var gys_json_obj = $.parseJSON(gys_json_str);
+            var gys_obj = { '0':"请选择"};
+            $.each(gys_json_obj,function(index,elem){
+                //console.log(index,elem);
+                $.each(elem,function(index2,elem2){
+                    //console.log(index2,elem2);
+                    gys_obj[elem2["id"]] = elem2["gys_name"]
+                });
+            });
+            //console.log(gys_obj);
+            return {
+                name: indexname,
+                index: indexname,
+                width:70,
+                align:"center",
+                sortable:true,
+                stype:'select',//查询类型
+                editable:true,edittype:"select",
+                editoptions:{
+                    value:gys_obj,
+                    defaultValue:"0"
+                },
+                editrules:{required: (typeof(require )== "undefined") ? false : require },
+                formoptions:{ rowpos:rowpos,label: label ,elmprefix:"(*)"}
+            };
+        }
         //供应商管理 材料管理
         function setGysClglCommJqGrid(domTableId,domPageId,cur_pro_id,cur_user_id,srctype){
             var search_url = '/index.php/Home/DbOpt/ajaxGysclglSearch';
@@ -88,12 +168,12 @@
             var selflable = "";
             if(srctype == "zxcg"){
                 caption_str = "装修材料";
-                colNames = ['ID','装修材料名称','合同金额','VO金额','VO占比','设计部评价','工程部评价','采购部评价','售后部评价','平均评价'];
+                colNames = ['ID','装修材料名称','供应商名称','合同类型','合同金额','VO金额','VO占比','设计部评价','工程部评价','采购部评价','售后部评价','平均评价'];
                 selfname = "sj_pj";
                 selflable = "设计部评价";
             }else if(srctype == "jdcg"){
                 caption_str = "机电材料";
-                colNames = ['ID','机电材料名称','合同金额','VO金额','VO占比','机电部评价','工程部评价','采购部评价','售后部评价','平均评价'];
+                colNames = ['ID','机电材料名称','供应商名称','合同类型','合同金额','VO金额','VO占比','机电部评价','工程部评价','采购部评价','售后部评价','平均评价'];
                 selfname = "jd_pj";
                 selflable = "机电部评价";
             }
@@ -108,26 +188,30 @@
                     ,
                     getColModel_ReadOnly("cg_name",2,"材料名称")
                     ,
-                    getColModel_ReadOnly("htje",3,"合同金额")
+                    getColModel_Gyslist("cg_gys_name",3,"供应商名称")
                     ,
-                    getColModel_ReadOnly("voje",4,"VO金额")
+                    getColModel_Ht_lx("cg_ht_lx",4,"合同类型")
                     ,
-                    getColModel_ReadOnly("vozb",5,"VO占比",false)
+                    getColModel_ReadOnly("htje",5,"合同金额")
                     ,
-                    getColModel_Pj(selfname,6,selflable)
+                    getColModel_ReadOnly("voje",6,"VO金额")
                     ,
-                    getColModel_Pj("gc_pj",7,"工程部评价")
+                    getColModel_ReadOnly("vozb",7,"VO占比",false)
                     ,
-                    getColModel_Pj("cg_pj",8,"采购部评价")
+                    getColModel_Pj(selfname,8,selflable)
                     ,
-                    getColModel_Pj("sh_pj",9,"售后部评价")
+                    getColModel_Pj("gc_pj",9,"工程部评价")
+                    ,
+                    getColModel_Pj("cg_pj",10,"采购部评价")
+                    ,
+                    getColModel_Pj("sh_pj",11,"售后部评价")
                     ,
                     {name:'pj_pj',index:'pj_pj',
                         width:20,align:"right",
                         sortable:true,
                         editable:true, edittype:"text",editrules:{required:false},
                         editoptions:{size:"20"},
-                        formoptions:{rowpos:10, label: "平均评价", elmprefix:"(*)"}
+                        formoptions:{rowpos:12, label: "平均评价", elmprefix:"(*)"}
                     }
                 ],
                 hiddengrid: false,
@@ -147,7 +231,7 @@
                     if(rowid){
                         var rowData = $(domTableId).jqGrid('getRowData',rowid);
                         var domTableId_tag = domTableId.substring(1);
-                        if("sj" == dep_sx || "gc" == dep_sx || "cg" == dep_sx || "sh" == dep_sx || "jd" == dep_sx){
+                        if("cg" == dep_sx || "sj" == dep_sx || "gc" == dep_sx || "cg" == dep_sx || "sh" == dep_sx || "jd" == dep_sx){
                             $("#" + domTableId_tag + "_iledit").removeClass('ui-state-disabled');
                         }else{
                             $("#" + domTableId_tag + "_iledit").addClass('ui-state-disabled');
@@ -164,11 +248,10 @@
 
             //导航栏配置和CRUD函数
             jQuery(domTableId).jqGrid('navGrid',domPageId,
-                    {view:true,search:false,edit:false,add:false,del:false,alerttext:"请选择需要操作的数据行!"}
+                    {view:true,search:false,edit:false,add:false,del:false}
             );
             //
             var addparameters = {
-                //
             }
             //
             var editparameters = {
@@ -211,7 +294,7 @@
             var parameters = {
                 edit: true,
                 editicon: "ui-icon-pencil",
-                add: false,
+                add:false,
                 addicon:"ui-icon-plus",
                 save: true,
                 saveicon:"ui-icon-disk",
@@ -242,7 +325,7 @@
             var caption_str = "分包";
             var search_url = '/index.php/Home/DbOpt/ajaxGysfbglSearch';
             var save_url = '/index.php/Home/DbOpt/ajaxGysfbglSave';
-            var colNames = ['ID','分包类型','合同类型','合同金额','VO金额','VO占比','预算部评价','设计部评价','机电部评价','工程部评价','售后部评价','平均评价'];
+            var colNames = ['ID','分包类型','分包商名称','合同类型','合同金额','VO金额','VO占比','预算部评价','设计部评价','机电部评价','工程部评价','售后部评价','平均评价'];
 
             var $gyscommgridobj = jQuery(domTableId).jqGrid({
                 url: search_url,
@@ -255,47 +338,32 @@
                     ,
                     getColModel_ReadOnly("fb_lx",2,"分包类型")
                     ,
-                    {name:'ys_fb_ht_lx',index:'ys_fb_ht_lx',
-                        width:30, align:"center",
-                        sortable:true,
-                        stype:'select',//查询类型
-                        editable:true,edittype:"select",
-                        editoptions:{
-                            value:{
-                                '0':"请选择",
-                                'A':"投标",
-                                'B':"询价",
-                                'C':"直接指定",
-                                'D':"客户指定"
-                            },
-                            defaultValue:"0"
-                        },
-                        editrules:{required:true},
-                        formoptions:{ rowpos:3,label: "合同类型",elmprefix:"(*)"}
-                    }
+                    getColModel_Fbslist("ys_fbs_name",3,"分包商名称")
                     ,
-                    getColModel_ReadOnly("htje",4,"合同金额")
+                    getColModel_Ht_lx("ys_fb_ht_lx",4,"合同类型")
                     ,
-                    getColModel_ReadOnly("voje",5,"VO金额")
+                    getColModel_ReadOnly("htje",5,"合同金额")
                     ,
-                    getColModel_ReadOnly("vozb",6,"VO占比",false)
+                    getColModel_ReadOnly("voje",6,"VO金额")
                     ,
-                    getColModel_Pj("ys_pj",7,"预算部评价")
+                    getColModel_ReadOnly("vozb",7,"VO占比",false)
                     ,
-                    getColModel_Pj("sj_pj",8,"设计部评价")
+                    getColModel_Pj("ys_pj",8,"预算部评价")
                     ,
-                    getColModel_Pj("jd_pj",9,"机电部评价")
+                    getColModel_Pj("sj_pj",9,"设计部评价")
                     ,
-                    getColModel_Pj("gc_pj",10,"工程部评价")
+                    getColModel_Pj("jd_pj",10,"机电部评价")
                     ,
-                    getColModel_Pj("sh_pj",11,"售后部评价")
+                    getColModel_Pj("gc_pj",11,"工程部评价")
+                    ,
+                    getColModel_Pj("sh_pj",12,"售后部评价")
                     ,
                     {name:'pj_pj',index:'pj_pj',
                         width:20,align:"right",
                         sortable:true,
                         editable:true, edittype:"text",editrules:{required:false},
                         editoptions:{size:"20"},
-                        formoptions:{rowpos:12, label: "平均评价", elmprefix:"(*)"}
+                        formoptions:{rowpos:13, label: "平均评价", elmprefix:"(*)"}
                     }
                 ],
                 hiddengrid: false,

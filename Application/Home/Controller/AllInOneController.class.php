@@ -57,7 +57,29 @@ class AllInOneController extends Controller {
             $responce[$item['department']][] = array('id' => $item["id"],'user_name' => $item['user_name']);
         }
         $this->all_dep_username = json_encode($responce);
-        //
+
+        //--------------------------------------------------------------------------------------------------------------
+        //得到分包商信息
+        $Data = M('fbs'); // 实例化Data数据模型
+        $condition["status"] = 2;//normal
+        $list  = $Data->where($condition)->select();
+        $responce = array();
+        foreach($list as $item){
+            $responce[$item["fbs_type"]][] = array('id' => $item["id"],'fbs_name' => $item['fbs_name']);
+        }
+        $this->all_fbs_name = json_encode($responce);
+        $_SESSION['all_fbs_name'] = $this->all_fbs_name;
+        //得到供应商信息
+        $Data = M('gys'); // 实例化Data数据模型
+        $condition["status"] = 2;//normal
+        $list  = $Data->where($condition)->select();
+        $responce = array();
+        foreach($list as $item){
+            $responce[$item["gys_type"]][] = array('id' => $item["id"],'gys_name' => $item['gys_name']);
+        }
+        $this->all_gys_name = json_encode($responce);
+        $_SESSION['all_gys_name'] = $this->all_gys_name;
+        //--------------------------------------------------------------------------------------------------------------
         $this->gc_kg_jh_time = $project_detail["gc_kg_jh_time"];;
         $this->gc_xmwg_khys_jh_time = $project_detail["gc_xmwg_khys_jh_time"];
         $this->ys_hetong_amt = $project_detail["ys_hetong_amt"];
@@ -502,7 +524,7 @@ class AllInOneController extends Controller {
         $responce["records"] = $count;
 
         $myd_pj_arr = USER_FUN_GET_MYD_PJ_NAME();
-        $my_fb_type_arr = USER_FUN_GET_VO_TYPE_NAME();
+        $my_fb_type_arr = USER_FUN_GET_FBS_TYPE_NAME();
         $my_ht_type_arr = USER_FUN_GET_HT_TYPE_NAME();
         $i=0;
         if(!empty($list)){

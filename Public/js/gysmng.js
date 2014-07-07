@@ -1,12 +1,12 @@
 $(document).ready(function(){
     //jqGrid setting 开始.//////////////////////////////////////////////////////////////////////////////////////////////
-    //分包商管理
-    function setFbsmngCommJqGrid(domTableId,domPageId,cur_user_id){
-        var search_url = '/index.php/Home/Fbs/ajaxFbsmngSearch';
-        var save_url = '/index.php/Home/Fbs/ajaxFbsmngSave';
-        var colNames = ['ID','分包商名称','分包商类型','联系人姓名','联系人电话','邮箱地址','状态'];
-        var caption_str = "分包商管理";
-        var $fbscommgridobj = jQuery(domTableId).jqGrid({
+    //供应商管理
+    function setGysmngCommJqGrid(domTableId,domPageId,cur_user_id){
+        var search_url = '/index.php/Home/Gys/ajaxGysmngSearch';
+        var save_url = '/index.php/Home/Gys/ajaxGysmngSave';
+        var colNames = ['ID','供应商名称','供应商类型','联系人姓名','联系人电话','邮箱地址','状态'];
+        var caption_str = "供应商管理";
+        var $gyscommgridobj = jQuery(domTableId).jqGrid({
             url: search_url,
             datatype: "json",
             mtype: 'POST',
@@ -19,14 +19,14 @@ $(document).ready(function(){
                     editable:false,
                     editoptions:{readonly:true,size:20}
                 },
-                {name:'fbs_name',index:'fbs_name',
+                {name:'gys_name',index:'gys_name',
                     width:100,align:"right",
                     sortable:true,
                     editable:true, edittype:"text",editrules:{required:true},
                     editoptions:{size:"100"},
-                    formoptions:{rowpos:2, label: "分包商名称", elmprefix:"(*)"}
+                    formoptions:{rowpos:2, label: "供应商名称", elmprefix:"(*)"}
                 },
-                {name:'fbs_type',index:'fbs_type',
+                {name:'gys_type',index:'gys_type',
                     width:30, align:"center",
                     sortable:true,
                     stype:'select',//查询类型
@@ -35,18 +35,12 @@ $(document).ready(function(){
                         value:{
                             '0':"全部",
                             'zx':"装修",
-                            'dq':"电气",
-                            'kt':"空调",
-                            'xf':"消防",
-                            'jps':"给排水",
-                            'it':"IT",
-                            'sec':"SEC",
-                            'av':"AV"
+                            'jd':"机电"
                         },
                         defaultValue:"0"
                     },
                     editrules:{required:true},
-                    formoptions:{ rowpos:3,label: "分包商类型",elmprefix:"(*)"}
+                    formoptions:{ rowpos:3,label: "供应商类型",elmprefix:"(*)"}
                 },
                 {name:'lxr_name',index:'lxr_name',
                     width:30,align:"right",
@@ -175,12 +169,12 @@ $(document).ready(function(){
          if($(domPageId + ":contains(Toggle)").length < 1){
              jQuery(domTableId).jqGrid('navButtonAdd',domPageId,{caption:"Toggle",title:"Toggle Search Toolbar", buttonicon :'ui-icon-pin-s',
                  onClickButton:function(){
-                     $fbscommgridobj[0].toggleToolbar();
+                     $gyscommgridobj[0].toggleToolbar();
                  }
              });
          }
     }
-    setFbsmngCommJqGrid("#fbsmnglist","#pfbsmnglist",$("#user_id").val());
+    setGysmngCommJqGrid("#gysmnglist","#pgysmnglist",$("#user_id").val());
 
     //------------------------------------------------------------------------------------------------------------------
     //jqGrid setting 结束///////////////////////////////////////////////////////////////////////////////////////////////

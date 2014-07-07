@@ -176,6 +176,7 @@ $(document).ready(function() {
             || dep == "cg_" || dep == "gc_" || dep == "zj_"){
             $(this).addClass("recurly");
         }
+
     });
     $(".module table[jb_table]").each(function(index,elem){
         var cls = $(this).attr("jb_table");

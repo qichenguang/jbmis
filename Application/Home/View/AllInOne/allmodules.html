@@ -1,20 +1,17 @@
 <script src="__PUBLIC__/js/allmodules.js"></script>
 <script src="__PUBLIC__/js/Lib/darktooltip/jquery.darktooltip.min.js"></script>
 <link rel="stylesheet" type="text/css"  href="__PUBLIC__/style/darktooltip/darktooltip.css" />
-<script src="__PUBLIC__/js/Lib/simplemodal/jquery.simplemodal-1.4.4.js"></script>
-<link rel="stylesheet" type="text/css"  href="__PUBLIC__/style/simplemodal/basic.css" />
+<!--<script src="__PUBLIC__/js/Lib/simplemodal/jquery.simplemodal-1.4.4.js"></script>-->
+<!--<link rel="stylesheet" type="text/css"  href="__PUBLIC__/style/simplemodal/basic.css" />-->
 <!--<script src="__PUBLIC__/js/Lib/jquery-easyui-1.3.5/jquery.easyui.min.js"></script>-->
 <!--<link rel="stylesheet" type="text/css"  href="__PUBLIC__/js/Lib/jquery-easyui-1.3.5/themes/default/easyui.css" />-->
 <script src="__PUBLIC__/js/Lib/jquery-ui-multiselect-widget/src/jquery.multiselect.js"></script>
 <script src="__PUBLIC__/js/Lib/jquery-ui-multiselect-widget/i18n/jquery.multiselect.zh-cn.js"></script>
 <link rel="stylesheet" type="text/css"  href="__PUBLIC__/js/Lib/jquery-ui-multiselect-widget/jquery.multiselect.css" />
-<!--<style>
-    .module table{border-collapse:collapse;border-spacing:0;border-left:1px solid #888;border-top:1px solid #888;background:#efefef;}
-    .module th,td{border-right:1px solid #888;border-bottom:1px solid #888;padding:5px 15px;}
-    .module th{font-weight:bold;background:#ccc;}
-</style>-->
+
 
 <div id="AllInOneMain"  style="display:none">
+<!--<div id="AllInOneMain" >-->
     <INPUT type="text" id="user_id" name="user_id" value="{$user_id}" >
     <br/>
     <INPUT type="text" id="user_department" name="user_department" value="{$user_department}" >
@@ -31,25 +28,16 @@
     <br/>
     <INPUT type="text" id="cur_project_sc_zb_flag" name="cur_project_sc_zb_flag" value="{$cur_project_sc_zb_flag}" >
     <br/>
+    <textarea rows="10" cols="200" id="all_fbs_name" name="all_fbs_name" >{$all_fbs_name}</textarea>
+    <br/>
+    <textarea rows="10" cols="200" id="all_gys_name" name="all_gys_name" >{$all_gys_name}</textarea>
+    <br/>
 </div>
-
-
-
 
 <span id="lock">锁定</span><span id="unlock">解锁</span>
 <br>
 <div id="AllInOneDetail">
     <include file="AllInOne/module_xmjbxx" />
-    <include file="AllInOne/module_xmscfx" />
-    <include file="AllInOne/module_khbyd" />
-    <include file="AllInOne/module_xmrlzygl" />
-    <include file="AllInOne/module_xmsjgl" />
-    <include file="AllInOne/module_xmcbgl" />
-    <include file="AllInOne/module_xmzjlgl" />
-    <include file="AllInOne/module_gysgl" />
-    <include file="AllInOne/module_ygjxgl" />
-    <include file="AllInOne/module_gczcgl" />
-    <include file="AllInOne/module_dxmgl" />
 </div>
 
 

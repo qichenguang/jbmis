@@ -2,16 +2,16 @@
 namespace Home\Controller;
 use Think\Controller;
 //use Think\Page;
-class FbsController extends Controller {
+class GysController extends Controller {
 
-    public function ajaxFbsmngSave(){
-        $Data = M('fbs'); // 实例化Data数据模型
+    public function ajaxGysmngSave(){
+        $Data = M('gys'); // 实例化Data数据模型
 
         $oper = I('oper');
         $id = I('id');
 
-        $fbs_name = I('fbs_name');
-        $fbs_type = I('fbs_type');
+        $gys_name = I('gys_name');
+        $gys_type = I('gys_type');
         $lxr_name = I('lxr_name');
         $lxr_phone = I('lxr_phone');
         $email = I('email');
@@ -19,16 +19,16 @@ class FbsController extends Controller {
 
         switch ($oper) {
             case "add"://
-                if( empty($fbs_name) || empty($fbs_type) ){
+                if( empty($gys_name) || empty($gys_type) ){
                     $this->ajaxReturn(array('state' => false, 'msg' => "字段不能为空"));
                 }
-                $condition["fbs_name"] = $fbs_name;
-                $condition["fbs_type"] = $fbs_type;
+                $condition["gys_name"] = $gys_name;
+                $condition["gys_type"] = $gys_type;
                 $list  = $Data->where($condition)->find();
                 if(!empty($list)){
                     $this->ajaxReturn(array('state' => false, 'msg' => "已经有相同 分包商名称 存在"));
                 }
-                $condition["fbs_type"] = $fbs_type;
+                $condition["gys_type"] = $gys_type;
                 $condition["lxr_name"] = $lxr_name;
                 $condition["lxr_phone"] = $lxr_phone;
                 $condition['email'] = $email;
@@ -40,11 +40,11 @@ class FbsController extends Controller {
                 }
                 break;
             case "edit"://
-                if(empty($id) || empty($fbs_name)|| empty($fbs_type) || empty($status)){
+                if(empty($id) || empty($gys_name)|| empty($gys_type) || empty($status)){
                     $this->ajaxReturn(array('state' => false, 'msg' => "字段不能为空", 'id' => $id));
                 }
-                $condition["fbs_name"] = $fbs_name;
-                $condition["fbs_type"] = $fbs_type;
+                $condition["gys_name"] = $gys_name;
+                $condition["gys_type"] = $gys_type;
                 $condition["lxr_name"] = $lxr_name;
                 $condition["lxr_phone"] = $lxr_phone;
                 $condition['email'] = $email;
@@ -79,14 +79,14 @@ class FbsController extends Controller {
         }
     }
 
-    public function _before_ajaxFbsmngSave(){
+    public function _before_ajaxGysmngSave(){
         $department = $_SESSION['department'];
         if("cg" != $department){
             $this->error("没有权限!");
         }
     }
 
-    public function ajaxFbsmngSearch(){
+    public function ajaxGysmngSearch(){
         $pagenum = I('page',1); // get the requested page
         $limitnum = I('rows',20); // get how many rows we want to have into the grid
         $sidx = I('sidx','id'); // get index row - i.e. user click to sort
@@ -102,14 +102,14 @@ class FbsController extends Controller {
             $sarr = I('param.');
             foreach( $sarr as $k=>$v) {
                 switch ($k) {
-                    case 'fbs_name':
+                    case 'gys_name':
                     case 'lxr_name':
                     case 'lxr_phone':
                     case 'email':
                         $cond[$k] = array('LIKE', "%$v%");
                         break;
                     case 'id':
-                    case 'fbs_type':
+                    case 'gys_type':
                     case 'status':
                         if("0" != $v){
                             $cond[$k] = $v;
@@ -126,7 +126,7 @@ class FbsController extends Controller {
             $cond[$searchField] = array('LIKE', "%$searchString%");
         }
         //
-        $User = M('fbs'); // 实例化User对象
+        $User = M('gys'); // 实例化User对象
         $count = $User->where($cond)->order(array($sidx => $sord))->count();// 查询满足要求的总记录数
         $list =  $User->where($cond)->order(array($sidx => $sord))->page($pagenum,$limitnum)->select();
 
@@ -139,25 +139,25 @@ class FbsController extends Controller {
         $responce["records"] = $count;
 
         $i=0;
-        $fbs_arr = USER_FUN_GET_FBS_TYPE_NAME();
+        $gys_arr = USER_FUN_GET_GYS_TYPE_NAME();
         $st = USER_FUN_GET_PROJECT_STATUS_NAME();
         foreach($list as $item){
             $responce["rows"][$i]['id']=$item["id"];
             $responce["rows"][$i]['cell'] = array($item['id'],
-                $item['fbs_name'],$fbs_arr[$item['fbs_type']],$item['lxr_name'],$item['lxr_phone'],$item['email'],$st[$item['status']]);
+                $item['gys_name'],$gys_arr[$item['gys_type']],$item['lxr_name'],$item['lxr_phone'],$item['email'],$st[$item['status']]);
             $i++;
         }
         $this->ajaxReturn($responce);
 
     }
 
-    public function _before_fbsmng(){
+    public function _before_gysmng(){
         $department = $_SESSION['department'];
         if("cg" != $department){
             $this->error("没有权限!");
         }
     }
-    public function fbsmng(){
+    public function gysmng(){
         layout(false);
         //显示用户列表
         $this->display();

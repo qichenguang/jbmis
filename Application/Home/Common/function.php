@@ -5,7 +5,8 @@ function USER_FUN_GET_GYS_FB_HT_LX_NAME(){
         'A' => "投标",
         'B' => "询价",
         'C' => "直接指定",
-        'D' => "客户指定");
+        'D' => "客户指定",
+        'E' => "长期协议");
     return $arr;
 }
 function USER_FUN_GET_ZJL_SKSJ_BS_NAME(){
@@ -159,7 +160,7 @@ function USER_FUN_GET_PROJECT_STATUS_NAME(){
     return $st;
 }
 
-function USER_FUN_GET_VO_TYPE_NAME(){
+function USER_FUN_GET_FBS_TYPE_NAME(){
     $vo = array(
         'zx'=> "装修",
         'dq' => "电气",
@@ -169,6 +170,13 @@ function USER_FUN_GET_VO_TYPE_NAME(){
         'it' => "IT",
         'sec' => "SEC",
         'av' => "AV",
+    );
+    return $vo;
+}
+function USER_FUN_GET_GYS_TYPE_NAME(){
+    $vo = array(
+        'zx'=> "装修",
+        'jd'=> "机电",
     );
     return $vo;
 }
@@ -196,7 +204,7 @@ function USER_FUN_GET_CUSTOMER_VO_RESON_NAME(){
 function USER_FUN_GET_FB_VO_RESON_NAME(){
     $vo_reson = array(
         'A' => "客户要求-有VO",
-        'B' => "客户要求- 无VO",
+        'B' => "客户要求-无VO",
         'C' => "装修设计协调",
         'D' => "机电设计协调",
         'E' => "预算漏项或少算",

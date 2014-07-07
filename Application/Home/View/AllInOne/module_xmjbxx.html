@@ -6,6 +6,92 @@
 
         //$.Zebra_TransForm($('#sc_mag_company_base'));
         //$("#sc_ss_fgs").chosen();
+        //--------------------------------------------------------------------------------------------------------------
+        var provinceSelector = $("#provinceSelector");
+        var citySelector = $("#citySelector");
+        var areaSelector=$("#areaSelector");
+        GetProvince();
+        provinceSelector.change(function () {
+            var provinceName = provinceSelector.val();
+            if (provinceName != '') {
+                GetCity(provinceName);
+                areaSelector.empty();
+            }
+            else{
+                citySelector.empty();
+                areaSelector.empty();
+            }
+        });
+        citySelector.change(function () {
+            var provinceName = provinceSelector.val();
+            var cityName = citySelector.val();
+            if(cityName!=''){
+                GetArea(provinceName, cityName);
+            }
+            else{
+                areaSelector.empty();
+            }
+        });
+        areaSelector.change(function () {
+            var provinceName = provinceSelector.val();
+            var cityName = citySelector.val();
+            var areaName = areaSelector.val();
+            //alert(provinceName);
+            //alert($.isEmptyObject(provinceName));
+            if($.isEmptyObject(provinceName)|| $.isEmptyObject(cityName) || $.isEmptyObject(areaName)){
+                //console.log(provinceName,cityName,areaName);
+            }else{
+                $("#sc_pro_city").val(provinceName + "," + cityName + "," + areaName);
+            }
+
+        });
+        // 获取省份(直辖市)信息
+        function GetProvince() {
+            var provSelector = $("#provinceSelector");
+            provSelector.empty();
+            provSelector.append("<option value=''>--请选择--</option>");
+            var arrProvince = provinceInfo;
+            for (var provinceIndex in arrProvince) {
+                provSelector.append("<option value='" + arrProvince[provinceIndex]["name"] + "'>" + arrProvince[provinceIndex]["name"] + "</option>")
+            }
+        }
+        // 获取指定省份(直辖市)的城市(辖区或县)信息
+        function GetCity(provinceName) {
+            var citySelector = $("#citySelector");
+            var arrCity;
+            for (var provinceIndex in provinceInfo) {
+                if (provinceInfo[provinceIndex]["name"] == provinceName) {
+                    arrCity = provinceInfo[provinceIndex]["sub"];
+                    break;
+                }
+            }
+            citySelector.empty();
+            citySelector.append("<option value=''>--请选择--</option>")
+            for (var cityIndex in arrCity) {
+                citySelector.append("<option value='" + arrCity[cityIndex]["name"] + "'>" + arrCity[cityIndex]["name"] + "</option>")
+            }
+        }
+        // 获取指定城市(辖区或县)的地区信息
+        function GetArea(provinceName, cityName) {
+            var areaSelector = $("#areaSelector");
+            var arrCity, arrArea;
+            for (var provinceIndex in provinceInfo) {
+                if (provinceInfo[provinceIndex]["name"] == provinceName) {
+                    arrCity = provinceInfo[provinceIndex]["sub"];
+                    for (var cityIndex in arrCity) {
+                        if (arrCity[cityIndex]["name"] == cityName) {
+                            arrArea = arrCity[cityIndex]["sub"];
+                            break;
+                        }
+                    }
+                }
+            }
+            areaSelector.empty();
+            areaSelector.append("<option value=''>--请选择--</option>")
+            for (var areaIndex in arrArea) {
+                areaSelector.append("<option value='" + arrArea[areaIndex]["name"] + "'>" + arrArea[areaIndex]["name"] + "</option>")
+            }
+        }
     });
 </script>
 <div id="module_xmjbxx"  class="module">
@@ -106,7 +192,15 @@
                 </td>
             </tr>
             <tr>
-                <td>项目城市:</td><td><input type="text"  id="sc_pro_city" name="sc_pro_city"   jb_field="jb_single_save" /></td>
+                <td>项目城市:</td>
+                <td>
+                    <div>
+                        <select id="provinceSelector"></select>
+                        <select id="citySelector"></select>
+                        <select id="areaSelector"></select>
+                    </div>
+                    <input type="text"  id="sc_pro_city" name="sc_pro_city" size="35"  jb_field="jb_single_save" />
+                </td>
                 <td>项目地点:</td><td><input type="text"  id="sc_pro_address" name="sc_pro_address"   jb_field="jb_single_save" /></td>
             </tr>
 

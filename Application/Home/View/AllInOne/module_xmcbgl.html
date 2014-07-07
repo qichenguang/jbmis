@@ -23,7 +23,7 @@
                        //alert(nkje);
                        var dwbj =  parseFloat($("#" + cur_dwbj_id).val()) || 0.00;
                        //alert(dwbj);
-                       if(nkje >= dwbj){
+                       if(nkje > dwbj){
                            alert("内控金额 大于 对外报价！");
                            $(this).focus();
                            return;
@@ -123,7 +123,7 @@
                         //alert(nkje);
                         var dwbj =  parseFloat($("#" + cur_dwbj_id).val()) || 0.00;
                         //alert(dwbj);
-                        if(nkje >= dwbj){
+                        if(nkje > dwbj){
                             alert("内控金额 大于 对外报价！");
                             $(this).focus();
                             return;
@@ -270,7 +270,7 @@
                         //alert(nkje);
                         var dwbj =  parseFloat($("#" + cur_dwbj_id).val()) || 0.00;
                         //alert(dwbj);
-                        if(nkje >= dwbj){
+                        if(nkje > dwbj){
                             alert("内控金额 大于 对外报价！");
                             $(this).focus();
                             return;
@@ -476,7 +476,7 @@
             var fb_vo_arr = {
                 '0':"全部",
                 'A' : "客户要求-有VO",
-                'B' : "客户要求- 无VO",
+                'B' : "客户要求-无VO",
                 'C' : "装修设计协调",
                 'D' : "机电设计协调",
                 'E' : "预算漏项或少算",

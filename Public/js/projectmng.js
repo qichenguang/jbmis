@@ -10,7 +10,6 @@ $(document).ready(function(){
             }
         }
     }
-
     //zTree  设置开始 //////////////////////////////////////////////////////////////////////////////////////////////////
     var ztree_setting = {
         view: {
@@ -32,7 +31,6 @@ $(document).ready(function(){
             onCheck: ztree_onCheck
         }
     };
-
     function ztree_onCheck(){
         var treeObj = $.fn.zTree.getZTreeObj("privilegeTree");
         var nodes = treeObj.getCheckedNodes(true);
@@ -46,7 +44,6 @@ $(document).ready(function(){
         //
         getAllZtreeCheckToUL();
     }
-
     function initProIdZtree(pro_id){
         $.ajax({
             type: "POST",
@@ -69,7 +66,6 @@ $(document).ready(function(){
     }
     $("#privilegeDiv").hide();
     ////zTree  设置结束/////////////////////////////////////////////////////////////////////////////////////////////////
-
     //Form 设置 开始  //////////////////////////////////////////////////////////////////////////////////////////////////
     function beforePrivilegeRequest(formData, jqForm, options){
         //生成权限字符串，并设置
@@ -85,7 +81,6 @@ $(document).ready(function(){
         jAlert(result.msg);
         $("#privilegeDiv").hide();
     }
-
     var privilegeOptions = {
         target:        '#privilegeResult',   // 用服务器返回的数据 更新 id为 result 的内容.
         beforeSubmit:  beforePrivilegeRequest,  // 提交前
@@ -103,7 +98,6 @@ $(document).ready(function(){
     //'ajaxForm' 方式的表单 .
     $('#privilegeAddForm').ajaxForm(privilegeOptions);
     //Form 设置 结束  //////////////////////////////////////////////////////////////////////////////////////////////////
-
     //jqGrid setting 开始.//////////////////////////////////////////////////////////////////////////////////////////////
     var projectmngListGrid = jQuery("#projectmnglist").jqGrid({
         url:'/index.php/Home/Project/ajaxProjectmngSearch',
@@ -112,35 +106,39 @@ $(document).ready(function(){
         colNames:['ID','项目ID', '项目名称','项目状态'],
         colModel:[
             {name:'id',index:'id',
-                width:100,align:"right",
+                width:20,align:"right",
                 sortable:true,
                 editable:false,
-                editoptions:{readonly:true,size:100}
+                editoptions:{readonly:true,size:20}
             },
             {name:'pro_id',index:'pro_id',
-                width:150,align:"right",
+                width:50,align:"right",
                 sortable:true,
                 editable:true, edittype:"text",editrules:{required:true},
-                editoptions:{size:"20"},
+                editoptions:{size:"50"},
                 formoptions:{rowpos:1, label: "项目ID", elmprefix:"(*)"}
             },
             {name:'sc_pro_name',index:'sc_pro_name',
                 width:150,align:"right",
                 sortable:true,
                 editable:true, edittype:"text",editrules:{required:true},
-                editoptions:{size:"20"},
+                editoptions:{size:"150"},
                 formoptions:{rowpos:2, label: "项目名称", elmprefix:"(*)"}
             },
             {name:'status',index:'status',
-                width:150, align:"center",
+                width:30, align:"center",
                 sortable:true,
                 stype:'select',//查询类型
                 editable:true,edittype:"select",
-                editoptions:{value:{
-                    '0':"全部",
-                    '1':"新增(待审核)",
-                    '2':"正常(已审核)",
-                    '3':"注销(已删除)"},defaultValue:"0"},
+                editoptions:{
+                    value:{
+                        '0':"全部",
+                        '1':"新增(待审核)",
+                        '2':"正常(已审核)",
+                        '3':"注销(已删除)"
+                    },
+                    defaultValue:"0"
+                },
                 editrules:{required:true},
                 formoptions:{ rowpos:3,label: "项目状态",elmprefix:"(*)"}
             }

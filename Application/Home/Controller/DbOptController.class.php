@@ -11,7 +11,7 @@ class DbOptController extends Controller {
         $project_rec = $Data->where($cond)->find();
 
         //dwbj
-        $fb_lx_arr = USER_FUN_GET_VO_TYPE_NAME();
+        $fb_lx_arr = USER_FUN_GET_FBS_TYPE_NAME();
         $fb_dwbj_all = 0.0;
         $cg_dwbj_all = $project_rec['ys_cg_all_dwbj'];
         $fb_sjcb_all = 0.0;
@@ -64,7 +64,7 @@ class DbOptController extends Controller {
         $project_rec = $Data->where($cond)->find();
 
         //fb
-        $fb_lx_arr = USER_FUN_GET_VO_TYPE_NAME();
+        $fb_lx_arr = USER_FUN_GET_FBS_TYPE_NAME();
         $fb_sjcb_all = 0.0;
         $cg_sjcb_all = 0.0;
         foreach($fb_lx_arr as $fb_lx => $fb_lx_name){
@@ -474,6 +474,8 @@ class DbOptController extends Controller {
                     case 'id':
                     case 'pro_id':
                     case 'srctype':
+                    case 'cg_ht_lx':
+                    case 'cg_gys_name':
                     case 'sj_pj':
                     case 'jd_pj':
                     case 'gc_pj':
@@ -504,6 +506,18 @@ class DbOptController extends Controller {
         $responce["total"] = $total_pages;
         $responce["records"] = $count;
 
+        $ht_lx_arr = USER_FUN_GET_GYS_FB_HT_LX_NAME();
+        $gys_name_json_str = $_SESSION['all_gys_name'];
+        //trace($gys_name_json_str);
+        $gys_obj_arr = json_decode($gys_name_json_str,true);
+        //trace($fbs_obj_arr);
+        $gys_name_arr = array();
+        foreach($gys_obj_arr as $key=>$value){
+            foreach($value as $key2=>$value2){
+                //trace($value2);
+                $gys_name_arr[$value2["id"]] = $value2["gys_name"];
+            }
+        }
         $myd_pj_arr = USER_FUN_GET_MYD_PJ_NAME();
         $i=0;
         if(!empty($list)){
@@ -525,26 +539,28 @@ class DbOptController extends Controller {
                     $self_pj_str = $myd_pj_arr[$item['jd_pj']];
                 }
 
-                $over_c = 0;
-                if("A" == $self_pj || "B" == $self_pj || "C" == $self_pj){
-                    $over_c++;
+                $over_b = 0;
+                if("A" == $self_pj || "B" == $self_pj ){
+                    $over_b++;
                 }
-                if("A" == $item['gc_pj'] || "B" == $item['gc_pj'] || "C" == $item['gc_pj']){
-                    $over_c++;
+                if("A" == $item['gc_pj'] || "B" == $item['gc_pj'] ){
+                    $over_b++;
                 }
-                if("A" == $item['cg_pj'] || "B" == $item['cg_pj'] || "C" == $item['cg_pj']){
-                    $over_c++;
+                if("A" == $item['cg_pj'] || "B" == $item['cg_pj'] ){
+                    $over_b++;
                 }
-                if("A" == $item['sh_pj'] || "B" == $item['sh_pj'] || "C" == $item['sh_pj']){
-                    $over_c++;
+                if("A" == $item['sh_pj'] || "B" == $item['sh_pj'] ){
+                    $over_b++;
                 }
-                $rate = round(($over_c/4)*100,2) . "%";
+                $rate = round(($over_b/4)*100,2) . "%";
 
 
 
                 $responce["rows"][$i]['id']=$item["id"];
                 $responce["rows"][$i]['cell'] = array($item['id'],
                     $item['cg_name'],
+                    $gys_name_arr[$item['cg_gys_name']],
+                    $ht_lx_arr[$item['cg_ht_lx']],
                     $htje,
                     $voje,
                     round($vozb*100,2) . "%",
@@ -574,6 +590,8 @@ class DbOptController extends Controller {
   `cg_pj` char(1) NOT NULL COMMENT '平均：采购部',
   `sh_pj` char(1) NOT NULL COMMENT '平均：售后部',
         */
+        $cg_gys_name = I('cg_gys_name');
+        $cg_ht_lx = I('cg_ht_lx');
         $sj_pj = I('sj_pj');
         $jd_pj = I('jd_pj');
         $gc_pj = I('gc_pj');
@@ -589,6 +607,8 @@ class DbOptController extends Controller {
                 }
                 $condition["pro_id"] = $pro_id;
                 $condition["srctype"] = $srctype;
+                $condition['cg_gys_name'] = $cg_gys_name;
+                $condition['cg_ht_lx'] = $cg_ht_lx;
                 $condition['sj_pj'] = $sj_pj;
                 $condition['jd_pj'] = $jd_pj;
                 $condition['gc_pj'] = $gc_pj;
@@ -631,6 +651,7 @@ class DbOptController extends Controller {
                     case 'id':
                     case 'pro_id':
                     case 'fb_lx':
+                    case 'ys_fbs_name':
                     case 'ys_fb_ht_lx':
                     case 'sj_pj':
                     case 'ys_pj':
@@ -650,8 +671,20 @@ class DbOptController extends Controller {
             $cond[$searchField] = array('LIKE', "%$searchString%");
         }
         //
-        $fb_lx_arr = USER_FUN_GET_VO_TYPE_NAME();
+        $fb_lx_arr = USER_FUN_GET_FBS_TYPE_NAME();
         $fb_ht_lx_arr = USER_FUN_GET_GYS_FB_HT_LX_NAME();
+        $fbs_name_json_str = $_SESSION['all_fbs_name'];
+        trace($fbs_name_json_str);
+        $fbs_obj_arr = json_decode($fbs_name_json_str,true);
+        //trace($fbs_obj_arr);
+        $fbs_name_arr = array();
+        foreach($fbs_obj_arr as $key=>$value){
+            foreach($value as $key2=>$value2){
+                //trace($value2);
+                $fbs_name_arr[$value2["id"]] = $value2["fbs_name"];
+            }
+        }
+        //trace($fbs_name_arr);
         //
         $Data = M('gys_fbgl'); // 实例化User对象
         $count = $Data->where($cond)->order(array($sidx => $sord))->count();// 查询满足要求的总记录数
@@ -730,29 +763,30 @@ class DbOptController extends Controller {
                     $vozb = $voje / $htje;
                 }
 
-                $over_c = 0;
-                if("A" == $item['ys_pj'] || "B" == $item['ys_pj'] || "C" == $item['ys_pj']){
-                    $over_c++;
+                $over_b = 0;
+                if("A" == $item['ys_pj'] || "B" == $item['ys_pj'] ){
+                    $over_b++;
                 }
-                if("A" == $item['sj_pj'] || "B" == $item['sj_pj'] || "C" == $item['sj_pj']){
-                    $over_c++;
+                if("A" == $item['sj_pj'] || "B" == $item['sj_pj'] ){
+                    $over_b++;
                 }
-                if("A" == $item['jd_pj'] || "B" == $item['jd_pj'] || "C" == $item['jd_pj']){
-                    $over_c++;
+                if("A" == $item['jd_pj'] || "B" == $item['jd_pj'] ){
+                    $over_b++;
                 }
-                if("A" == $item['gc_pj'] || "B" == $item['gc_pj'] || "C" == $item['gc_pj']){
-                    $over_c++;
+                if("A" == $item['gc_pj'] || "B" == $item['gc_pj']){
+                    $over_b++;
                 }
-                if("A" == $item['sh_pj'] || "B" == $item['sh_pj'] || "C" == $item['sh_pj']){
-                    $over_c++;
+                if("A" == $item['sh_pj'] || "B" == $item['sh_pj']){
+                    $over_b++;
                 }
-                $rate = round(($over_c/4)*100,2) . "%";
+                $rate = round(($over_b/4)*100,2) . "%";
 
                 $responce["rows"][$i]['id']=$item["id"];
 
                 $cur_record_arr = array();
                 $cur_record_arr[] = $item['id'];
                 $cur_record_arr[] = $cur_fb_lx_str;
+                $cur_record_arr[] = $fbs_name_arr[$item['ys_fbs_name']];
                 $cur_record_arr[] = $fb_ht_lx_arr[$item['ys_fb_ht_lx']];
                 $cur_record_arr[] = $htje;
                 $cur_record_arr[] = $voje;
@@ -777,6 +811,7 @@ class DbOptController extends Controller {
         $id = I('id');
         $pro_id = I('pro_id');
 
+        $ys_fbs_name = I("ys_fbs_name");
         $ys_fb_ht_lx = I("ys_fb_ht_lx");
         $sj_pj = I('sj_pj');
         $jd_pj = I('jd_pj');
@@ -792,6 +827,7 @@ class DbOptController extends Controller {
                     $this->ajaxReturn(array('state' => false, 'msg' => "字段不能为空", 'id' => $id));
                 }
                 $condition["pro_id"] = $pro_id;
+                $condition["ys_fbs_name"] = $ys_fbs_name;
                 $condition["ys_fb_ht_lx"] = $ys_fb_ht_lx;
                 $condition['sj_pj'] = $sj_pj;
                 $condition['jd_pj'] = $jd_pj;

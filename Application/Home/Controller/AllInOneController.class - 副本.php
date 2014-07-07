@@ -668,7 +668,7 @@ class AllInOneController extends Controller {
         $responce["records"] = $count;
 
         $myd_pj_arr = USER_FUN_GET_MYD_PJ_NAME();
-        $my_fb_type_arr = USER_FUN_GET_VO_TYPE_NAME();
+        $my_fb_type_arr = USER_FUN_GET_FBS_TYPE_NAME();
         $my_ht_type_arr = USER_FUN_GET_HT_TYPE_NAME();
         $i=0;
         if(!empty($list)){
