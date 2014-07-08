@@ -672,7 +672,7 @@
         function get_hetong_js_zje(){
             var ret = $.get("/index.php/Home/DbOpt/ajaxGetHtJsZje?pro_id=" + $("#pro_id").val(), function(xhr){
                 $("#hetong_js_zje").text(xhr.dwbj + xhr.customer_vo);
-                $("#fb_hetong_zje").text(xhr.fb_sjcb);
+                $("#fb_hetong_zje").text(xhr.fb_sjcb + xhr.fb_all_vo);
             });
             return ret;
         }
@@ -723,9 +723,10 @@
                     <td>
                         <span id="fb_hetong_zje"></span>
                     </td>
+                    <td>采购合同总金额：</td>
                     <td>
+                        <span id="cg_hetong_zje"></span>
                     </td>
-                    <td></td>
                 </tr>
             </table>
             <br>

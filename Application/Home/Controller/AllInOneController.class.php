@@ -116,10 +116,40 @@ class AllInOneController extends Controller {
                     }
                 }
             }
-
         }
-
-
+        //计算工资
+        $rl = array();
+        $rl[] = intval($project_detail["jd_rlzy_jdgz1"]);
+        $rl[] = intval($project_detail["jd_rlzy_jdgz2"]);
+        $rl[] = intval($project_detail["jd_rlzy_jdgz3"]);
+        $rl[] = intval($project_detail["gc_rlzy_xmxc1"]);
+        $rl[] = intval($project_detail["gc_rlzy_xmxc2"]);
+        $rl[] = intval($project_detail["gc_rlzy_zxgz1"]);
+        $rl[] = intval($project_detail["gc_rlzy_zxgz2"]);
+        $rl[] = intval($project_detail["gc_rlzy_zxgz3"]);
+        $id_str = implode(",",$rl);
+        trace($id_str);
+        $sql = "select sum(salary) from jb_user where id in ($id_str)";
+        trace($sql);
+        $list = M()->query("select sum(salary) as it_sum from jb_user where id in ($id_str)");
+        $mon_sum_salary = 0.0;
+        if(!empty($list)){
+            foreach($list as $item){
+                $mon_sum_salary += $item["it_sum"];
+            }
+        }
+        $day_sum_salary = $mon_sum_salary/30;
+        $sum_salary = 0.0;
+        if(!empty($this->gc_xmwg_khys_sj_time) && !empty($this->gc_kg_sj_time)){
+            $end = strtotime($this->gc_xmwg_khys_sj_time);
+            $beg = strtotime($this->gc_kg_sj_time);
+            $inter = ($end - $beg)/(3600*24);
+            $sum_salary = $inter * $day_sum_salary;
+        }
+        if($sum_salary < 0){
+            $sum_salary = 0.0;
+        }
+        $this->cur_project_zjrgcb = $sum_salary;
         //layout(flase);
         $this->display();
     }

@@ -41,6 +41,7 @@ CREATE TABLE `jb_user` (
   `email` char(30) NOT NULL COMMENT '电子邮件,作为用户登录名',
   `password` char(100) NOT NULL COMMENT '登录密码',
   `department` char(2) DEFAULT NULL COMMENT '部门',
+  `salary` double DEFAULT NULL COMMENT '工资',
   `userflag` tinyint(4) NOT NULL DEFAULT '1' COMMENT '用户标识 1:普通用户 2.用户管理员',
   `status` tinyint(4) NOT NULL DEFAULT '1' COMMENT '用户标识 1：新建自注册用户 2:正常已经审核过的用户 3.已经删除用户',
   PRIMARY KEY (`id`)

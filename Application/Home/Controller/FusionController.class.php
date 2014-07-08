@@ -193,28 +193,30 @@ class FusionController extends Controller {
             $dataset = array();
             //left
             $left_dataset = array();
-            $left_dataset['seriesname'] = "内控金额";
+            $left_dataset['seriesname'] = "实际发生成本";
             $left_dataset["parentyaxis"] = "P";
             $left_data = array();
             foreach($r as $key => $je_arr){
                 $tmp = array();
-                $tmp['value'] = floatval($je_arr["nkje"]);
+                $tmp['value'] = floatval($je_arr["sjcb"]) + floatval($je_arr["self_vo"]);
                 $left_data[] = $tmp;
             }
             $left_dataset['data'] = $left_data;
             $dataset[] = $left_dataset;
-            //right
+
+            //left $left_dataset $left_data
             $right_dataset = array();
-            $right_dataset['seriesname'] = "实际发生成本";
+            $right_dataset['seriesname'] = "内控金额";
             $right_dataset["parentyaxis"] = "P";
             $right_data = array();
             foreach($r as $key => $je_arr){
                 $tmp = array();
-                $tmp['value'] = floatval($je_arr["sjcb"]) + floatval($je_arr["self_vo"]);
+                $tmp['value'] = floatval($je_arr["nkje"]);
                 $right_data[] = $tmp;
             }
             $right_dataset['data'] = $right_data;
             $dataset[] = $right_dataset;
+
             //第二条 Y轴
             $y2_dataset = array();
             $y2_dataset['seriesname'] = "比率";
@@ -464,8 +466,9 @@ class FusionController extends Controller {
                         //
                         $item_tmp = array();
                         $item_tmp["vline"] = true;
-                        $item_tmp["label"] = $now_str;
+                        $item_tmp["label"] = "Today " . $now_str;
                         $item_tmp["showLabel"] = "1";
+                        $item_tmp["color"] = "009933";
                         $data[] = $item_tmp;
                     }
                 }
@@ -478,8 +481,9 @@ class FusionController extends Controller {
                         //
                         $item_tmp = array();
                         $item_tmp["vline"] = true;
-                        $item_tmp["label"] = $now_str;
+                        $item_tmp["label"] = "Today " . $now_str;
                         $item_tmp["showLabel"] = "1";
+                        $item_tmp["color"] = "009933";
                         $data[] = $item_tmp;
                     }
                 }
@@ -489,18 +493,33 @@ class FusionController extends Controller {
             $item["tooltext"] = $node['label'] . " \n计划: " . $node['jh'] . "\n实际: " . $node['sj'];
             if(false == $node['have_jh']){
                 $item['value'] = "0";
+                $item["tooltext"] = $node['label'] . "\n实际: " . $node['sj'];
+                if(empty($node['sj'])){
+                    $item['value'] = "0";
+                    $item["anchorsides"] ="3";
+                    $item["anchorradius"] ="8";
+                    $item["anchorbgcolor"] ="ff0000";
+                    $item["anchorbordercolor"] ="000000";
+                    $item["anchorborderthickness"] ="2";
+                }
             }else{
+                $item["tooltext"] = $node['label'] . " \n计划: " . $node['jh'] . "\n实际: " . $node['sj'];
                 if(empty($node['jh']) || empty($node['sj'])){
                     $item['value'] = "0";
+                    $item["anchorsides"] ="4";
+                    $item["anchorradius"] ="8";
+                    $item["anchorbgcolor"] ="ff0000";
+                    $item["anchorbordercolor"] ="000000";
+                    $item["anchorborderthickness"] ="2";
                 }else{
                     $inter = strtotime($node['sj']) - strtotime($node['jh']);
                     $inter_day = round($inter /(3600*24));
                     $item['value'] = $inter_day;
                     $item["tooltext"] = $node['label'] . " \n计划: " . $node['jh'] . "\n实际: " . $node['sj'] . "\n实际时间比计划时间";
                     if($inter_day > 0){
-                        $item["tooltext"] .= "早 $inter_day 天";
+                        $item["tooltext"] .= "晚 $inter_day 天";
                     }else{
-                        $item["tooltext"] .= "晚 " . abs($inter_day) . " 天";
+                        $item["tooltext"] .= "早 " . abs($inter_day) . " 天";
                     }
                 }
             }

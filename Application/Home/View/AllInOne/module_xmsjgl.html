@@ -4,7 +4,7 @@
         function get_sjgl_all_nodes(pro_id){
             var ret = $.get("/index.php/Home/Fusion/ajaxGetSjgl?pro_id=" + $("#pro_id").val(), function(xhr){
                 console.log(xhr);
-                var sjglChart = new FusionCharts( "__PUBLIC__/js/Lib/FusionCharts/Charts/Line.swf",
+                var sjglChart = new FusionCharts( "__PUBLIC__/js/Lib/FusionCharts/Charts/Line.swf",//MSColumn2D  Line  Column2D
                         "sjglChartId", "1400", "500", "0", "1" );
                 sjglChart.setJSONData( {
                     "chart":
@@ -13,7 +13,10 @@
                         "xAxisName" : "时间里程碑",
                         "yAxisName" : "天数",
                         "numberPrefix" : "",
-                        "rotateNames" : 1
+                        "rotateNames" : 1,
+                        "basefont":"Arial",
+                        "basefontsize":"15",
+                        "basefontcolor":"000000"
                     },
                     "data" : xhr
                 } );

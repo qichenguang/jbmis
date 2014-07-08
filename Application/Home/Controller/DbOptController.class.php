@@ -43,10 +43,20 @@ class DbOptController extends Controller {
                 $custom_all_vo += $item["it_sum"];
             }
         }
+        //fb vo
+        $fb_all_vo = 0.0;
+        $tablename = "jb_fb_vo";
+        $list = M()->query("SELECT SUM(vo_je) as it_sum FROM `" . $tablename . "` WHERE pro_id='" . $pro_id . "' ");
+        if(!empty($list)){
+            foreach($list as $item){
+                $fb_all_vo += $item["it_sum"];
+            }
+        }
 
         $responce = array();
         $responce['dwbj'] = $fb_dwbj_all + $cg_dwbj_all;
         $responce['fb_sjcb'] = $fb_sjcb_all;
+        $responce['fb_all_vo'] = $fb_all_vo;
         $responce['customer_vo'] = $custom_all_vo;
         trace($fb_dwbj_all,"fb_dwbj_all");
         trace($fb_sjcb_all,"fb_sjcb_all");
@@ -198,7 +208,8 @@ class DbOptController extends Controller {
             foreach($list as $item){
                 $responce["rows"][$i]['id']=$item["id"];
                 $responce["rows"][$i]['cell'] = array($item['id'],
-                    $item['vo_je'],$reson[$item['vo_reson']],$item['vo_desc'],);
+                    $item['vo_desc'],
+                    $item['vo_je'],$reson[$item['vo_reson']]);
                 $i++;
             }
         }
@@ -291,7 +302,9 @@ class DbOptController extends Controller {
         if($sidx == ""){
             $sidx = 'id';
         }
-
+        //
+        $pro_id = I("pro_id");
+        $srctype = I("srctype");
         //手动查询标志
         $searchOn = I('_search');
         //多条件查询
@@ -321,10 +334,27 @@ class DbOptController extends Controller {
         }
         //
         $Data = M('cg_vo'); // 实例化对象
+        $qq_lx_arr = USER_FUN_GET_QQ_TYPE_NAME();
         $reson = USER_FUN_GET_FB_VO_RESON_NAME();
-
-
         $count = $Data->where($cond)->order(array($sidx => $sord))->count();// 查询满足要求的总记录数
+        if("qq" == $srctype && $count < 23){
+            //先删除，再插入
+            $condition = array();
+            $condition['pro_id'] = $pro_id;
+            $condition['srctype'] = "qq";
+            $result = $Data->where($condition)->delete();
+            //
+            foreach($qq_lx_arr as $qq_lx => $value){
+                $condition['cg_name'] = $qq_lx;
+                $result  = $Data->add($condition);
+            }
+            //
+            $count = $Data->where($cond)->order(array($sidx => $sord))->count();// 查询满足要求的总记录数
+            if($count != 23){
+                $this->ajaxReturn(array('state' => false, 'msg' => "数据库加入 前期类型记录 失败,请检查数据库连接设置"));
+            }
+            //
+        }
         $list =  $Data->where($cond)->order(array($sidx => $sord))->page($pagenum,$limitnum)->select();
 
         $total_pages = 0;
@@ -340,8 +370,8 @@ class DbOptController extends Controller {
             foreach($list as $item){
                 $responce["rows"][$i]['id']=$item["id"];
                 $responce["rows"][$i]['cell'] = array($item['id'],
-                    $item['cg_name'],
-                    $item['cg_je'],$reson[$item['cg_reson']],$item['cg_desc'],
+                    $qq_lx_arr[$item['cg_name']],
+                    $item['cg_je'],$item['cg_desc'],
                     $item['vo1_je'],$reson[$item['vo1_reson']],$item['vo1_desc'],
                     $item['vo2_je'],$reson[$item['vo2_reson']],$item['vo2_desc'],
                     $item['vo3_je'],$reson[$item['vo3_reson']],$item['vo3_desc']);
@@ -361,7 +391,6 @@ class DbOptController extends Controller {
 
         $cg_name = I('cg_name');
         $cg_je = I('cg_je');
-        $cg_reson = I('cg_reson');
         $cg_desc = I('cg_desc');
         $vo1_je = I('vo1_je');
         $vo1_reson = I('vo1_reson');
@@ -376,14 +405,13 @@ class DbOptController extends Controller {
         $condition = array();
         switch ($oper) {
             case "add"://
-                if( empty($pro_id) || empty($srctype) || empty($cg_name) || empty($cg_reson)|| empty($cg_desc) || empty($cg_je)){
+                if( empty($pro_id) || empty($srctype) || empty($cg_name) || empty($cg_desc) || empty($cg_je)){
                     $this->ajaxReturn(array('state' => false, 'msg' => "字段不能为空"));
                 }
                 $condition["pro_id"] = $pro_id;
                 $condition["srctype"] = $srctype;
                 $condition['cg_name'] = $cg_name;
                 $condition['cg_je'] = $cg_je;
-                $condition['cg_reson'] = $cg_reson;
                 $condition['cg_desc'] = $cg_desc;
                 $condition['vo1_je'] = $vo1_je;
                 $condition['vo1_reson'] = $vo1_reson;
@@ -403,14 +431,24 @@ class DbOptController extends Controller {
                 }
                 break;
             case "edit"://
-                if(empty($id) || empty($pro_id) || empty($srctype) || empty($cg_name) || empty($cg_reson)|| empty($cg_desc) || empty($cg_je) ){
-                    $this->ajaxReturn(array('state' => false, 'msg' => "字段不能为空", 'id' => $id));
+                //qq not send cg_name
+                if("qq" == $srctype){
+                    if(empty($id) || empty($pro_id) || empty($srctype) || empty($cg_desc) || empty($cg_je) ){
+                        $this->ajaxReturn(array('state' => false, 'msg' => "字段不能为空", 'id' => $id));
+                    }
+                }else{
+                    if(empty($id) || empty($pro_id) || empty($srctype) || empty($cg_name) || empty($cg_desc) || empty($cg_je) ){
+                        $this->ajaxReturn(array('state' => false, 'msg' => "字段不能为空", 'id' => $id));
+                    }
                 }
                 $condition["pro_id"] = $pro_id;
                 $condition["srctype"] = $srctype;
-                $condition['cg_name'] = $cg_name;
+                if("qq" == $srctype){
+                    //qq not send cg_name
+                }else{
+                    $condition['cg_name'] = $cg_name;
+                }
                 $condition['cg_je'] = $cg_je;
-                $condition['cg_reson'] = $cg_reson;
                 $condition['cg_desc'] = $cg_desc;
                 $condition['vo1_je'] = $vo1_je;
                 $condition['vo1_reson'] = $vo1_reson;
@@ -688,7 +726,7 @@ class DbOptController extends Controller {
         //
         $Data = M('gys_fbgl'); // 实例化User对象
         $count = $Data->where($cond)->order(array($sidx => $sord))->count();// 查询满足要求的总记录数
-        if($count == 0){
+        if($count < 8){
             //先删除，再插入
             $condition = array();
             $condition['pro_id'] = $pro_id;

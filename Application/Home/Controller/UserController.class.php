@@ -199,6 +199,105 @@ class UserController extends Controller {
         //显示用户列表
         $this->display();
     }
+    public function usersalary(){
+        layout(false);
+        //显示用户列表
+        $this->display();
+    }
+    public function ajaxUserSalarySearch(){
+        $pagenum = I('page',1); // get the requested page
+        $limitnum = I('rows',20); // get how many rows we want to have into the grid
+        $sidx = I('sidx','id'); // get index row - i.e. user click to sort
+        $sord = I('sord','desc'); // get the direction
+        if($sidx == ""){
+            $sidx = 'id';
+        }
+        //手动查询标志
+        $searchOn = I('_search');
+        $cond = array();
+        //多条件查询
+        if('true' == $searchOn) {
+            $sarr = I('param.');
+            foreach( $sarr as $k=>$v) {
+                switch ($k) {
+                    case 'user_name':
+                    case 'email':
+                        $cond[$k] = array('LIKE', "%$v%");
+                        break;
+                    case 'department':
+                        if("all" != $v){
+                            $cond[$k] = array('LIKE', "%$v%");
+                        }
+                        break;
+                    case 'id':
+                    case 'status':
+                        if("0" != $v){
+                            $cond[$k] = $v;
+                        }
+                        break;
+                }
+            }
+        }
+        //只用正常的机电和工程
+        $cond["status"] = 2;
+        $cond['department'] = array('like',array('gc','jd'),'OR');
+        //单条件 find
+        if(FALSE && 'true' == $searchOn){
+            $searchField = I('searchField');
+            $searchString = I('searchString');
+            $searchOper = I('searchOper');
+            $cond[$searchField] = array('LIKE', "%$searchString%");
+        }
+        //
+        $User = M('User'); // 实例化User对象
+        $count = $User->where($cond)->order(array($sidx => $sord))->count();// 查询满足要求的总记录数
+        $list =  $User->where($cond)->order(array($sidx => $sord))->page($pagenum,$limitnum)->select();
+        $total_pages = 0;
+        if( $count >0 ) {
+            $total_pages = ceil($count/$limitnum);
+        }
+        $responce["page"] = $pagenum;
+        $responce["total"] = $total_pages;
+        $responce["records"] = $count;
+        trace($count,"count=");
+        $i=0;
+        $dep = USER_FUN_GET_DEPARTMENT_NAME();
+        $st = USER_FUN_GET_USER_STATUS_NAME();
+        foreach($list as $item){
+            $responce["rows"][$i]['id']=$item["id"];
+            $responce["rows"][$i]['cell'] = array($item['id'],
+                $item['user_name'],$item['email'],$dep[$item['department']],$item['salary']);
+            $i++;
+        }
+        $this->ajaxReturn($responce);
+    }
+    public function ajaxUserSalarySave(){
+        $Data = M('user'); // 实例化Data数据模型
+
+        $oper = I('oper');
+        $id = I('id');
+        $salary = I('salary');
+
+        switch ($oper) {
+            case "edit"://
+                if(empty($id) || empty($salary)){
+                    $this->ajaxReturn(array('state' => false, 'msg' => "字段不能为空", 'id' => $id));
+                }
+                $condition['salary'] = $salary;
+                $condition['id'] = $id;
+                $result  = $Data->save($condition);
+                if(false === $result){
+                    $this->ajaxReturn(array('state' => false, 'msg' => "存盘失败,请检查数据库连接设置", 'id' => $id));
+                }elseif(0 == $result){
+                    $this->ajaxReturn(array('state' => false, 'msg' => "相同的记录,请修改用户信息", 'id' => $id));
+                }else{
+                    $this->ajaxReturn(array('state' => true, 'msg' => "存盘成功", 'id' => $id));
+                }
+                break;
+            default:
+                break;
+        }
+    }
 
     public function add(){
         //layout(false);

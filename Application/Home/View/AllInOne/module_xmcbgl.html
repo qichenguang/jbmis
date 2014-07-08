@@ -143,7 +143,7 @@
         //single mll
         function get_single_mll(domDiv,mlltype){
             $("#" + domDiv + " [" + mlltype + "]").each(function(){
-                if("jb_single_kgmll" == mlltype || "jb_qq_kgmll" == mlltype || "jb_rg_kgmll" == mlltype){
+                if("jb_single_kgmll" == mlltype || "jb_qq_kgmll" == mlltype || "jb_rg_kgmll" == mlltype || "jb_qt_kgmll" == mlltype ){
                     var fb_type = $(this).attr(mlltype);
                     var fb_dwbj = parseFloat($("#ys_" + fb_type + "_dwbj").val()) || 0.00;
                     var fb_nkje = parseFloat($("#ys_" + fb_type + "_nkje").val()) || 0.00;
@@ -153,13 +153,13 @@
                     }
                     //Math.round(x*100)/100
                     $("#ys_" + fb_type + "_kgmll").val(Math.round(fb_kgmll * 10000)/100 + "%");
-                }else if("jb_sjmll" == mlltype || "jb_qq_sjmll" == mlltype || "jb_rg_sjmll" == mlltype){
+                }else if("jb_sjmll" == mlltype || "jb_qq_sjmll" == mlltype || "jb_rg_sjmll" == mlltype || "jb_qt_sjmll" == mlltype){
                     var fb_type = $(this).attr(mlltype);
                     var fb_dwbj = parseFloat($("#ys_" + fb_type + "_dwbj").val()) || 0.00;
                     var fb_customer_vo = parseFloat($("#ys_" + fb_type + "_customer_vo").val()) || 0.00;
                     var fb_sjcb = parseFloat($("#ys_" + fb_type + "_sjcb").val()) || 0.00;
                     var fb_fb_vo = parseFloat($("#ys_" + fb_type + "_fb_vo").val()) || 0.00;
-                    if("jb_qq_sjmll" == mlltype || "jb_rg_sjmll" == mlltype){
+                    if("jb_qq_sjmll" == mlltype || "jb_rg_sjmll" == mlltype || "jb_qt_sjmll" == mlltype){
                         fb_fb_vo = parseFloat($("#ys_" + fb_type + "_vo").val()) || 0.00;
                     }
                     var fb_sjmll = 0.00;
@@ -224,12 +224,18 @@
             var rg_nkje = $("#ys_rg_nkje").val() || 0.00;
             var rg_sjcb = $("#ys_rg_sjcb").val() || 0.00;
             var rg_vo = 0.00;
+            //qt
+            var qt_dwbj = $("#ys_qt_dwbj").val() || 0.00;
+            var qt_customer_vo = $("#ys_qt_customer_vo").val() || 0.00;
+            var qt_nkje = $("#ys_qt_nkje").val() || 0.00;
+            var qt_sjcb = $("#ys_qt_sjcb").val() || 0.00;
+            var qt_vo = $("#ys_qt_vo").val() || 0.00;
             //
-            var zj_dwbj = parseFloat(fb_dwbj) + parseFloat(cg_dwbj) + parseFloat(qq_dwbj) + parseFloat(rg_dwbj);
-            var zj_customer_vo = parseFloat(fb_customer_vo) + parseFloat(cg_customer_vo) + parseFloat(qq_customer_vo) + parseFloat(rg_customer_vo);
-            var zj_nkje = parseFloat(fb_nkje) + parseFloat(cg_nkje) + parseFloat(qq_nkje) + parseFloat(rg_nkje);
-            var zj_sjcb = parseFloat(fb_sjcb) + parseFloat(cg_sjcb) + parseFloat(qq_sjcb) + parseFloat(rg_sjcb);
-            var zj_vo = parseFloat(fb_vo) + parseFloat(cg_vo) + parseFloat(qq_vo) + parseFloat(rg_vo);
+            var zj_dwbj = parseFloat(fb_dwbj) + parseFloat(cg_dwbj) + parseFloat(qq_dwbj) + parseFloat(rg_dwbj) + parseFloat(qt_dwbj);
+            var zj_customer_vo = parseFloat(fb_customer_vo) + parseFloat(cg_customer_vo) + parseFloat(qq_customer_vo) + parseFloat(rg_customer_vo) + parseFloat(qt_customer_vo);
+            var zj_nkje = parseFloat(fb_nkje) + parseFloat(cg_nkje) + parseFloat(qq_nkje) + parseFloat(rg_nkje) + parseFloat(qt_nkje);
+            var zj_sjcb = parseFloat(fb_sjcb) + parseFloat(cg_sjcb) + parseFloat(qq_sjcb) + parseFloat(rg_sjcb) + parseFloat(qt_sjcb);
+            var zj_vo = parseFloat(fb_vo) + parseFloat(cg_vo) + parseFloat(qq_vo) + parseFloat(rg_vo) + parseFloat(qt_vo);
             //
             var zj_kgmll = 0.00;
             if(zj_dwbj > 0.00 ){
@@ -299,7 +305,7 @@
                 datatype: "json",
                 mtype: 'POST',
                 postData: {pro_id:cur_pro_id,srctype:srctype,vo_type:cur_vo_type},
-                colNames:['ID','金额','原因','描述'],
+                colNames:['ID','描述','金额','原因'],
                 colModel:[
                     {name:'id',index:'id',
                         width:20,align:"right",
@@ -307,6 +313,15 @@
                         editable:false,
                         readonly:true,
                         editoptions:{readonly:true,size:100}
+                    },
+                    {name:'vo_desc',index:'vo_desc',
+                        width:50,align:"right",
+                        sortable:true,
+                        editable:true, edittype:"text",editrules:{required:true},
+                        editoptions:{size:50},
+                        /*                  editable:true, edittype:"textarea",editrules:{required:true},
+                         editoptions:{rows:"3",cols:"30"},*/
+                        formoptions:{rowpos:4, label: "描述", elmprefix:"(*)"}
                     },
                     {name:'vo_je',index:'vo_je',
                         width:30,align:"right",
@@ -328,15 +343,6 @@
                         },
                         editrules:{required:true},
                         formoptions:{ rowpos:3,label: "原因",elmprefix:"(*)"}
-                    },
-                    {name:'vo_desc',index:'vo_desc',
-                        width:50,align:"right",
-                        sortable:true,
-                        editable:true, edittype:"text",editrules:{required:true},
-                        editoptions:{size:50},
-                        /*                  editable:true, edittype:"textarea",editrules:{required:true},
-                         editoptions:{rows:"3",cols:"30"},*/
-                        formoptions:{rowpos:4, label: "描述", elmprefix:"(*)"}
                     }
                 ],
                 hiddengrid: false,
@@ -531,6 +537,36 @@
         //-------------------------------------------------------------------------------------------
         //弹窗: 子表2
         //-------------------------------------------------------------------------------------------
+        function getColModel_CgAndQQName(indexname,rowpos,label,srctype,require){
+            if("qq" == srctype){
+                return {
+                    name:indexname,
+                    index:indexname,
+                    width:50,
+                    align:"center",
+                    sortable:true,
+                    editable:false, edittype:"text",
+                    editrules:{required: false},
+                    editoptions:{
+                        size:"50"
+                    },
+                    formoptions:{rowpos:rowpos, label: label, elmprefix:"(*)"}
+                };
+            }
+            return {
+                name:indexname,
+                index:indexname,
+                width:30,
+                align:"center",
+                sortable:true,
+                editable:true, edittype:"text",
+                editrules:{required: (typeof(require )== "undefined") ? true : require},
+                editoptions:{
+                    size:"30"
+                },
+                formoptions:{rowpos:rowpos, label: label, elmprefix:"(*)"}
+            };
+        }
         function setCgAndVoJqGrid(domTableId,domPageId,srctype,cur_pro_id,domResultId){
             //console.log(cur_pro_id);
             //console.log(cur_vo_type);
@@ -539,7 +575,7 @@
                 datatype: "json",
                 mtype: 'POST',
                 postData: {pro_id:cur_pro_id,srctype:srctype},
-                colNames:['ID','名称','金额','原因','描述','VO1 金额','VO1 原因','VO1 描述','VO2 金额','VO2 原因','VO2 描述','VO3 金额','VO3 原因','VO3 描述'],
+                colNames:['ID','名称','金额','描述','VO1 金额','VO1 原因','VO1 描述','VO2 金额','VO2 原因','VO2 描述','VO3 金额','VO3 原因','VO3 描述'],
                 colModel:[
                     {name:'id',index:'id',
                         width:20,align:"right",
@@ -548,13 +584,8 @@
                         readonly:true,
                         editoptions:{readonly:true,size:100}
                     },
-                    {name:'cg_name',index:'cg_name',
-                        width:30,align:"right",
-                        sortable:true,
-                        editable:true, edittype:"text",editrules:{required:true},
-                        editoptions:{size:30},
-                        formoptions:{rowpos:2, label: "名称", elmprefix:"(*)"}
-                    },
+                    getColModel_CgAndQQName("cg_name",2,"名称",srctype)
+                    ,
                     {name:'cg_je',index:'cg_je',
                         width:30,align:"right",
                         sortable:true,
@@ -564,18 +595,6 @@
                         editoptions:{size:30},
                         formoptions:{rowpos:3, label: "金额", elmprefix:"(*)"}
                     },
-                    {name:'cg_reson',index:'cg_reson',
-                        width:30, align:"center",
-                        sortable:true,
-                        stype:'select',//查询类型
-                        editable:true,edittype:"select",
-                        editoptions:{
-                            value: get_vo_reson_array(srctype),
-                            defaultValue:"A"
-                        },
-                        editrules:{required:true},
-                        formoptions:{ rowpos:4,label: "原因",elmprefix:"(*)"}
-                    },
                     {name:'cg_desc',index:'cg_desc',
                         width:50,align:"right",
                         sortable:true,
@@ -583,7 +602,7 @@
                         editoptions:{size:50},
                         /*                  editable:true, edittype:"textarea",editrules:{required:true},
                          editoptions:{rows:"3",cols:"30"},*/
-                        formoptions:{rowpos:5, label: "描述", elmprefix:"(*)"}
+                        formoptions:{rowpos:4, label: "描述", elmprefix:"(*)"}
                     },
                     {name:'vo1_je',index:'vo1_je',
                         width:30,align:"right",
@@ -592,10 +611,10 @@
                         summaryType:'sum',
                         editable:true, edittype:"text",editrules:{required:false},
                         editoptions:{size:30},
-                        formoptions:{rowpos:6, label: "VO1 金额", elmprefix:"(*)"}
+                        formoptions:{rowpos:5, label: "VO1 金额", elmprefix:"(*)"}
                     },
                     {name:'vo1_reson',index:'vo1_reson',
-                        width:30, align:"center",
+                        width:70, align:"center",
                         sortable:true,
                         stype:'select',//查询类型
                         editable:true,edittype:"select",
@@ -604,7 +623,7 @@
                             defaultValue:"A"
                         },
                         editrules:{required:false},
-                        formoptions:{ rowpos:7,label: "VO1 原因",elmprefix:"(*)"}
+                        formoptions:{ rowpos:6,label: "VO1 原因",elmprefix:"(*)"}
                     },
                     {name:'vo1_desc',index:'vo1_desc',
                         width:50,align:"right",
@@ -613,7 +632,7 @@
                         editoptions:{size:50},
                         /*                  editable:true, edittype:"textarea",editrules:{required:true},
                          editoptions:{rows:"3",cols:"30"},*/
-                        formoptions:{rowpos:8, label: "VO1 描述", elmprefix:"(*)"}
+                        formoptions:{rowpos:7, label: "VO1 描述", elmprefix:"(*)"}
                     },
                     {name:'vo2_je',index:'vo2_je',
                         width:30,align:"right",
@@ -622,7 +641,7 @@
                         summaryType:'sum',
                         editable:true, edittype:"text",editrules:{required:false},
                         editoptions:{size:30},
-                        formoptions:{rowpos:9, label: "VO2 金额", elmprefix:"(*)"}
+                        formoptions:{rowpos:8, label: "VO2 金额", elmprefix:"(*)"}
                     },
                     {name:'vo2_reson',index:'vo2_reson',
                         width:30, align:"center",
@@ -634,28 +653,28 @@
                             defaultValue:"A"
                         },
                         editrules:{required:false},
-                        formoptions:{ rowpos:10,label: "VO2 原因",elmprefix:"(*)"}
+                        formoptions:{ rowpos:9,label: "VO2 原因",elmprefix:"(*)"}
                     },
                     {name:'vo2_desc',index:'vo2_desc',
-                        width:50,align:"right",
+                        width:30,align:"right",
                         sortable:true,
                         editable:true, edittype:"text",editrules:{required:false},
-                        editoptions:{size:50},
+                        editoptions:{size:30},
                         /*                  editable:true, edittype:"textarea",editrules:{required:true},
                          editoptions:{rows:"3",cols:"30"},*/
-                        formoptions:{rowpos:11, label: "VO2 描述", elmprefix:"(*)"}
+                        formoptions:{rowpos:10, label: "VO2 描述", elmprefix:"(*)"}
                     },
                     {name:'vo3_je',index:'vo3_je',
-                        width:30,align:"right",
+                        width:20,align:"right",
                         sortable:true,
                         formatter: 'number',
                         summaryType:'sum',
                         editable:true, edittype:"text",editrules:{required:false},
-                        editoptions:{size:30},
-                        formoptions:{rowpos:12, label: "VO3 金额", elmprefix:"(*)"}
+                        editoptions:{size:20},
+                        formoptions:{rowpos:11, label: "VO3 金额", elmprefix:"(*)"}
                     },
                     {name:'vo3_reson',index:'vo3_reson',
-                        width:30, align:"center",
+                        width:20, align:"center",
                         sortable:true,
                         stype:'select',//查询类型
                         editable:true,edittype:"select",
@@ -664,26 +683,26 @@
                             defaultValue:"A"
                         },
                         editrules:{required:false},
-                        formoptions:{ rowpos:13,label: "VO3 原因",elmprefix:"(*)"}
+                        formoptions:{ rowpos:12,label: "VO3 原因",elmprefix:"(*)"}
                     },
                     {name:'vo3_desc',index:'vo3_desc',
-                        width:50,align:"right",
+                        width:20,align:"right",
                         sortable:true,
                         editable:true, edittype:"text",editrules:{required:false},
-                        editoptions:{size:50},
+                        editoptions:{size:20},
                         /*                  editable:true, edittype:"textarea",editrules:{required:true},
                          editoptions:{rows:"3",cols:"30"},*/
-                        formoptions:{rowpos:14, label: "VO3 描述", elmprefix:"(*)"}
+                        formoptions:{rowpos:13, label: "VO3 描述", elmprefix:"(*)"}
                     }
                 ],
                 hiddengrid: false,
                 autowidth: true,
                 rownumbers: true,
-                rowNum:20,
+                rowNum:30,
                 rowList:[10,20,30],
                 pager: domPageId,
                 viewrecords: true,
-                sortorder: "desc",
+                sortorder: "asc",
                 forceFit : true,
                 editurl: '/index.php/Home/DbOpt/ajaxCgAndVoSave',
                 caption:"",
@@ -710,9 +729,15 @@
             });
 
             //导航栏配置和CRUD函数
-            jQuery(domTableId).jqGrid('navGrid',domPageId,
-                    {view:true,search:false,edit:false,add:false,del:true}
-            );
+            if("qq" == srctype){
+                jQuery(domTableId).jqGrid('navGrid',domPageId,
+                        {view:true,search:false,edit:false,add:false,del:false}
+                );
+            }else{
+                jQuery(domTableId).jqGrid('navGrid',domPageId,
+                        {view:true,search:false,edit:false,add:false,del:true}
+                );
+            }
             //
             var addparameters = {
                 rowID : "new_row",
@@ -756,10 +781,15 @@
                 "restoreAfterError" : true,
                 "mtype" : "POST"
             }
+            //
+            var add_flag = true;
+            if("qq" == srctype){
+                add_flag = false;
+            }
             var parameters = {
                 edit: true,
                 editicon: "ui-icon-pencil",
-                add: true,
+                add: add_flag,
                 addicon:"ui-icon-plus",
                 save: true,
                 saveicon:"ui-icon-disk",
@@ -770,7 +800,7 @@
             }
             jQuery(domTableId).jqGrid('inlineNav',domPageId,parameters);
             //其他配置
-            jQuery(domTableId).jqGrid('gridResize',{minWidth:350,maxWidth:1000,minHeight:80, maxHeight:350});
+            jQuery(domTableId).jqGrid('gridResize',{minWidth:350,maxWidth:1000,minHeight:350, maxHeight:350});
             jQuery(domTableId).jqGrid('sortableRows');
             /*        jQuery(domTableId).jqGrid('filterToolbar');
              $gridobj[0].toggleToolbar();
@@ -795,7 +825,7 @@
                 title: title,
                 bgiframe: true,
                 resizable: true,
-                width: 1600,
+                width: 1200,
                 height:500,
                 //autoOpen: false,
                 modal: true,
@@ -929,6 +959,12 @@
         add_single_type_hj_event("module_xmcbgl","rg","dwbj","");
         add_single_type_hj_event("module_xmcbgl","rg","nkje","");
         add_single_type_hj_event("module_xmcbgl","rg","sjcb","");
+        //qt add hj blur
+        add_single_type_hj_event("module_xmcbgl","qt","dwbj","");
+        add_single_type_hj_event("module_xmcbgl","qt","customer_vo","");
+        add_single_type_hj_event("module_xmcbgl","qt","nkje","");
+        add_single_type_hj_event("module_xmcbgl","qt","sjcb","");
+        add_single_type_hj_event("module_xmcbgl","qt","qt_vo","");
         //jquery promise init.
         $.when(get_all_vo_hj("customer"),get_all_vo_hj("fb"),get_cg_and_vo_hj())
                 .done(function(){
@@ -944,6 +980,9 @@
                     //rg
                     get_single_mll("module_xmcbgl","jb_rg_kgmll");
                     get_single_mll("module_xmcbgl","jb_rg_sjmll");
+                    //qt
+                    get_single_mll("module_xmcbgl","jb_qt_kgmll");
+                    get_single_mll("module_xmcbgl","jb_qt_sjmll");
                     //zj
                     get_total_zj("module_xmcbgl");
                 });
@@ -962,7 +1001,10 @@
                             "decimals": "0",
                             "numberprefix": "",
                             "placevaluesinside": "1",
-                            "rotatevalues": "1"
+                            "rotatevalues": "1",
+                            "basefont":"Arial",
+                            "basefontsize":"15",
+                            "basefontcolor":"000000"
                         },
                         "categories":response.categories1,
                         "dataset" :response.dataset1
@@ -980,7 +1022,10 @@
                             "decimals": "0",
                             "numberprefix": "",
                             "placevaluesinside": "1",
-                            "rotatevalues": "1"
+                            "rotatevalues": "1",
+                            "basefont":"Arial",
+                            "basefontsize":"15",
+                            "basefontcolor":"000000"
                         },
                         "categories":response.categories2,
                         "dataset" :response.dataset2
@@ -1109,7 +1154,7 @@
             </tr>
             <tr>
                 <td>投标毛利率：</td>
-                <td><input type="text" id="ys_tb_mll" name="ys_tb_mll" jb_field="jb_single_save"/></td>
+                <td><input type="text" id="ys_tb_mll" name="ys_tb_mll"  style="text-align:right" jb_field="jb_single_save"/>%</td>
                 <td>开工毛利率：</td>
                 <td><span id="span_zj_kgmll"></span></td>
                 <td>实际毛利率：</td>
@@ -1302,7 +1347,7 @@
                 <td></td>
                 <td><input type="text" id="ys_rg_nkje" name="ys_rg_nkje" jb_rg_hj="nkje" jb_field="jb_single_save"/></td>
                 <td><input type="text" id="ys_rg_kgmll" name="ys_rg_kgmll" jb_rg_kgmll="rg" readonly="true"/></td>
-                <td><input type="text" id="ys_rg_sjcb" name="ys_rg_sjcb" jb_rg_hj="sjcb" jb_field="jb_single_save"/></td>
+                <td><input type="text" id="ys_rg_sjcb" name="ys_rg_sjcb" value="{$cur_project_zjrgcb}" jb_rg_hj="sjcb" readonly="true"/></td>
                 <td></td>
                 <td><input type="text" id="ys_rg_sjmll" name="ys_rg_sjmll" jb_rg_sjmll="rg" readonly="true"/></td>
                 <td><input type="text" id="ys_rg_sm" name="ys_rg_sm" jb_field="jb_single_save"/></td>
@@ -1310,13 +1355,13 @@
             <tr>
                 <td>其它：</td>
                 <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
+                <td><input type="text" id="ys_qt_dwbj" name="ys_qt_dwbj" jb_qt_hj="dwbj" jb_field="jb_single_save"/></td>
+                <td><input type="text" id="ys_qt_customer_vo" name="ys_qt_customer_vo" jb_qq_hj="customer_vo" jb_field="jb_single_save"/></td>
+                <td><input type="text" id="ys_qt_nkje" name="ys_qt_nkje"  jb_qt_hj="nkje" jb_field="jb_single_save"/></td>
+                <td><input type="text" id="ys_qt_kgmll" name="ys_qt_kgmll" jb_qt_kgmll="qt" readonly="true"/></td>
+                <td><input type="text" id="ys_qt_sjcb" name="ys_qt_sjcb" jb_qt_hj="sjcb" jb_field="jb_single_save"/></td>
+                <td><input type="text" id="ys_qt_vo" name="ys_qt_vo" jb_qt_hj="qt_vo" jb_field="jb_single_save"/></td>
+                <td><input type="text" id="ys_qt_sjmll" name="ys_qt_sjmll" jb_qt_sjmll="qt" readonly="true"/></td>
                 <td><input type="text" id="ys_qt_sm" name="ys_qt_sm" jb_field="jb_single_save"/></td>
             </tr>
             <tr>
