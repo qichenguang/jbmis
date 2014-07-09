@@ -5,7 +5,7 @@ class FusionController extends Controller {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     private function getProjectRecCbDetail($item){
         $r = array();
-        //1.查询：customer_vo
+        //1.查询：fb cg customer_vo
         $customer_vo_arr = array();
         $list = M()->query("SELECT vo_type,SUM(vo_je) as it_sum FROM `jb_customer_vo` WHERE pro_id='" . $item['pro_id'] . "' GROUP BY vo_type ");
         if(!empty($list)){
@@ -13,7 +13,7 @@ class FusionController extends Controller {
                 $customer_vo_arr[$cur["vo_type"]]=$cur["it_sum"];
             }
         }
-        //2.查询：fb_vo
+        //2.查询：fb self vo
         $fb_vo_arr = array();
         $list = M()->query("SELECT vo_type,SUM(vo_je) as it_sum FROM `jb_fb_vo` WHERE pro_id='" . $item['pro_id'] . "' GROUP BY vo_type ");
         if(!empty($list)){
@@ -21,7 +21,7 @@ class FusionController extends Controller {
                 $fb_vo_arr[$cur["vo_type"]]=$cur["it_sum"];
             }
         }
-        //3.查询：cg_vo
+        //3.查询：cg self vo
         $cg_sjcb_all = 0.0;
         $cg_sjcb_vo_all = 0.0;
         $qq_sjcb_all = 0.0;
@@ -155,15 +155,44 @@ class FusionController extends Controller {
             $key_nkje = "ys_" . $key . "_nkje";
             $nkje = $item[$key_nkje];
             $tmp['nkje'] = $nkje;
-            //sjcb
-            $key_sjcb = "ys_" . $key . "_sjcb";
-            $sjcb = $item[$key_sjcb];
+            //sjcb 计算生成
+            $sjcb = $_SESSION['all_zjrgcb'];
             $tmp['sjcb'] = $sjcb;
             //vo
             $tmp['self_vo'] = 0.0;
             //
             $r[$key] = $tmp;
         }
+        //其它
+        if(true){
+            $key = 'qt';
+            $name = "其它";
+            $tmp = array();
+            $tmp['name'] = $name;
+            //dwbj
+            $key_dwbj = "ys_" . $key . "_dwbj";
+            $dwbj = $item[$key_dwbj];
+            $tmp['dwbj'] = $dwbj;
+            //customer_vo
+            $key_customer_vo = "ys_" . $key . "_customer_vo";
+            $customer_vo = $item[$key_customer_vo];
+            $tmp['customer_vo'] = $customer_vo;
+            //nkje
+            $key_nkje = "ys_" . $key . "_nkje";
+            $nkje = $item[$key_nkje];
+            $tmp['nkje'] = $nkje;
+            //sjcb 计算生成
+            $key_sjcb = "ys_" . $key . "_sjcb";
+            $sjcb = $item[$key_sjcb];
+            $tmp['sjcb'] = $sjcb;
+            //vo
+            $key_vo = "ys_" . $key . "_vo";
+            $vo = $item[$key_vo];
+            $tmp['self_vo'] = $vo;
+            //
+            $r[$key] = $tmp;
+        }
+        //
         return $r;
     }
     //成本管理

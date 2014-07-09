@@ -92,6 +92,7 @@ class AllInOneController extends Controller {
         }
         //--------------------------------------------------------------------------------------------------------------
         $this->ys_hetong_amt = $project_detail["ys_hetong_amt"];
+        $_SESSION['ys_hetong_amt'] = $this->ys_hetong_amt;
         //--------------------------------------------------------------------------------------------------------------
         $this->gc_zbqm_time = $project_detail["gc_zbqm_time"];
         $this->cur_project_status = ($this->cur_project_sc_zb_flag == "A") ? "落标" : "中标";
@@ -150,6 +151,7 @@ class AllInOneController extends Controller {
             $sum_salary = 0.0;
         }
         $this->cur_project_zjrgcb = $sum_salary;
+        $_SESSION['all_zjrgcb'] = $this->cur_project_zjrgcb;
         //layout(flase);
         $this->display();
     }

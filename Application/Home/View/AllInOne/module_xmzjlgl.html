@@ -673,6 +673,7 @@
             var ret = $.get("/index.php/Home/DbOpt/ajaxGetHtJsZje?pro_id=" + $("#pro_id").val(), function(xhr){
                 $("#hetong_js_zje").text(xhr.dwbj + xhr.customer_vo);
                 $("#fb_hetong_zje").text(xhr.fb_sjcb + xhr.fb_all_vo);
+                console.log(xhr);
             });
             return ret;
         }

@@ -259,6 +259,8 @@
             $("#span_zj_htjs").text(zj_dwbj + zj_customer_vo);
             $("#span_zj_kgmll").text(Math.round(zj_kgmll * 10000)/100 + "%");
             $("#span_zj_sjmll").text(Math.round(zj_sjmll * 10000)/100 + "%");
+            //平衡值
+            $("#span_zj_dwbj_phz").text($("#ys_hetong_amt").val() - zj_dwbj);
         }
         //--------------------------------------------------------------------------------------------------------------
         //-------------------------------------------------------------------------------------------
@@ -1007,7 +1009,16 @@
                             "basefontcolor":"000000"
                         },
                         "categories":response.categories1,
-                        "dataset" :response.dataset1
+                        "dataset" :response.dataset1,
+                        "trendlines":{
+                            "line":[{
+                                    "parentYAxis": "S",
+                                    "startvalue":"0.8",
+                                    "color":"009933",
+                                    "displayvalue":"比率 80%"
+                                }
+                            ]
+                        }
                     });
                     cbgl_1_Chart.render("cbgl_1_chartContainer");
                     //-------------------------------------------------------------------------------------------------------------
@@ -1028,7 +1039,16 @@
                             "basefontcolor":"000000"
                         },
                         "categories":response.categories2,
-                        "dataset" :response.dataset2
+                        "dataset" :response.dataset2,
+                        "trendlines":{
+                            "line":[{
+                                    "parentYAxis": "S",
+                                    "startvalue":"0.8",
+                                    "color":"009933",
+                                    "displayvalue":"比率 80%"
+                                }
+                            ]
+                        }
                     });
                     cbgl_2_Chart.render("cbgl_2_chartContainer");
                 });
@@ -1370,7 +1390,13 @@
             <tr>
                 <td><h3>总计：</h3></td>
                 <td></td>
-                <td><input type="text" id="zj_dwbj" name="zj_dwbj" readonly="true"/></td></td>
+                <td>
+                    <input type="text" id="zj_dwbj" name="zj_dwbj" readonly="true"/>
+                    <br>
+                    平衡值：<span id="span_zj_dwbj_phz"></span>
+                    <br>
+                    合同金额：{$ys_hetong_amt}
+                </td>
                 <td><input type="text" id="zj_customer_vo" name="zj_customer_vo" readonly="true"/></td>
                 <td><input type="text" id="zj_nkje" name="zj_nkje" readonly="true"/></td>
                 <td><input type="text" id="zj_kgmll" name="zj_kgmll" readonly="true"/></td>

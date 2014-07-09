@@ -10,10 +10,10 @@ class DbOptController extends Controller {
         $cond['pro_id'] = $pro_id;
         $project_rec = $Data->where($cond)->find();
 
-        //dwbj
+        //fb begin------------------------------------------------------------------------------------------------------
+        //fb dwbj sjcb
         $fb_lx_arr = USER_FUN_GET_FBS_TYPE_NAME();
         $fb_dwbj_all = 0.0;
-        $cg_dwbj_all = $project_rec['ys_cg_all_dwbj'];
         $fb_sjcb_all = 0.0;
         foreach($fb_lx_arr as $fb_lx => $fb_lx_name){
             $key_dwbj = "ys_" . $fb_lx . "_dwbj";
@@ -34,34 +34,82 @@ class DbOptController extends Controller {
                 }
             }
         }
-        //custom vo
-        $custom_all_vo = 0.0;
+        //fb custom vo, cg custom vo
+        $fb_custom_vo_all = 0.0;
+        $cg_custom_vo_all = 0.0;
         $tablename = "jb_customer_vo";
-        $list = M()->query("SELECT SUM(vo_je) as it_sum FROM `" . $tablename . "` WHERE pro_id='" . $pro_id . "' ");
+        $list = M()->query("SELECT vo_type,SUM(vo_je) as it_sum FROM `" . $tablename . "` WHERE pro_id='" . $pro_id . "' GROUP BY vo_type ");
         if(!empty($list)){
-            foreach($list as $item){
-                $custom_all_vo += $item["it_sum"];
+            foreach($list as $cur){
+                if($cur["vo_type"] != "cg"){
+                    $fb_custom_vo_all += $cur["it_sum"];
+                }else{
+                    $cg_custom_vo_all += $cur["it_sum"];
+                }
             }
         }
-        //fb vo
-        $fb_all_vo = 0.0;
+        //fb self vo
+        $fb_self_vo_all = 0.0;
         $tablename = "jb_fb_vo";
         $list = M()->query("SELECT SUM(vo_je) as it_sum FROM `" . $tablename . "` WHERE pro_id='" . $pro_id . "' ");
         if(!empty($list)){
             foreach($list as $item){
-                $fb_all_vo += $item["it_sum"];
+                $fb_self_vo_all += $item["it_sum"];
             }
         }
-
+        //fb end--------------------------------------------------------------------------------------------------------
+        //cg beg--------------------------------------------------------------------------------------------------------
+        $cg_dwbj_all = $project_rec['ys_cg_all_dwbj'];
+        //cg self vo
+        $cg_sjcb_all = 0.0;
+        $cg_self_vo_all = 0.0;
+        $qq_sjcb_all = 0.0;
+        $qq_self_vo_all = 0.0;
+        $tablename = "jb_cg_vo";
+        $list = M()->query("SELECT srctype,SUM(cg_je) as it_sum,SUM(vo1_je) as it_1_sum,SUM(vo2_je) as it_2_sum,SUM(vo3_je) as it_3_sum FROM `jb_cg_vo` WHERE pro_id='" . $pro_id . "' group by srctype ");
+        if(!empty($list)){
+            foreach($list as $cur){
+                if($cur["srctype"] != "qq"){
+                    $cg_sjcb_all += $cur["it_sum"];
+                    $cg_self_vo_all += $cur["it_1_sum"] + $cur["it_2_sum"] + $cur["it_3_sum"];
+                }else{
+                    $qq_sjcb_all += $cur["it_sum"];
+                    $qq_self_vo_all += $cur["it_1_sum"] + $cur["it_2_sum"] + $cur["it_3_sum"];
+                }
+            }
+        }
+        $cg_gckc_sjcb = $project_rec["cg_gckc_sjcb"];
+        $cg_gcrgf_sjcb = $project_rec["cg_gcrgf_sjcb"];
+        $cg_sjcb_all += floatval($cg_gckc_sjcb) + floatval($cg_gcrgf_sjcb);
+        $cg_gckc_sjcb_vo = $project_rec["cg_gckc_sjcb_vo"];
+        $cg_gcrgf_sjcb_vo = $project_rec["cg_gcrgf_sjcb_vo"];
+        $cg_self_vo_all += floatval($cg_gckc_sjcb_vo) + floatval($cg_gcrgf_sjcb_vo);
+        //cg end--------------------------------------------------------------------------------------------------------
+        //qq beg--------------------------------------------------------------------------------------------------------
+        $qq_dwbj_all = $project_rec['ys_qq_dwbj'];
+        $qq_custom_all_vo = $project_rec['ys_qq_customer_vo'];
+        //qq end--------------------------------------------------------------------------------------------------------
+        //rg beg--------------------------------------------------------------------------------------------------------
+        $rg_dwbj_all = $project_rec['ys_rg_dwbj'];
+        $rg_custom_all_vo = 0.0;
+        $rg_sjcb_all = $_SESSION['all_zjrgcb'];
+        $rg_self_vo_all = 0.0;
+        //rg end--------------------------------------------------------------------------------------------------------
+        //qt beg--------------------------------------------------------------------------------------------------------
+        $qt_dwbj_all = $project_rec['ys_qt_dwbj'];
+        $qt_custom_all_vo = $project_rec['ys_qt_customer_vo'];
+        $qt_sjcb_all = $project_rec['ys_qt_sjcb'];
+        $qt_self_vo_all = $project_rec['ys_qt_vo'];
+        //qt end--------------------------------------------------------------------------------------------------------
         $responce = array();
-        $responce['dwbj'] = $fb_dwbj_all + $cg_dwbj_all;
+        $responce['dwbj'] = $fb_dwbj_all + $cg_dwbj_all + $qq_dwbj_all + $rg_dwbj_all + $qt_dwbj_all;
+        $responce['customer_vo'] = $fb_custom_vo_all + $cg_custom_vo_all + $qq_custom_all_vo + $rg_custom_all_vo + $qt_custom_all_vo;
+        $responce['sjcb'] = $fb_sjcb_all + $cg_sjcb_all + $qq_sjcb_all + $rg_sjcb_all + $qt_sjcb_all;
+        $responce['self_vo'] = $fb_self_vo_all + $cg_self_vo_all + $qq_self_vo_all + $rg_self_vo_all + $qt_self_vo_all;
         $responce['fb_sjcb'] = $fb_sjcb_all;
-        $responce['fb_all_vo'] = $fb_all_vo;
-        $responce['customer_vo'] = $custom_all_vo;
-        trace($fb_dwbj_all,"fb_dwbj_all");
-        trace($fb_sjcb_all,"fb_sjcb_all");
-        trace($cg_dwbj_all,"cg_dwbj_all");
-        trace($custom_all_vo,"custom_all_vo");
+        $responce['fb_self_vo'] = $fb_self_vo_all;
+        $responce['cg_sjcb'] = $cg_sjcb_all;
+        $responce['cg_self_vo'] = $cg_self_vo_all;
         $this->ajaxReturn($responce);
     }
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -152,7 +200,6 @@ class DbOptController extends Controller {
         if($sidx == ""){
             $sidx = 'id';
         }
-
         //手动查询标志
         $searchOn = I('_search');
         //多条件查询
