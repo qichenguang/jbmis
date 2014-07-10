@@ -6,6 +6,25 @@ function CMP_MONTH($a, $b){
     }
     return ($a < $b) ? -1 : 1;
 }
+function USER_FUN_GET_ZB_FLAG_NAME(){
+    $in_type = array(
+        'A' => "落标",
+        'B' => "中标",
+    );
+    return $in_type;
+}
+function USER_FUN_GET_FGS_FLAG_NAME(){
+    $in_type = array(
+        'A' => "北京公司",
+        'B' => "上海分公司",
+        'C' => "广深办事处",
+        'D' => "天津办事处",
+        'E' => "成都办事处",
+        'F' => "新加坡分公司",
+        'G' => "香港分公司",
+    );
+    return $in_type;
+}
 function USER_FUN_GET_GYS_FB_HT_LX_NAME(){
     $arr = array(
         'A' => "投标",
@@ -357,6 +376,7 @@ function USER_FUN_GET_DEPATMENT_MODULE_ARRAY($zb_flag){
     unset($mod['module_xmcbgl']);
     unset($mod['module_xmzjlgl']);
     unset($mod['module_gysgl']);
+    unset($mod['module_dxmgl']);
     $dep['sc']=$mod;
     //ys
     $mod = USER_FUN_GET_PROJECT_MODULE_ARRAY();

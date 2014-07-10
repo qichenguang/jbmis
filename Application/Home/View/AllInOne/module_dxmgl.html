@@ -1,0 +1,73 @@
+<script type="text/javascript">
+    $(document).ready(function() {
+        var template1 =
+        { "groupOp": "AND",
+            "rules": [
+                { "field": "b.name", "op": "bw", "data": "Client 1" },
+                { "field": "a.amount", "op": "gt", "data": "20"}
+            ]
+        };
+
+        var template2 =
+        { "groupOp": "AND",
+            "rules": [
+                { "field": "b.name", "op": "eq", "data": "Client 2" },
+                { "field": "a.id", "op": "le", "data": "10"}
+            ]
+        } ;
+
+
+        jQuery("#dxmgl").jqGrid({
+            url:'search_adv.php?q=1',
+            datatype: "json",
+            colNames:['Inv No', 'Date', 'Client', 'Amount','Tax','Total','Notes'],
+            colModel:[
+                {name:'id',	key : true,	index:'a.id',	width:55, searchtype:"integer"},
+                {name:'invdate',index:'a.invdate', width:90},
+                {name:'name', index:'b.name',	width:100},
+                {name:'amount',index:'a.amount', width:80, align:"right", searchtype:"number"},
+                {name:'tax',index:'a.tax', width:80, align:"right", searchtype:"number"},
+                {name:'total',index:'a.total', width:80,align:"right", searchtype:"number"},
+                {name:'note',index:'a.note', width:150, sortable:false}
+            ],
+            rowNum:10,
+            width:700,
+            rowList:[10,20,30],
+            pager: '#pdxmgl',
+            sortname: 'invdate',
+            viewrecords: true,
+            sortorder: "desc",
+            caption: "Show query in search",
+            height: '100%'
+        });
+        jQuery("#dxmgl").jqGrid('navGrid','#pdxmgl',
+                {edit:false,add:false,del:false},
+                {},
+                {},
+                {},
+                {
+                    multipleSearch:true,
+                    multipleGroup:true,
+                    showQuery: true,
+                    // set the names of the template
+                    "tmplNames" : ["Template One", "Template Two"],
+                    // set the template contents
+                    "tmplFilters": [template1, template2]
+                }
+        );
+    });
+</script>
+<div id="module_xmjbxx"  class="module">
+    <h3><a href="#">多项目管理</a></h3>
+    <div>
+        <div>
+            <table id="dxmgl"></table>
+            <div id="pdxmgl"></div>
+        </div>
+        <br>
+        <br>
+        <div>
+            <div id="dxmglchartContainer">FusionCharts XT will load here!</div>
+        </div>
+    </div>
+</div>

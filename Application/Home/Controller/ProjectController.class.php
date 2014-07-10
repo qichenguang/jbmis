@@ -257,18 +257,23 @@ class ProjectController extends Controller {
                 switch ($k) {
                     case 'pro_id':
                     case 'sc_pro_name':
+                    case 'sc_cus_name':
+                    case 'sc_pro_city':
+                    case 'sc_pro_address':
                         $cond[$k] = array('LIKE', "%$v%");
                         break;
                     case 'id':
+                    case 'sc_zb_flag':
+                    case 'sc_ss_fgs':
                     case 'status':
-                        if("0" != $v){
+                        if("0" != $v && "all" != $v && "" != $v){
                             $cond[$k] = $v;
                         }
                         break;
                 }
             }
         }
-        //强制为 1
+        //强制为 正常的项目
         $cond['jb_project.status'] = 2;//normal
         $sidx = "jb_project." . $sidx;
         //单条件 find
@@ -279,11 +284,11 @@ class ProjectController extends Controller {
             $cond[$searchField] = array('LIKE', "%$searchString%");
         }
         //
-        $User = M('project'); // 实例化User对象
-        $count = $User
-            ->join('jb_pro2user ON jb_project.pro_id = jb_pro2user.pro_id and jb_pro2user.user_id = ' . session("user_id") . " and jb_pro2user.department = " . session("department") . "'")
+        $PROJECT = M('project'); // 实例化对象
+        $count = $PROJECT
+            ->join('jb_pro2user ON jb_project.pro_id = jb_pro2user.pro_id and jb_pro2user.user_id = ' . session("user_id") . " and jb_pro2user.department = '" . session("department") . "'")
             ->where($cond)->order(array($sidx => $sord))->count();// 查询满足要求的总记录数
-        $list =  $User
+        $list =  $PROJECT
             ->join('jb_pro2user ON jb_project.pro_id = jb_pro2user.pro_id and jb_pro2user.user_id = ' . session("user_id") . " and jb_pro2user.department ='" . session("department") . "'")
             ->where($cond)->order(array($sidx => $sord))->page($pagenum,$limitnum)->select();
 
@@ -297,10 +302,18 @@ class ProjectController extends Controller {
 
         $i=0;
         $st = USER_FUN_GET_PROJECT_STATUS_NAME();
+        $zb = USER_FUN_GET_ZB_FLAG_NAME();
+        $fgs = USER_FUN_GET_FGS_FLAG_NAME();
         foreach($list as $item){
             $responce["rows"][$i]['id']=$item["id"];
             $responce["rows"][$i]['cell'] = array($item['id'],
-                $item['pro_id'],$item['sc_pro_name'],$st[$item['status']]);
+                $item['pro_id'],$item['sc_pro_name'],
+                $item['sc_cus_name'],$item['sc_pro_city'],
+                $item['sc_pro_address'],
+                $item['gc_kg_sj_time'] == "" ? "" : date("Y-m-d",strtotime($item['gc_kg_sj_time'])),
+                $item['gc_kg_sj_time'] == "" ? "" : date("Y-m-d",strtotime($item['gc_xmwg_khys_sj_time'])),
+                $zb[$item['sc_zb_flag']],
+                $fgs[$item['sc_ss_fgs']]);
             $i++;
         }
         $this->ajaxReturn($responce);
