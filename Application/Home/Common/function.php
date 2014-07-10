@@ -1,5 +1,11 @@
 <?php
 
+function CMP_MONTH($a, $b){
+    if ($a == $b) {
+        return 0;
+    }
+    return ($a < $b) ? -1 : 1;
+}
 function USER_FUN_GET_GYS_FB_HT_LX_NAME(){
     $arr = array(
         'A' => "投标",

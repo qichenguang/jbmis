@@ -151,7 +151,7 @@
                     if(rowNum > 0){
                         var sk_je  = jQuery(domTableId).jqGrid('getCol','sk_je',false,'sum');
                         jQuery(domTableId).jqGrid('footerData',"set",{sk_bs:'合计:',sk_je:sk_je});
-                        $("#custom_hetong_dzje").text(sk_je);
+                        $("#span_custom_hetong_dzje").text(sk_je);
                     }
                 },
                 onSelectRow: function(id){
@@ -202,6 +202,7 @@
                 "successfunc" : function(xhr){
                     var result = eval('(' + xhr.responseText + ')');
                     if(true == result.state){
+                        jQuery(domTableId).trigger("reloadGrid");
                         return true;
                     }else{
                         jAlert(result.msg);
@@ -381,6 +382,7 @@
                 "successfunc" : function(xhr){
                     var result = eval('(' + xhr.responseText + ')');
                     if(true == result.state){
+                        jQuery(domTableId).trigger("reloadGrid");
                         return true;
                     }else{
                         jAlert(result.msg);
@@ -638,12 +640,15 @@
 
 
         //get fb and cg hetong sjcb
-        function get_fb_and_cg_all_sjcb(){
-            var ret = $.get("/index.php/Home/DbOpt/ajaxGetFbAndCgSjcb?pro_id=" + $("#pro_id").val(), function(xhr){
+        function get_cbgl_all_zje(){
+            var ret = $.get("/index.php/Home/DbOpt/ajaxGetCbglAllZje?pro_id=" + $("#pro_id").val(), function(xhr){
                 console.log(xhr);
-                setZjlgl_Fkyj_JqGrid("#zjlfkyj","#pzjlfkyj",$("#pro_id").val(),$("#user_id").val(),$("#user_department").val(),xhr.fb,xhr.cg);
-                var ret_fusion = $.get("/index.php/Home/Fusion/ajaxGetMonthZjl?pro_id=" + $("#pro_id").val() + "&hetong_amt=" + $("#ys_hetong_amt").val() + "&fb_amt=" + xhr.fb + "&cl_amt=" + xhr.cg, function(response){
-                    var zjlChart = new FusionCharts( "__PUBLIC__/js/Lib/FusionCharts/Charts/MSColumn2D.swf",// MSColumn2D.swf  MSBar2D.swf
+                setZjlgl_Fkyj_JqGrid("#zjlfkyj","#pzjlfkyj",$("#pro_id").val(),$("#user_id").val(),$("#user_department").val(),xhr.fb_sjcb,xhr.cg_sjcb);
+                $("#span_hetong_js_zje").text(xhr.dwbj + xhr.customer_vo);
+                $("#span_fb_hetong_zje").text(xhr.fb_sjcb + xhr.fb_self_vo);
+                $("#span_cg_hetong_zje").text(xhr.cg_sjcb + xhr.cg_self_vo);
+                var ret_fusion = $.get("/index.php/Home/Fusion/ajaxGetMonthZjl?pro_id=" + $("#pro_id").val() + "&hetong_amt=" + $("#ys_hetong_amt").val() + "&fb_amt=" + xhr.fb_sjcb + "&cl_amt=" + xhr.cg_sjcb, function(response){
+                    var zjlChart = new FusionCharts( "__PUBLIC__/js/Lib/FusionCharts/Charts/MSLine.swf",// MSLine.swf Line.swf,MSColumn2D.swf  MSBar2D.swf
                             "zjlChartId", "1400", "500", "0", "1" );
                     zjlChart.setJSONData({
                         "chart":
@@ -654,12 +659,13 @@
                             "decimals": "0",
                             "numberprefix": "",
                             "placevaluesinside": "1",
-                            "rotatevalues": "1"
-
-/*                           "caption" : "项目资金流月份统计" ,
+/*                            "rotatevalues": "1",*/
+                            "basefont":"Arial",
+                            "basefontsize":"15",
+                            "basefontcolor":"000000"
+/*                            ,
                             "xAxisName" : "月份",
-                            "yAxisName" : "金额",
-                            "numberPrefix" : ""*/
+                            "yAxisName" : "金额"*/
                         },
                         "categories":response.categories,
                         "dataset" :response.dataset
@@ -669,23 +675,14 @@
             });
             return ret;
         }
-        function get_hetong_js_zje(){
-            var ret = $.get("/index.php/Home/DbOpt/ajaxGetHtJsZje?pro_id=" + $("#pro_id").val(), function(xhr){
-                $("#hetong_js_zje").text(xhr.dwbj + xhr.customer_vo);
-                $("#fb_hetong_zje").text(xhr.fb_sjcb + xhr.fb_all_vo);
-                console.log(xhr);
-            });
-            return ret;
-        }
-
         //jquery promise init.
-        $.when(get_fb_and_cg_all_sjcb(),get_hetong_js_zje())
+        $.when(get_cbgl_all_zje())
                 .done(function(){
                     //
-                    var all_je = parseFloat($("#hetong_js_zje").text());
-                    var dz_je = parseFloat($("#custom_hetong_dzje").text());
+                    var all_je = parseFloat($("#span_hetong_js_zje").text());
+                    var dz_je = parseFloat($("#span_custom_hetong_dzje").text());
                     var dz_rate = Math.round((dz_je/all_je)*10000)/100;
-                    $("#custom_hetong_dzje_rate").text(' ' + dz_rate + '%');
+                    $("#span_custom_hetong_dzje_rate").text(' ' + dz_rate + '%');
 
                 });
     });
@@ -706,27 +703,27 @@
                     </td>
                     <td>客户合同到账金额:</td>
                     <td>
-                        <span id="custom_hetong_dzje"></span>
+                        <span id="span_custom_hetong_dzje"></span>
                     </td>
                 </tr>
                 <tr>
                     <td>项目结算金额：</td>
                     <td>
-                        <span id="hetong_js_zje"></span>
+                        <span id="span_hetong_js_zje"></span>
                     </td>
                     <td>客户合同到账金额占结算金额比例:</td>
                     <td>
-                        <span id="custom_hetong_dzje_rate"></span>
+                        <span id="span_custom_hetong_dzje_rate"></span>
                     </td>
                 </tr>
                 <tr>
                     <td>分包合同总金额：</td>
                     <td>
-                        <span id="fb_hetong_zje"></span>
+                        <span id="span_fb_hetong_zje"></span>
                     </td>
                     <td>采购合同总金额：</td>
                     <td>
-                        <span id="cg_hetong_zje"></span>
+                        <span id="span_cg_hetong_zje"></span>
                     </td>
                 </tr>
             </table>

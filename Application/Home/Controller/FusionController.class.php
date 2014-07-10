@@ -386,11 +386,13 @@ class FusionController extends Controller {
             }
         }
         //
+        usort($month_arr,CMP_MONTH);
+        //
         $categories = array();
         $category = array();
-        foreach($month_arr as $key => $value){
+        for($i=0;$i<count($month_arr);$i++){
             $tmp = array();
-            $tmp['label'] = $key;
+            $tmp['label'] = $month_arr[$i];
             $category[] = $tmp;
         }
         $categories['category'] = $category;
@@ -400,11 +402,11 @@ class FusionController extends Controller {
         $sksj_dataset = array();
         $sksj_dataset['seriesname'] = "收款实计";
         $sksj_data = array();
-        foreach($month_arr as $key => $value){
+        for($i=0;$i<count($month_arr);$i++){
             $tmp = array();
             $tmp['value'] = "0.0";
             foreach($sksj_arr as $item){
-                if($item['month'] == $key){
+                if($item['month'] <= $month_arr[$i]){
                     $tmp['value']  += floatval($item['je']);
                 }
             }
@@ -416,11 +418,11 @@ class FusionController extends Controller {
         $skyj_dataset = array();
         $skyj_dataset['seriesname'] = "收款预计";
         $skyj_data = array();
-        foreach($month_arr as $key => $value){
+        for($i=0;$i<count($month_arr);$i++){
             $tmp = array();
             $tmp['value'] = "0.0";
             foreach($skyj_arr as $item){
-                if($item['month'] == $key){
+                if($item['month'] <= $month_arr[$i]){
                     $tmp['value']  += floatval($item['je']);
                 }
             }
@@ -432,11 +434,11 @@ class FusionController extends Controller {
         $fkyj_dataset = array();
         $fkyj_dataset['seriesname'] = "付款预计";
         $fkyj_data = array();
-        foreach($month_arr as $key => $value){
+        for($i=0;$i<count($month_arr);$i++){
             $tmp = array();
             $tmp['value'] = "0.0";
             foreach($fkyj_arr as $item){
-                if($item['month'] == $key){
+                if($item['month'] <= $month_arr[$i]){
                     $tmp['value']  += floatval($item['je']);
                 }
             }
@@ -448,16 +450,16 @@ class FusionController extends Controller {
         $yj_dataset = array();
         $yj_dataset['seriesname'] = "现金流预计";
         $yj_data = array();
-        foreach($month_arr as $key => $value){
+        for($i=0;$i<count($month_arr);$i++){
             $tmp = array();
             $tmp['value'] = "0.0";
             foreach($skyj_arr as $item){
-                if($item['month'] == $key){
+                if($item['month'] <= $month_arr[$i]){
                     $tmp['value']  += floatval($item['je']);
                 }
             }
             foreach($fkyj_arr as $item){
-                if($item['month'] == $key){
+                if($item['month'] <= $month_arr[$i]){
                     $tmp['value']  -= floatval($item['je']);
                 }
             }

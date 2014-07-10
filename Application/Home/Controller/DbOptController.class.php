@@ -3,7 +3,7 @@ namespace Home\Controller;
 use Think\Controller;
 class DbOptController extends Controller {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    public function ajaxGetHtJsZje(){
+    public function ajaxGetCbglAllZje(){
         $pro_id = I('pro_id');
         //
         $Data = M("project");
@@ -110,46 +110,6 @@ class DbOptController extends Controller {
         $responce['fb_self_vo'] = $fb_self_vo_all;
         $responce['cg_sjcb'] = $cg_sjcb_all;
         $responce['cg_self_vo'] = $cg_self_vo_all;
-        $this->ajaxReturn($responce);
-    }
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    public function ajaxGetFbAndCgSjcb(){
-        //
-        $pro_id = I('pro_id');
-        //
-        $Data = M("project");
-        $cond['pro_id'] = $pro_id;
-        $project_rec = $Data->where($cond)->find();
-
-        //fb
-        $fb_lx_arr = USER_FUN_GET_FBS_TYPE_NAME();
-        $fb_sjcb_all = 0.0;
-        $cg_sjcb_all = 0.0;
-        foreach($fb_lx_arr as $fb_lx => $fb_lx_name){
-            $key_sjcb = "ys_" . $fb_lx . "_sjcb";
-            $sjcb = $project_rec[$key_sjcb];
-            //
-            if(!empty($sjcb)){
-                if(floatval($sjcb) > 0.01 ){
-                    $fb_sjcb_all += floatval($sjcb);
-                }
-            }
-        }
-        //cg
-        if(true){
-            $Data = M("cg_vo");
-            $cond['pro_id'] = $pro_id;
-            $cg_je = $Data->where($cond)->sum('cg_je');
-            $cg_gckc_sjcb = $project_rec["cg_gckc_sjcb"];
-            $cg_gcrgf_sjcb = $project_rec["cg_gcrgf_sjcb"];
-            $sjcb = floatval($cg_je) + floatval($cg_gckc_sjcb) + floatval($cg_gcrgf_sjcb);
-            if($sjcb > 0.01){
-                $cg_sjcb_all = $sjcb;
-            }
-        }
-        $responce = array();
-        $responce['fb'] = $fb_sjcb_all;
-        $responce['cg'] = $cg_sjcb_all;
         $this->ajaxReturn($responce);
     }
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
