@@ -238,7 +238,6 @@
             jQuery(domTableId).jqGrid('sortableRows');
         }
         setZjlglSksjJqGrid("#zjlsksj","#pzjlsksj",$("#pro_id").val(),$("#user_id").val(),$("#user_department").val());
-
         //skyj
         function setZjlgl_Skyj_JqGrid(domTableId,domPageId,cur_pro_id,cur_user_id,cur_dep_id,cur_ht_amt){
             var caption_str = "收款预计";
@@ -418,7 +417,6 @@
             jQuery(domTableId).jqGrid('sortableRows');
         }
         setZjlgl_Skyj_JqGrid("#zjlskyj","#pzjlskyj",$("#pro_id").val(),$("#user_id").val(),$("#user_department").val(),$("#ys_hetong_amt").val());
-
         //fkyj --------------------------------------------------------------------------------------------------------------
         function setZjlgl_Fkyj_JqGrid(domTableId,domPageId,cur_pro_id,cur_user_id,cur_dep_id,cur_fb_amt,cur_cl_amt){
             var caption_str = "付款预计";
@@ -637,8 +635,6 @@
             jQuery(domTableId).jqGrid('gridResize',{minWidth:1500,maxWidth:2000,minHeight:500, maxHeight:1000});
             jQuery(domTableId).jqGrid('sortableRows');
         }
-
-
         //get fb and cg hetong sjcb
         function get_cbgl_all_zje(){
             var ret = $.get("/index.php/Home/DbOpt/ajaxGetCbglAllZje?pro_id=" + $("#pro_id").val(), function(xhr){

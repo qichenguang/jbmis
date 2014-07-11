@@ -57,9 +57,75 @@
         );
     });
 </script>
-<div id="module_xmjbxx"  class="module">
+<div id="module_dxmgl"  class="module">
     <h3><a href="#">多项目管理</a></h3>
     <div>
+        <div>
+            <table jb_table="bordered">
+                <tr>
+                    <td>客户类别2:</td><td>
+                    <select id="sc_cus_t_2" name="sc_cus_t_2" jb_field="jb_single_save" >
+                        <option value="" selected="selected">请选择</option>
+                        <option value="A">质量敏感性</option>
+                        <option value="B">成本敏感型</option>
+                        <option value="C">平衡性</option>
+                    </select>
+                    <td>投标类别:</td><td>
+                    <select id="sc_invest_type" name="sc_invest_type"  jb_field="jb_single_save" >
+                        <option value="" selected="selected">请选择</option>
+                        <option value="A">框架协议</option>
+                        <option value="B">意向协商</option>
+                        <option value="C">投标</option>
+                    </select>
+                </td>
+                </tr>
+
+                <tr>
+                    <td>项目实施分公司:</td>
+                    <td>
+                        <select id="sc_ss_fgs" name="sc_ss_fgs"  jb_field="jb_single_save"  >
+                            <option value="" selected="selected">请选择</option>
+                            <option value="A">北京公司</option>
+                            <option value="B">上海分公司</option>
+                            <option value="C">广深办事处</option>
+                            <option value="D">天津办事处</option>
+                            <option value="E">成都办事处</option>
+                            <option value="F">新加坡分公司</option>
+                            <option value="G">香港分公司</option>
+                        </select>
+                    </td>
+                    <td>中标状态:</td><td>
+                    <select id="sc_zb_flag" name="sc_zb_flag"  jb_field="jb_single_save" >
+                        <option value="" selected="selected">请选择</option>
+                        <option value="A">落标</option>
+                        <option value="B">中标</option>
+                    </select>
+                </td>
+                    <td>
+                        项目行业:</td><td>
+                    <div>
+                        选择:
+                        <select id="sc_pro_trade_base" name="sc_pro_trade_base" >
+                            <option value="0"  selected="selected">请选择</option>
+                            <option value="A">IT</option>
+                            <option value="B">金融</option>
+                            <option value="C">医药</option>
+                            <option value="D">食品</option>
+                            <option value="E">工业</option>
+                            <option value="F">物流</option>
+                            <option value="G">汽车</option>
+                            <option value="H">能源</option>
+                            <option value="I">零售</option>
+                            <option value="J">日用品</option>
+                            <option value="K">咨询</option>
+                        </select>
+                        <br>
+                        其它:<INPUT type="text" id="sc_pro_trade" name="sc_pro_trade"  jb_field="jb_single_save" />
+                    </div>
+                </td>
+                </tr>
+            </table>
+        </div>
         <div>
             <table id="dxmgl"></table>
             <div id="pdxmgl"></div>

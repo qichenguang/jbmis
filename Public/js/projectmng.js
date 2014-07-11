@@ -112,21 +112,21 @@ $(document).ready(function(){
                 editoptions:{readonly:true,size:20}
             },
             {name:'pro_id',index:'pro_id',
-                width:50,align:"right",
+                width:30,align:"right",
                 sortable:true,
                 editable:true, edittype:"text",editrules:{required:true},
-                editoptions:{size:"50"},
-                formoptions:{rowpos:1, label: "项目ID", elmprefix:"(*)"}
+                editoptions:{size:"30"},
+                formoptions:{rowpos:2, label: "项目ID", elmprefix:"(*)"}
             },
             {name:'sc_pro_name',index:'sc_pro_name',
-                width:150,align:"right",
+                width:30,align:"right",
                 sortable:true,
                 editable:true, edittype:"text",editrules:{required:true},
-                editoptions:{size:"150"},
-                formoptions:{rowpos:2, label: "项目名称", elmprefix:"(*)"}
+                editoptions:{size:"30"},
+                formoptions:{rowpos:3, label: "项目名称", elmprefix:"(*)"}
             },
             {name:'status',index:'status',
-                width:30, align:"center",
+                width:20, align:"center",
                 sortable:true,
                 stype:'select',//查询类型
                 editable:true,edittype:"select",
@@ -140,7 +140,7 @@ $(document).ready(function(){
                     defaultValue:"0"
                 },
                 editrules:{required:true},
-                formoptions:{ rowpos:3,label: "项目状态",elmprefix:"(*)"}
+                formoptions:{ rowpos:4,label: "项目状态",elmprefix:"(*)"}
             }
         ],
         hiddengrid: false,

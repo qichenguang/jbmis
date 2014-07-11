@@ -4,7 +4,7 @@ $(document).ready(function() {
         url:'/index.php/Home/User/ajaxUserSearch',
         datatype: "json",
         mtype: 'POST',
-        colNames:['ID','用户名称', '邮件地址', '部门','用户状态'],
+        colNames:['ID','用户名称','邮件地址','部门','用户状态'],
         colModel:[
             {name:'id',index:'id',
                 width:100,align:"right",

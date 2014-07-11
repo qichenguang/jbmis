@@ -84,8 +84,8 @@ $(document).ready(function(){
             }
             ,
             {
-                name: "sc_ss_fgs",
-                index: "sc_ss_fgs",
+                name: "fgs",
+                index: "fgs",
                 width:20,
                 align:"right",
                 sortable:true,

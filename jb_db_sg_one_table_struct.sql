@@ -40,9 +40,10 @@ CREATE TABLE `jb_user` (
   `user_name` char(30) NOT NULL COMMENT '用户姓名',
   `email` char(30) NOT NULL COMMENT '电子邮件,作为用户登录名',
   `password` char(100) NOT NULL COMMENT '登录密码',
+  `fgs` char(2) DEFAULT NULL COMMENT '分公司',
   `department` char(2) DEFAULT NULL COMMENT '部门',
   `salary` double DEFAULT NULL COMMENT '工资',
-  `userflag` tinyint(4) NOT NULL DEFAULT '1' COMMENT '用户标识 1:普通用户 2.用户管理员',
+  `userflag` tinyint(4) NOT NULL DEFAULT '1' COMMENT '用户标识 1:普通用户 2.用户管理员 3.工资管理员',
   `status` tinyint(4) NOT NULL DEFAULT '1' COMMENT '用户标识 1：新建自注册用户 2:正常已经审核过的用户 3.已经删除用户',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=30 DEFAULT CHARSET=utf8 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC COMMENT='用户表';
@@ -179,6 +180,7 @@ CREATE TABLE `jb_project` (
 
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `pro_id` char(30) NOT NULL COMMENT '项目ID',
+  `fgs` char(1) DEFAULT NULL COMMENT '所属分公司标识',
   
   #售后服务部表
   `sh_yjtime` datetime DEFAULT NULL COMMENT '工程部移交售后服务部移交日期',
@@ -531,7 +533,12 @@ CREATE TABLE `jb_project` (
 	`ys_rg_dwbj`  double DEFAULT NULL COMMENT '直接人工成本:对外报价',
 	`ys_rg_nkje`  double DEFAULT NULL COMMENT '直接人工成本:内控金额',
 	`ys_rg_sm`    varchar(200) DEFAULT NULL COMMENT '直接人工成本:相关说明', 
-	#其他说明
+	#其他费用
+	`ys_qt_dwbj`  double DEFAULT NULL COMMENT '其他:对外报价',
+	`ys_qt_customer_vo`  double DEFAULT NULL COMMENT '其他:客户VO',
+	`ys_qt_nkje`  double DEFAULT NULL COMMENT '其他:内控金额',
+	`ys_qt_sjcb`  double DEFAULT NULL COMMENT '其他:实际成本',
+	`ys_qt_vo`    double DEFAULT NULL COMMENT '其他:实际VO',
 	`ys_qt_sm`    varchar(200) DEFAULT NULL COMMENT '其他:相关说明', 
 	
 	#

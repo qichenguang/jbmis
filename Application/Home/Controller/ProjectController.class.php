@@ -3,19 +3,19 @@ namespace Home\Controller;
 use Think\Controller;
 //use Think\Page;
 class ProjectController extends Controller {
-
     public function ajaxProjectmngSave(){
         $Data = M('project'); // 实例化Data数据模型
 
         $oper = I('oper');
         $id = I('id');
         $pro_id = I('pro_id');
+        $fgs = $_SESSION['fgs'];
         $sc_pro_name = I('sc_pro_name');
         $status = I('status');
 
         switch ($oper) {
             case "add"://
-                if( empty($pro_id) || empty($sc_pro_name) ){
+                if( empty($pro_id) || empty($fgs) || empty($sc_pro_name) ){
                     $this->ajaxReturn(array('state' => false, 'msg' => "字段不能为空"));
                 }
                 $condition["pro_id"] = $pro_id;
@@ -24,6 +24,7 @@ class ProjectController extends Controller {
                     $this->ajaxReturn(array('state' => false, 'msg' => "$pro_id 已经有相同 项目ID 存在"));
                 }
                 $condition['sc_pro_name'] = $sc_pro_name;
+                $condition["fgs"] = $fgs;
                 $condition["status"] = 1;
                 $result  = $Data->add($condition);
                 if(false === $result){
@@ -33,7 +34,7 @@ class ProjectController extends Controller {
                 }
                 break;
             case "edit"://
-                if(empty($id) || empty($pro_id) || empty($sc_pro_name) || empty($status)){
+                if(empty($id) || empty($pro_id) || empty($fgs) || empty($sc_pro_name) || empty($status)){
                     $this->ajaxReturn(array('state' => false, 'msg' => "字段不能为空", 'id' => $id));
                 }
                 $condition['sc_pro_name'] = $sc_pro_name;
@@ -67,14 +68,12 @@ class ProjectController extends Controller {
                 break;
         }
     }
-
     public function _before_ajaxProjectmngSearch(){
         $department = $_SESSION['department'];
         if("hr" != $department){
             $this->error("没有权限!");
         }
     }
-
     public function ajaxProjectmngSearch(){
         $pagenum = I('page',1); // get the requested page
         $limitnum = I('rows',20); // get how many rows we want to have into the grid
@@ -83,7 +82,6 @@ class ProjectController extends Controller {
         if($sidx == ""){
             $sidx = 'id';
         }
-
         //手动查询标志
         $searchOn = I('_search');
         //多条件查询
@@ -104,6 +102,8 @@ class ProjectController extends Controller {
                 }
             }
         }
+        $cond['fgs'] = $_SESSION['fgs'];
+        //
         //单条件 find
         if(FALSE && 'true' == $searchOn){
             $searchField = I('searchField');
@@ -135,7 +135,6 @@ class ProjectController extends Controller {
         $this->ajaxReturn($responce);
 
     }
-
     public function _before_projectmng(){
         $department = $_SESSION['department'];
         if("hr" != $department){
@@ -147,7 +146,6 @@ class ProjectController extends Controller {
         //显示用户列表
         $this->display();
     }
-
     public function ajaxPrivilegeSave(){
         $search_pro_id = I('pro2user_pro_id');
         $pro2user_all_str = I("pro2user_all_str");
@@ -182,11 +180,12 @@ class ProjectController extends Controller {
         }
         $this->ajaxReturn(array('state' => true, 'msg' => "存盘成功", 'pro_id' => $i));
     }
-
     public function ajaxPrivilegeGet(){
         $search_pro_id = I('pro_id');
         $User = M('user'); // 实例化Data数据模型
         $condition['status'] = 2;//normal
+        $fgs = $_SESSION['fgs'];
+        $condition['fgs'] = $fgs;
         $list =  $User->where($condition)->select();
         $dep = USER_FUN_GET_DEPARTMENT_NAME();
         $all_user_arr = array();
@@ -232,10 +231,8 @@ class ProjectController extends Controller {
         }
         $this->ajaxReturn($all_user_arr);
     }
-
     public function projectsearch(){
         layout(false);
-        layout(true);
         //显示用户列表
         $this->display();
     }
@@ -247,7 +244,6 @@ class ProjectController extends Controller {
         if($sidx == ""){
             $sidx = 'id';
         }
-
         //手动查询标志
         $searchOn = I('_search');
         //多条件查询
@@ -264,7 +260,7 @@ class ProjectController extends Controller {
                         break;
                     case 'id':
                     case 'sc_zb_flag':
-                    case 'sc_ss_fgs':
+                    case 'fgs':
                     case 'status':
                         if("0" != $v && "all" != $v && "" != $v){
                             $cond[$k] = $v;

@@ -5,6 +5,7 @@ class UserController extends Controller {
 
     private function clearSession(){
         unset($_SESSION['user_id']);
+        unset($_SESSION['fgs']);
         unset($_SESSION['department']);
         unset($_SESSION['userflag']);
         session(null);
@@ -22,8 +23,8 @@ class UserController extends Controller {
 
         $email = I('email','');
         $password = I('password','');
+        $fgs = I('fgs');
         $department = I('department','');
-        $userflag = I('userflag',1);
         $theme = I('theme','redmond');
         //
         $_SESSION['theme'] = $theme;
@@ -31,14 +32,16 @@ class UserController extends Controller {
         $condition["status"] = 2;//normal
         $condition["email"] = $email;
         $condition["password"] = $password;
+        $condition["fgs"] = $fgs;
         $condition["department"] = $department;
         $list  = $Data->where($condition)->find();
 
         if(empty($list)){
-            $this->message = "$email,$password,$department";
+            $this->message = "$email,$password,$fgs,$department";
             $this->error("登录失败!");
         }else{
             $_SESSION['user_id'] = $list['id'];
+            $_SESSION['fgs'] = $list['fgs'];
             $_SESSION['department'] = $list['department'];
             $_SESSION['userflag'] = $list['userflag'];
             $this->success('登录成功!',U('AllInOne/index'));
@@ -58,15 +61,17 @@ class UserController extends Controller {
         $id = I('id');
         $user_name = I('user_name');
         $email = I('email');
+        $fgs = $_SESSION['fgs'];
         $department = I('department');
         $status = I('status');
 
         switch ($oper) {
             case "add"://
-                if( empty($user_name) || empty($email) || empty($department)){
+                if( empty($user_name) || empty($email) || empty($fgs) || empty($department)){
                     $this->ajaxReturn(array('state' => false, 'msg' => "字段不能为空"));
                 }
                 $condition["email"] = $email;
+                $condition["fgs"] = $fgs;
                 $condition["department"] = $department;
                 $list  = $Data->where($condition)->find();
                 $dep = USER_FUN_GET_DEPARTMENT_NAME();
@@ -85,11 +90,12 @@ class UserController extends Controller {
                 }
                 break;
             case "edit"://
-                if(empty($id) || empty($user_name) || empty($email) || empty($department) || empty($status)){
+                if(empty($id) || empty($user_name) || empty($email) || empty($fgs) || empty($department) || empty($status)){
                     $this->ajaxReturn(array('state' => false, 'msg' => "字段不能为空", 'id' => $id));
                 }
                 $condition['user_name'] = $user_name;
                 $condition["email"] = $email;
+                $condition["fgs"] = $fgs;
                 $condition["department"] = $department;
                 $condition['status'] = $status;
                 $condition['id'] = $id;
@@ -163,6 +169,7 @@ class UserController extends Controller {
                 }
             }
         }
+        $cond['fgs'] = $_SESSION['fgs'];
         //单条件 find
         if(FALSE && 'true' == $searchOn){
             $searchField = I('searchField');

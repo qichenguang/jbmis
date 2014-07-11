@@ -25,6 +25,16 @@
     <FORM id="userLoginForm" method="post" action="__URL__/logon">
         Email 作为登录用户名：<em>*</em><input type="text"  id="email" name="email"  /><br/>
         登录密码：<em>*</em><input type="password"  id="password" name="password" value="111111" /><br/>
+        分公司:
+        <select id="fgs" name="fgs">
+            <option value="A">北京公司</option>
+            <option value="B">上海分公司</option>
+            <option value="C">广深办事处</option>
+            <option value="D">天津办事处</option>
+            <option value="E">成都办事处</option>
+            <option value="F">新加坡分公司</option>
+            <option value="G">香港分公司</option>
+        </select>
         部门：
         <select name="department" id="department">
             <foreach name="department_array" item="vo" >
