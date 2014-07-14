@@ -1,90 +1,172 @@
 <script type="text/javascript">
     $(document).ready(function() {
-        var template1 =
-        { "groupOp": "AND",
-            "rules": [
-                { "field": "b.name", "op": "bw", "data": "Client 1" },
-                { "field": "a.amount", "op": "gt", "data": "20"}
-            ]
-        };
-
-        var template2 =
-        { "groupOp": "AND",
-            "rules": [
-                { "field": "b.name", "op": "eq", "data": "Client 2" },
-                { "field": "a.id", "op": "le", "data": "10"}
-            ]
-        } ;
-
-
-        jQuery("#dxmgl").jqGrid({
-            url:'search_adv.php?q=1',
-            datatype: "json",
-            colNames:['Inv No', 'Date', 'Client', 'Amount','Tax','Total','Notes'],
-            colModel:[
-                {name:'id',	key : true,	index:'a.id',	width:55, searchtype:"integer"},
-                {name:'invdate',index:'a.invdate', width:90},
-                {name:'name', index:'b.name',	width:100},
-                {name:'amount',index:'a.amount', width:80, align:"right", searchtype:"number"},
-                {name:'tax',index:'a.tax', width:80, align:"right", searchtype:"number"},
-                {name:'total',index:'a.total', width:80,align:"right", searchtype:"number"},
-                {name:'note',index:'a.note', width:150, sortable:false}
-            ],
-            rowNum:10,
-            width:700,
-            rowList:[10,20,30],
-            pager: '#pdxmgl',
-            sortname: 'invdate',
-            viewrecords: true,
-            sortorder: "desc",
-            caption: "Show query in search",
-            height: '100%'
-        });
-        jQuery("#dxmgl").jqGrid('navGrid','#pdxmgl',
-                {edit:false,add:false,del:false},
-                {},
-                {},
-                {},
-                {
-                    multipleSearch:true,
-                    multipleGroup:true,
-                    showQuery: true,
-                    // set the names of the template
-                    "tmplNames" : ["Template One", "Template Two"],
-                    // set the template contents
-                    "tmplFilters": [template1, template2]
+        function setSearchDate(dom,begflag){
+            var today = new Date();
+            var year = today.getFullYear();
+            var begin = year + "-01-01";
+            var end   = year + "-12-31";
+            var dateIt = begflag ? begin : end;
+            $("#" + dom).val(dateIt);
+            $("#" + dom).datepicker({
+                changeMonth: true,
+                changeYear: true,
+                dateFormat:"yy-mm-dd",
+                showButtonPanel: true,
+                defaultDate: dateIt
+            });
+        }
+        setSearchDate("zb_time_beg",true);
+        setSearchDate("zb_time_end",false);
+        setSearchDate("xmwg_khys_sj_time_beg",true);
+        setSearchDate("xmwg_khys_sj_time_end",false);
+        //
+        function checkSearchCondition(){
+            var fgs = $("#user_fgs").val();
+            if("A" != fgs){
+                $("#fgs").val("" + fgs);
+                //alert($("#fgs").val());
+                $("#fgs").attr("disabled",true);
+            }
+        }
+        checkSearchCondition();
+        //
+        function dxmsearch(){
+            var fgs = $("#fgs");
+            var zb_flag = $("#zb_flag");
+            var zb_time_beg = $("#zb_time_beg");
+            var zb_time_end = $("#zb_time_end");
+            var xmwg_khys_sj_time_beg = $("#xmwg_khys_sj_time_beg");
+            var xmwg_khys_sj_time_end = $("#xmwg_khys_sj_time_end");
+            var cus_t_2 = $("#cus_t_2");
+            var invest_type = $("#invest_type");
+            var xm_mj_beg = $("#xm_mj_beg");
+            var xm_mj_end = $("#xm_mj_end");
+            var hetong_amt_beg = $("#hetong_amt_beg");
+            var hetong_amt_end = $("#hetong_amt_end");
+            var pro_trade_base = $("#pro_trade_base");
+            var parm = {
+                fgs                   : fgs,
+                zb_flag               : zb_flag,
+                zb_time_beg           : zb_time_beg,
+                zb_time_end           : zb_time_end,
+                xmwg_khys_sj_time_beg : xmwg_khys_sj_time_beg,
+                xmwg_khys_sj_time_end : xmwg_khys_sj_time_end,
+                cus_t_2               : cus_t_2,
+                invest_type           : invest_type,
+                xm_mj_beg             : xm_mj_beg,
+                xm_mj_end             : xm_mj_end,
+                hetong_amt_beg        : hetong_amt_beg,
+                hetong_amt_end        : hetong_amt_end,
+                pro_trade_base        : pro_trade_base
+            }
+            setDxmSearchJqGrid("#dxmgl","#pdxmgl",parm);
+        }
+        //jqgrid begin--------------------------------------------------------------------------------------------------
+        function getColModel_Id(){
+            return {name:'id',index:'id',
+                width:20,align:"right",
+                sortable:true,
+                editable:false,
+                readonly:true,
+                editoptions:{readonly:true,size:20},
+                formoptions:{rowpos:1, label: "id", elmprefix:"(*)"}
+            };
+        }
+        function getColModel_Comm(indexname,rowpos,label,require){
+            return {
+                name:indexname,
+                index:indexname,
+                width:20,
+                align:"right",
+                sortable:true,
+                editable:true, edittype:"text",
+                editrules:{required: (typeof(require )== "undefined") ? true : require},
+                editoptions:{
+                    size:"20"
+                },
+                formoptions:{rowpos:rowpos, label: label, elmprefix:"(*)"}
+            };
+        }
+        //
+        function setDxmSearchJqGrid(domTableId,domPageId,parm){
+            var    caption_str = "多项目查询";
+            var    search_url = '/index.php/Home/DbOpt/ajaxDxmSearch';
+            var    save_url = '';
+            var    colNames = ['ID','项目ID','项目名称','客户名称','项目类别','项目面积','合同金额','中标日期','完工日期','项目状态','分公司'];
+            //
+            var $dxmgridobj = jQuery(domTableId).jqGrid({
+                url: search_url,
+                datatype: "json",
+                mtype: 'POST',
+                postData: parm,
+                colNames: colNames,
+                colModel:[
+                    getColModel_Id(),
+                    getColModel_Comm("pro_id",2,"项目ID"),
+                    getColModel_Comm("sc_pro_name",3,"项目名称"),
+                    getColModel_Comm("pro_id",4,"客户名称"),
+                    getColModel_Comm("pro_id",5,"项目类别"),
+                    getColModel_Comm("pro_id",6,"项目面积"),
+                    getColModel_Comm("pro_id",7,"合同金额"),
+                    getColModel_Comm("pro_id",8,"中标日期"),
+                    getColModel_Comm("pro_id",9,"完工日期"),
+                    getColModel_Comm("pro_id",10,"项目状态"),
+                    getColModel_Comm("pro_id",11,"分公司")
+                ],
+                hiddengrid: true,
+                autowidth: true,
+                rownumbers: true,
+                rowNum:20,
+                rowList:[20,30,50,1000],
+                pager: domPageId,
+                viewrecords: true,
+                sortorder: "asc",
+                forceFit : true,
+                editurl: save_url,
+                caption:caption_str,
+                footerrow : true,
+                //userDataOnFooter : true,
+                //altRows : true,
+                gridComplete: function() {
+                    var rowNum = parseInt(jQuery(domTableId).jqGrid('getGridParam','records',10));
+                    if(rowNum > 0){
+                        var sk_je  = jQuery(domTableId).jqGrid('getCol','sk_je',false,'sum');
+                        jQuery(domTableId).jqGrid('footerData',"set",{sk_bs:'合计:',sk_je:sk_je});
+                    }
+                },
+                onSelectRow: function(id){
+                },
+                onCellSelect: function(){
+                    //alert("cellselect");
+                },
+                afterInsertRow:function(rowid,rowdata,rowelem){
+                    //alert(rowid);
                 }
-        );
+            });
+
+            //导航栏配置和CRUD函数
+            jQuery(domTableId).jqGrid('navGrid',domPageId,
+                    {view:true,search:false,edit:false,add:false,del:false}
+            );
+
+            //其他配置
+            jQuery(domTableId).jqGrid('gridResize',{minWidth:1500,maxWidth:2000,minHeight:500, maxHeight:1000});
+            jQuery(domTableId).jqGrid('sortableRows');
+        }
+        //jqgrid end----------------------------------------------------------------------------------------------------
     });
 </script>
 <div id="module_dxmgl"  class="module">
     <h3><a href="#">多项目管理</a></h3>
     <div>
         <div>
+            <FORM id="dxmglForm" method="post" >
             <table jb_table="bordered">
-                <tr>
-                    <td>客户类别2:</td><td>
-                    <select id="sc_cus_t_2" name="sc_cus_t_2" jb_field="jb_single_save" >
-                        <option value="" selected="selected">请选择</option>
-                        <option value="A">质量敏感性</option>
-                        <option value="B">成本敏感型</option>
-                        <option value="C">平衡性</option>
-                    </select>
-                    <td>投标类别:</td><td>
-                    <select id="sc_invest_type" name="sc_invest_type"  jb_field="jb_single_save" >
-                        <option value="" selected="selected">请选择</option>
-                        <option value="A">框架协议</option>
-                        <option value="B">意向协商</option>
-                        <option value="C">投标</option>
-                    </select>
-                </td>
-                </tr>
-
                 <tr>
                     <td>项目实施分公司:</td>
                     <td>
-                        <select id="sc_ss_fgs" name="sc_ss_fgs"  jb_field="jb_single_save"  >
-                            <option value="" selected="selected">请选择</option>
+                        <select id="fgs" name="fgs" >
+                            <option value="all" selected="selected">全部</option>
                             <option value="A">北京公司</option>
                             <option value="B">上海分公司</option>
                             <option value="C">广深办事处</option>
@@ -94,38 +176,135 @@
                             <option value="G">香港分公司</option>
                         </select>
                     </td>
-                    <td>中标状态:</td><td>
-                    <select id="sc_zb_flag" name="sc_zb_flag"  jb_field="jb_single_save" >
-                        <option value="" selected="selected">请选择</option>
-                        <option value="A">落标</option>
-                        <option value="B">中标</option>
-                    </select>
-                </td>
+                    <td>中标状态:</td>
                     <td>
-                        项目行业:</td><td>
-                    <div>
-                        选择:
-                        <select id="sc_pro_trade_base" name="sc_pro_trade_base" >
-                            <option value="0"  selected="selected">请选择</option>
-                            <option value="A">IT</option>
-                            <option value="B">金融</option>
-                            <option value="C">医药</option>
-                            <option value="D">食品</option>
-                            <option value="E">工业</option>
-                            <option value="F">物流</option>
-                            <option value="G">汽车</option>
-                            <option value="H">能源</option>
-                            <option value="I">零售</option>
-                            <option value="J">日用品</option>
-                            <option value="K">咨询</option>
+                        <select id="zb_flag" name="zb_flag">
+                            <option value="all" >全部</option>
+                            <option value="A">落标</option>
+                            <option value="B" selected="selected">中标</option>
                         </select>
-                        <br>
-                        其它:<INPUT type="text" id="sc_pro_trade" name="sc_pro_trade"  jb_field="jb_single_save" />
-                    </div>
-                </td>
+                    </td>
+                </tr>
+                <tr>
+                    <td>中标日期:</td>
+                    <td>
+                        从<INPUT type="text" id="zb_time_beg" name="zb_time_beg"/>
+                        至<INPUT type="text" id="zb_time_end" name="zb_time_end"/>
+                    </td>
+                    <td>实际完工日期:</td>
+                    <td>
+                        从<INPUT type="text" id="xmwg_khys_sj_time_beg" name="xmwg_khys_sj_time_beg"/>
+                        至<INPUT type="text" id="xmwg_khys_sj_time_end" name="xmwg_khys_sj_time_end"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td>客户类别2:</td>
+                    <td>
+                        <select id="cus_t_2" name="cus_t_2">
+                            <option value="all" selected="selected">全部</option>
+                            <option value="A">质量敏感性</option>
+                            <option value="B">成本敏感型</option>
+                            <option value="C">平衡性</option>
+                        </select>
+                    </td>
+                    <td>投标类别:</td>
+                    <td>
+                        <select id="invest_type" name="invest_type">
+                            <option value="all" selected="selected">全部</option>
+                            <option value="A">框架协议</option>
+                            <option value="B">意向协商</option>
+                            <option value="C">投标</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>项目面积(平方米)：</td>
+                    <td>
+                        从
+                        <select id="xm_mj_beg" name="xm_mj_beg">
+                            <option value="0" selected="selected">0</option>
+                            <option value="200">200</option>
+                            <option value="500">500</option>
+                            <option value="1000">1000</option>
+                            <option value="3000">3000</option>
+                            <option value="5000">5000</option>
+                            <option value="10000">1万</option>
+                            <option value="30000">3万</option>
+                            <option value="50000">5万</option>
+                        </select>
+                        至
+                        <select id="xm_mj_end" name="xm_mj_end">
+                            <option value="200">200</option>
+                            <option value="500">500</option>
+                            <option value="1000">1000</option>
+                            <option value="3000">3000</option>
+                            <option value="5000">5000</option>
+                            <option value="10000">1万</option>
+                            <option value="30000">3万</option>
+                            <option value="50000">5万</option>
+                            <option value="100000">10万</option>
+                            <option value="1000000" selected="selected">100万</option>
+                        </select>
+                    </td>
+                    <td>项目金额(万元):</td>
+                    <td>
+                        从<select id="hetong_amt_beg" name="hetong_amt_beg">
+                            <option value="0" selected="selected">0</option>
+                            <option value="50">50万</option>
+                            <option value="100">100万</option>
+                            <option value="200">200万</option>
+                            <option value="500">500万</option>
+                            <option value="1000">1000万</option>
+                            <option value="3000">3000万</option>
+                            <option value="5000">5000万</option>
+                            <option value="10000">1亿</option>
+                        </select>
+                        至
+                        <select id="hetong_amt_end" name="hetong_amt_end">
+                            <option value="50">50万</option>
+                            <option value="100">100万</option>
+                            <option value="200">200万</option>
+                            <option value="500">500万</option>
+                            <option value="1000">1000万</option>
+                            <option value="3000">3000万</option>
+                            <option value="5000">5000万</option>
+                            <option value="10000">1亿</option>
+                            <option value="100000" selected>10亿</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        项目行业:</td>
+                    <td>
+                        <div>
+                            选择:
+                            <select id="pro_trade_base" name="pro_trade_base" >
+                                <option value="all"  selected="selected">全部</option>
+                                <option value="A">IT</option>
+                                <option value="B">金融</option>
+                                <option value="C">医药</option>
+                                <option value="D">食品</option>
+                                <option value="E">工业</option>
+                                <option value="F">物流</option>
+                                <option value="G">汽车</option>
+                                <option value="H">能源</option>
+                                <option value="I">零售</option>
+                                <option value="J">日用品</option>
+                                <option value="K">咨询</option>
+                            </select>
+                            <br>
+                            其它:<INPUT type="text" id="pro_trade" name="pro_trade"/>
+                        </div>
+                    </td>
+                    <td><INPUT type="reset" value="取消" id="reset"></td>
+                    <td><button type="button" id="dxmsearch" onclick="dxmsearch()">查询</button></td>
                 </tr>
             </table>
+            </form>
         </div>
+        <br>
+        <br>
         <div>
             <table id="dxmgl"></table>
             <div id="pdxmgl"></div>
