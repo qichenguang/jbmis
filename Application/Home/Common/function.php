@@ -6,6 +6,37 @@ function CMP_MONTH($a, $b){
     }
     return ($a < $b) ? -1 : 1;
 }
+
+function USER_FUN_GET_PROJECT_TYPE_NAME(){
+    $in_type = array(
+        'A' => "设计",
+        'B' => "施工",
+        'C' => "设计施工",
+        'D' => "交钥匙工程",
+        'E' => "项目管理",
+        'F' => "EPC",
+        'G' => "BOT",
+    );
+    return $in_type;
+}
+function USER_FUN_GET_TRADE_NAME(){
+    $in_type = array(
+        'A' => "IT",
+        'B' => "金融",
+        'C' => "医药",
+        'D' => "食品",
+        'E' => "工业",
+        'F' => "物流",
+        'G' => "汽车",
+        'H' => "能源",
+        'I' => "零售",
+        'J' => "日用品",
+        'K' => "咨询",
+        'L' => "其它",
+    );
+    return $in_type;
+}
+
 function USER_FUN_GET_ZB_FLAG_NAME(){
     $in_type = array(
         'A' => "落标",
@@ -13,6 +44,15 @@ function USER_FUN_GET_ZB_FLAG_NAME(){
     );
     return $in_type;
 }
+function USER_FUN_GET_TB_TYPE_NAME(){
+    $in_type = array(
+        'A' => "框架协议",
+        'B' => "意向协商",
+        'C' => "投标"
+    );
+    return $in_type;
+}
+
 function USER_FUN_GET_FGS_FLAG_NAME(){
     $in_type = array(
         'A' => "北京公司",
@@ -150,7 +190,8 @@ function USER_FUN_GET_MYD_LIST_NAME(){
         ),
         array(
             'sx' => 'sg',
-            'name'=>"施工满意度",item => array(
+            'name'=>"施工满意度",
+            'item' => array(
                 1=>"施工满意度1",
                 2=>"施工满意度2")
         ),

@@ -1,8 +1,19 @@
 <script type="text/javascript">
     $(document).ready(function() {
         $("#sc_pro_trade_base").on('change',function(){
-            $("#sc_pro_trade").val($(this).find('option:selected').text());
+            var v = $(this).val();
+            if("L" == v){
+                $("#sc_pro_trade_ot_name").attr("disabled",false);
+            }else{
+                $("#sc_pro_trade_ot_name").attr("disabled",true);
+            }
         });
+        if($("#sc_pro_trade_base").val() != "L"){
+            $("#sc_pro_trade_ot_name").attr("disabled",true);
+        }else{
+            $("#sc_pro_trade_ot_name").attr("disabled",false);
+        }
+
 /*
         //
         $("#sc_compety_company_base").on('change',function(){
@@ -33,7 +44,7 @@
                     项目行业:</td><td>
                     <div>
                     选择:
-                    <select id="sc_pro_trade_base" name="sc_pro_trade_base" >
+                    <select id="sc_pro_trade_base" name="sc_pro_trade_base" jb_field="jb_single_save">
                         <option value="0"  selected="selected">请选择</option>
                         <option value="A">IT</option>
                         <option value="B">金融</option>
@@ -46,9 +57,10 @@
                         <option value="I">零售</option>
                         <option value="J">日用品</option>
                         <option value="K">咨询</option>
+                        <option value="L">其它</option>
                     </select>
                     <br>
-                    其它:<INPUT type="text" id="sc_pro_trade" name="sc_pro_trade"  jb_field="jb_single_save" />
+                    其它行业名称：<INPUT type="text" id="sc_pro_trade_ot_name" name="sc_pro_trade_ot_name"  jb_field="jb_single_save" />
                     </div>
                 </td>
                 <td>客户类别1:</td><td>

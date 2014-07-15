@@ -31,38 +31,12 @@
         checkSearchCondition();
         //
         function dxmsearch(){
-            var fgs = $("#fgs");
-            var zb_flag = $("#zb_flag");
-            var zb_time_beg = $("#zb_time_beg");
-            var zb_time_end = $("#zb_time_end");
-            var xmwg_khys_sj_time_beg = $("#xmwg_khys_sj_time_beg");
-            var xmwg_khys_sj_time_end = $("#xmwg_khys_sj_time_end");
-            var cus_t_2 = $("#cus_t_2");
-            var invest_type = $("#invest_type");
-            var xm_mj_beg = $("#xm_mj_beg");
-            var xm_mj_end = $("#xm_mj_end");
-            var hetong_amt_beg = $("#hetong_amt_beg");
-            var hetong_amt_end = $("#hetong_amt_end");
-            var pro_trade_base = $("#pro_trade_base");
-            var parm = {
-                fgs                   : fgs,
-                zb_flag               : zb_flag,
-                zb_time_beg           : zb_time_beg,
-                zb_time_end           : zb_time_end,
-                xmwg_khys_sj_time_beg : xmwg_khys_sj_time_beg,
-                xmwg_khys_sj_time_end : xmwg_khys_sj_time_end,
-                cus_t_2               : cus_t_2,
-                invest_type           : invest_type,
-                xm_mj_beg             : xm_mj_beg,
-                xm_mj_end             : xm_mj_end,
-                hetong_amt_beg        : hetong_amt_beg,
-                hetong_amt_end        : hetong_amt_end,
-                pro_trade_base        : pro_trade_base
-            }
-            setDxmSearchJqGrid("#dxmgl","#pdxmgl",parm);
+            jQuery("#dxmgl").jqGrid("setGridParam", { postData: getCurSearchParm() }).trigger("reloadGrid");
+            get_dxmgl_chart_need_data();
         }
+        $("#butDxmsearch").on("click",dxmsearch);
         //jqgrid begin--------------------------------------------------------------------------------------------------
-        function getColModel_Id(){
+        function getColModel_CommId(){
             return {name:'id',index:'id',
                 width:20,align:"right",
                 sortable:true,
@@ -79,20 +53,21 @@
                 width:20,
                 align:"right",
                 sortable:true,
-                editable:true, edittype:"text",
-                editrules:{required: (typeof(require )== "undefined") ? true : require},
+                editable:false, edittype:"text",
+                editrules:{required: (typeof(require )== "undefined") ? false : require},
                 editoptions:{
                     size:"20"
                 },
                 formoptions:{rowpos:rowpos, label: label, elmprefix:"(*)"}
             };
         }
-        //
         function setDxmSearchJqGrid(domTableId,domPageId,parm){
-            var    caption_str = "多项目查询";
-            var    search_url = '/index.php/Home/DbOpt/ajaxDxmSearch';
-            var    save_url = '';
-            var    colNames = ['ID','项目ID','项目名称','客户名称','项目类别','项目面积','合同金额','中标日期','完工日期','项目状态','分公司'];
+            console.log(parm);
+            //----------------------------------------------------------------------------------------------------------
+            var  caption_str = "多项目查询";
+            var  search_url = '/index.php/Home/DbOpt/ajaxDxmSearch';
+            var  save_url = '';
+            var  colNames = ['ID','项目ID','项目名称','客户名称','项目类别','项目面积','合同金额','中标日期','完工日期','项目状态','分公司'];
             //
             var $dxmgridobj = jQuery(domTableId).jqGrid({
                 url: search_url,
@@ -101,19 +76,19 @@
                 postData: parm,
                 colNames: colNames,
                 colModel:[
-                    getColModel_Id(),
+                    getColModel_CommId(),
                     getColModel_Comm("pro_id",2,"项目ID"),
                     getColModel_Comm("sc_pro_name",3,"项目名称"),
-                    getColModel_Comm("pro_id",4,"客户名称"),
-                    getColModel_Comm("pro_id",5,"项目类别"),
-                    getColModel_Comm("pro_id",6,"项目面积"),
-                    getColModel_Comm("pro_id",7,"合同金额"),
-                    getColModel_Comm("pro_id",8,"中标日期"),
-                    getColModel_Comm("pro_id",9,"完工日期"),
-                    getColModel_Comm("pro_id",10,"项目状态"),
-                    getColModel_Comm("pro_id",11,"分公司")
+                    getColModel_Comm("sc_cus_name",4,"客户名称"),
+                    getColModel_Comm("sc_pro_type",5,"项目类别"),
+                    getColModel_Comm("ys_xm_mj",6,"项目面积"),
+                    getColModel_Comm("ys_hetong_amt",7,"合同金额"),
+                    getColModel_Comm("sc_zb_time",8,"中标日期"),
+                    getColModel_Comm("gc_xmwg_khys_sj_time",9,"完工日期"),
+                    getColModel_Comm("xmstatus",10,"项目状态"),
+                    getColModel_Comm("fgs",11,"分公司")
                 ],
-                hiddengrid: true,
+                hiddengrid: false,
                 autowidth: true,
                 rownumbers: true,
                 rowNum:20,
@@ -128,10 +103,14 @@
                 //userDataOnFooter : true,
                 //altRows : true,
                 gridComplete: function() {
+                    //alert("grid complete");
                     var rowNum = parseInt(jQuery(domTableId).jqGrid('getGridParam','records',10));
                     if(rowNum > 0){
-                        var sk_je  = jQuery(domTableId).jqGrid('getCol','sk_je',false,'sum');
-                        jQuery(domTableId).jqGrid('footerData',"set",{sk_bs:'合计:',sk_je:sk_je});
+                        var xm_mj  = jQuery(domTableId).jqGrid('getCol','ys_xm_mj',false,'sum');
+                        var hetong_amt  = jQuery(domTableId).jqGrid('getCol','ys_hetong_amt',false,'sum');
+                        jQuery(domTableId).jqGrid('footerData',"set",{sc_invest_type:'合计:',ys_xm_mj:xm_mj,ys_hetong_amt:hetong_amt});
+                    }else{
+                        jQuery(domTableId).jqGrid('footerData',"set",{sc_invest_type:'合计:',ys_xm_mj:0,ys_hetong_amt:0});
                     }
                 },
                 onSelectRow: function(id){
@@ -148,19 +127,108 @@
             jQuery(domTableId).jqGrid('navGrid',domPageId,
                     {view:true,search:false,edit:false,add:false,del:false}
             );
-
             //其他配置
             jQuery(domTableId).jqGrid('gridResize',{minWidth:1500,maxWidth:2000,minHeight:500, maxHeight:1000});
             jQuery(domTableId).jqGrid('sortableRows');
         }
+        function getCurSearchParm(){
+            var fgs = $("#fgs").val();
+            var zb_flag = $("#zb_flag").val();
+            var zb_time_beg = $("#zb_time_beg").val();
+            var zb_time_end = $("#zb_time_end").val();
+            var xmwg_khys_sj_time_beg = $("#xmwg_khys_sj_time_beg").val();
+            var xmwg_khys_sj_time_end = $("#xmwg_khys_sj_time_end").val();
+            var cus_t_2 = $("#cus_t_2").val();
+            var invest_type = $("#invest_type").val();
+            var xm_mj_beg = $("#xm_mj_beg").val();
+            var xm_mj_end = $("#xm_mj_end").val();
+            var hetong_amt_beg = $("#hetong_amt_beg").val();
+            var hetong_amt_end = $("#hetong_amt_end").val();
+            var pro_trade_base = $("#pro_trade_base").val();
+            var parm = {
+                fgs                       : fgs,
+                sc_zb_flag               : zb_flag,
+                zb_time_beg              : zb_time_beg,
+                zb_time_end               : zb_time_end,
+                xmwg_khys_sj_time_beg   : xmwg_khys_sj_time_beg,
+                xmwg_khys_sj_time_end   : xmwg_khys_sj_time_end,
+                sc_cus_t_2               : cus_t_2,
+                sc_invest_type           : invest_type,
+                xm_mj_beg                : xm_mj_beg,
+                xm_mj_end                : xm_mj_end,
+                hetong_amt_beg            : hetong_amt_beg,
+                hetong_amt_end           : hetong_amt_end,
+                sc_pro_trade_base        : pro_trade_base
+            }
+            return parm;
+        }
+/*        var postData = $(gridId).jqGrid("getGridParam", "postData");
+        $.each(paras, function (k, v) {
+            delete postData[v.name];
+        });*/
+        setDxmSearchJqGrid("#dxmgl","#pdxmgl",getCurSearchParm());
+        get_dxmgl_chart_need_data();
         //jqgrid end----------------------------------------------------------------------------------------------------
+        function get_dxmgl_chart_need_data(){
+            var ret = $.post("/index.php/Home/Fusion/ajaxGetDxmgl",getCurSearchParm(), function(xhr){
+                var dxmgl_1_Chart = new FusionCharts( "__PUBLIC__/js/Lib/FusionCharts/Charts/Pie2D.swf",// Pie2D.swf
+                        "dxmgl_1_ChartId", "700", "500", "0", "1" );
+                dxmgl_1_Chart.setJSONData({
+                    "chart":
+                    {
+                        "caption": "项目行业分布比例",
+                        "showlabels": "1",
+                        "showvalues": "1",
+                        "decimals": "0",
+                        "numberprefix": "",
+                        "placevaluesinside": "1",
+                        "rotatevalues": "1",
+                        "basefont":"Arial",
+                        "basefontsize":"15",
+                        "basefontcolor":"000000",
+                        //
+                        "showlegend":"1",
+                        "enablesmartlabels":"1",
+                        "showpercentvalues":"1"
+                    },
+                    "data" :xhr.hyfb
+                });
+                dxmgl_1_Chart.render("dxmgl_1_chartContainer");
+                //-------------------------------------------------------------------------------------------------------------
+                var dxmgl_2_Chart = new FusionCharts( "__PUBLIC__/js/Lib/FusionCharts/Charts/Pie2D.swf",// Pie2D.swf
+                        "dxmgl_2_ChartId", "700", "500", "0", "1" );
+                dxmgl_2_Chart.setJSONData({
+                    "chart":
+                    {
+                        "caption": "项目类别分布比例",
+                        "showlabels": "1",
+                        "showvalues": "1",
+                        "decimals": "0",
+                        "numberprefix": "",
+                        "placevaluesinside": "1",
+                        "rotatevalues": "1",
+                        "basefont":"Arial",
+                        "basefontsize":"15",
+                        "basefontcolor":"000000",
+                        //
+                        "showlegend":"1",
+                        "enablesmartlabels":"1",
+                        "showpercentvalues":"1"
+                    },
+                    "data" :xhr.lbfb
+                });
+                dxmgl_2_Chart.render("dxmgl_2_chartContainer");
+                //-------------------------------------------------------------------------------------------------------------
+            });
+            return ret;
+        }
     });
 </script>
 <div id="module_dxmgl"  class="module">
     <h3><a href="#">多项目管理</a></h3>
     <div>
         <div>
-            <FORM id="dxmglForm" method="post" >
+            <!--<FORM id="dxmglForm" method="post" >-->
             <table jb_table="bordered">
                 <tr>
                     <td>项目实施分公司:</td>
@@ -277,31 +345,28 @@
                     <td>
                         项目行业:</td>
                     <td>
-                        <div>
-                            选择:
-                            <select id="pro_trade_base" name="pro_trade_base" >
-                                <option value="all"  selected="selected">全部</option>
-                                <option value="A">IT</option>
-                                <option value="B">金融</option>
-                                <option value="C">医药</option>
-                                <option value="D">食品</option>
-                                <option value="E">工业</option>
-                                <option value="F">物流</option>
-                                <option value="G">汽车</option>
-                                <option value="H">能源</option>
-                                <option value="I">零售</option>
-                                <option value="J">日用品</option>
-                                <option value="K">咨询</option>
-                            </select>
-                            <br>
-                            其它:<INPUT type="text" id="pro_trade" name="pro_trade"/>
-                        </div>
+                        选择:
+                        <select id="pro_trade_base" name="pro_trade_base" >
+                            <option value="all"  selected="selected">全部</option>
+                            <option value="A">IT</option>
+                            <option value="B">金融</option>
+                            <option value="C">医药</option>
+                            <option value="D">食品</option>
+                            <option value="E">工业</option>
+                            <option value="F">物流</option>
+                            <option value="G">汽车</option>
+                            <option value="H">能源</option>
+                            <option value="I">零售</option>
+                            <option value="J">日用品</option>
+                            <option value="K">咨询</option>
+                            <option value="L">其它</option>
+                        </select>
                     </td>
                     <td><INPUT type="reset" value="取消" id="reset"></td>
-                    <td><button type="button" id="dxmsearch" onclick="dxmsearch()">查询</button></td>
+                    <td><button type="button" id="butDxmsearch" >查询</button></td>
                 </tr>
             </table>
-            </form>
+            <!--</form>-->
         </div>
         <br>
         <br>
@@ -312,7 +377,12 @@
         <br>
         <br>
         <div>
-            <div id="dxmglchartContainer">FusionCharts XT will load here!</div>
+            <table>
+                <tr>
+                    <td><div id="dxmgl_1_chartContainer">FusionCharts XT will load here!</div></td>
+                    <td><div id="dxmgl_2_chartContainer">FusionCharts XT will load here!</div></td>
+                </tr>
+            </table>
         </div>
     </div>
 </div>

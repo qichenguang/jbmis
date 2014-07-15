@@ -904,20 +904,21 @@ class DbOptController extends Controller {
             $sidx = 'id';
         }
 
+        //
         $fgs                   = I('fgs');
-        $zb_flag               = I('zb_flag');
+        $sc_zb_flag            = I('sc_zb_flag');
         $zb_time_beg           = I('zb_time_beg');
         $zb_time_end           = I('zb_time_end');
         $xmwg_khys_sj_time_beg = I('xmwg_khys_sj_time_beg');
         $xmwg_khys_sj_time_end = I('xmwg_khys_sj_time_end');
-        $cus_t_2               = I('cus_t_2');
-        $invest_type           = I('invest_type');
+        $sc_cus_t_2            = I('sc_cus_t_2');
+        $sc_invest_type        = I('sc_invest_type');
         $xm_mj_beg             = I('xm_mj_beg');
         $xm_mj_end             = I('xm_mj_end');
         $hetong_amt_beg        = I('hetong_amt_beg');
         $hetong_amt_end        = I('hetong_amt_end');
-        $pro_trade_base        = I('pro_trade_base');
-        
+        $sc_pro_trade_base     = I('sc_pro_trade_base');
+
         //手动查询标志
         $searchOn = I('_search');
         //多条件查询
@@ -927,20 +928,23 @@ class DbOptController extends Controller {
             foreach( $sarr as $k=>$v) {
                 switch ($k) {
                     case 'id':
-                    case 'pro_id':
-                    case 'fb_lx':
-                    case 'ys_fbs_name':
-                    case 'ys_fb_ht_lx':
-                    case 'sj_pj':
-                    case 'ys_pj':
-                    case 'jd_pj':
-                    case 'gc_pj':
-                    case 'sh_pj':
-                        $cond[$k] = $v;
+                    case 'fgs':
+                    case 'sc_zb_flag':
+                    case 'sc_cus_t_2':
+                    case 'sc_invest_type':
+                    case 'sc_pro_trade_base':
+                        if("all" != $v){
+                            $cond[$k] = $v;
+                        }
                         break;
                 }
             }
         }
+        $cond['sc_zb_time']            = array('between',array($zb_time_beg,$zb_time_end));
+        $cond['gc_xmwg_khys_sj_time'] = array('between',array($xmwg_khys_sj_time_beg,$xmwg_khys_sj_time_end));
+        $cond['ys_xm_mj']              = array('between',array($xm_mj_beg,$xm_mj_end));
+        $cond['ys_hetong_amt']         = array('between',array($hetong_amt_beg,$hetong_amt_end));
+        //
         //单条件 find
         if(FALSE && 'true' == $searchOn){
             $searchField = I('searchField');
@@ -949,42 +953,10 @@ class DbOptController extends Controller {
             $cond[$searchField] = array('LIKE', "%$searchString%");
         }
         //
-        $fb_lx_arr = USER_FUN_GET_FBS_TYPE_NAME();
-        $fb_ht_lx_arr = USER_FUN_GET_GYS_FB_HT_LX_NAME();
-        $fbs_name_json_str = $_SESSION['all_fbs_name'];
-        trace($fbs_name_json_str);
-        $fbs_obj_arr = json_decode($fbs_name_json_str,true);
-        //trace($fbs_obj_arr);
-        $fbs_name_arr = array();
-        foreach($fbs_obj_arr as $key=>$value){
-            foreach($value as $key2=>$value2){
-                //trace($value2);
-                $fbs_name_arr[$value2["id"]] = $value2["fbs_name"];
-            }
-        }
-        //trace($fbs_name_arr);
+        trace($cond);
         //
-        $Data = M('gys_fbgl'); // 实例化User对象
+        $Data = M('project'); // 实例化User对象
         $count = $Data->where($cond)->order(array($sidx => $sord))->count();// 查询满足要求的总记录数
-        if($count < 8){
-            //先删除，再插入
-            $condition = array();
-            $condition['pro_id'] = $pro_id;
-            $result = $Data->where($condition)->delete();
-            //
-
-            foreach($fb_lx_arr as $fb_lx => $value){
-                $condition['fb_lx'] = $fb_lx;
-                $result  = $Data->add($condition);
-            }
-            //
-            $count = $Data->where($cond)->order(array($sidx => $sord))->count();// 查询满足要求的总记录数
-            if($count != 8){
-                $this->ajaxReturn(array('state' => false, 'msg' => "数据库加入 分包类型记录 失败,请检查数据库连接设置"));
-            }
-            //
-        }
-
         $list =  $Data->where($cond)->order(array($sidx => $sord))->page($pagenum,$limitnum)->select();
 
         $total_pages = 0;
@@ -995,88 +967,41 @@ class DbOptController extends Controller {
         $responce["total"] = $total_pages;
         $responce["records"] = $count;
 
-        //得到实际成本
-        $Project = M("project");
-        $cond_project = array();
-        $cond_project["pro_id"] = $pro_id;
-        $rec_project =  $Project->where($cond_project)->find();
-        $sjcb_arr = array();
-        /*       'zx'=> "装修",
-                'dq' => "电气",
-                'kt' => "空调",
-                'xf' => "消防",
-                'jps' => "给排水",
-                'it' => "IT",
-                'sec' => "SEC",
-                'av' => "AV",*/
-        $sjcb_arr["zx"] = $rec_project["ys_zx_sjcb"];
-        $sjcb_arr["dq"] = $rec_project["ys_dq_sjcb"];
-        $sjcb_arr["kt"] = $rec_project["ys_kt_sjcb"];
-        $sjcb_arr["xf"] = $rec_project["ys_xf_sjcb"];
-        $sjcb_arr["jps"] = $rec_project["ys_jps_sjcb"];
-        $sjcb_arr["it"] = $rec_project["ys_it_sjcb"];
-        $sjcb_arr["sec"] = $rec_project["ys_sec_sjcb"];
-        $sjcb_arr["av"] = $rec_project["ys_av_sjcb"];
-
-        //得到VO金额
-        $voje_list = M()->query("SELECT vo_type,SUM(vo_je) as it_sum FROM `jb_fb_vo` WHERE pro_id='" . $pro_id . "' GROUP BY vo_type ");
-        $voje_arr = array();
-        if(!empty($voje_list)){
-            foreach($voje_list as $item){
-                $voje_arr[$item["vo_type"]] = $item["it_sum"];
-            }
-        }
-        //
-        $myd_pj_arr = USER_FUN_GET_MYD_PJ_NAME();
+        $fgs_arr = USER_FUN_GET_FGS_FLAG_NAME();
+        $plx_arr = USER_FUN_GET_PROJECT_TYPE_NAME();
         $i=0;
         if(!empty($list)){
             foreach($list as $item){
-                $cur_fb_lx = $item['fb_lx'];
-                $cur_fb_lx_str = $fb_lx_arr[$cur_fb_lx];
-                $htje = empty($sjcb_arr[$cur_fb_lx]) ? 0 : $sjcb_arr[$cur_fb_lx];
-                $voje = empty($voje_arr[$cur_fb_lx]) ? 0 : $voje_arr[$cur_fb_lx];
-
-                $vozb = 0;
-                if($htje > 0 ){
-                    $vozb = $voje / $htje;
+                $cur_project_status = ($item["sc_zb_flag"] == "A") ? "落标" : "中标";
+                if(!empty($item["gc_kg_sj_time"])){
+                    $kg = strtotime($item["gc_kg_sj_time"]);
+                    $now = time();
+                    if($now < $kg){
+                        $cur_project_status = "未开工";
+                    }
+                    if(!empty($item["gc_xmwg_khys_sj_time"])){
+                        $wg = strtotime($item["gc_xmwg_khys_sj_time"]);
+                        if($now >= $kg && $now < $wg){
+                            $cur_project_status = "施工中";
+                        }
+                        if(!empty($item["gc_zbqm_time"])){
+                            $zbqm = strtotime($item["gc_zbqm_time"]);
+                            if($now >= $wg && $now < $zbqm){
+                                $cur_project_status = "已完工";
+                            }
+                            if($now >= $zbqm){
+                                $cur_project_status = "质保期满";
+                            }
+                        }
+                    }
                 }
-
-                $over_b = 0;
-                if("A" == $item['ys_pj'] || "B" == $item['ys_pj'] ){
-                    $over_b++;
-                }
-                if("A" == $item['sj_pj'] || "B" == $item['sj_pj'] ){
-                    $over_b++;
-                }
-                if("A" == $item['jd_pj'] || "B" == $item['jd_pj'] ){
-                    $over_b++;
-                }
-                if("A" == $item['gc_pj'] || "B" == $item['gc_pj']){
-                    $over_b++;
-                }
-                if("A" == $item['sh_pj'] || "B" == $item['sh_pj']){
-                    $over_b++;
-                }
-                $rate = round(($over_b/4)*100,2) . "%";
-
                 $responce["rows"][$i]['id']=$item["id"];
-
-                $cur_record_arr = array();
-                $cur_record_arr[] = $item['id'];
-                $cur_record_arr[] = $cur_fb_lx_str;
-                $cur_record_arr[] = $fbs_name_arr[$item['ys_fbs_name']];
-                $cur_record_arr[] = $fb_ht_lx_arr[$item['ys_fb_ht_lx']];
-                $cur_record_arr[] = $htje;
-                $cur_record_arr[] = $voje;
-                $cur_record_arr[] =  round($vozb*100,2) . "%";
-                $cur_record_arr[] =  $myd_pj_arr[$item['ys_pj']];
-                $cur_record_arr[] =  $myd_pj_arr[$item['sj_pj']];
-                $cur_record_arr[] =  $myd_pj_arr[$item['jd_pj']];
-                $cur_record_arr[] =  $myd_pj_arr[$item['gc_pj']];
-                $cur_record_arr[] =  $myd_pj_arr[$item['sh_pj']];
-                $cur_record_arr[] =  $rate;
-
-                $responce["rows"][$i]['cell'] = $cur_record_arr;
+                $responce["rows"][$i]['cell'] = array($item['id'],
+                    $item['pro_id'],$item['sc_pro_name'],$item['sc_cus_name'],$plx_arr[$item['sc_pro_type']],
+                    $item['ys_xm_mj'],$item['ys_hetong_amt'],$item['sc_zb_time'],$item['gc_xmwg_khys_sj_time'],
+                    $cur_project_status,
+                    $fgs_arr[$item['fgs']]
+                );
                 $i++;
             }
         }

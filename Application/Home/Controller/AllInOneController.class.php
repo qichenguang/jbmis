@@ -21,6 +21,8 @@ class AllInOneController extends Controller {
     public function allmodules(){
         $this->user_id = $_SESSION["user_id"];
         $this->user_fgs = $_SESSION["fgs"];
+        $fgs_arr = USER_FUN_GET_FGS_FLAG_NAME();
+        $this->user_fgs_name = $fgs_arr[$this->user_fgs];
         $this->user_department = $_SESSION["department"];
         $this->userflag = $_SESSION['userflag'];
         //
@@ -120,6 +122,7 @@ class AllInOneController extends Controller {
                 }
             }
         }
+        //--------------------------------------------------------------------------------------------------------------
         //计算工资
         $rl = array();
         $rl[] = intval($project_detail["jd_rlzy_jdgz1"]);

@@ -423,6 +423,7 @@ CREATE TABLE `jb_project` (
   `sc_pro_trade` char(20) DEFAULT NULL COMMENT '项目行业',
   `sc_pro_trade_base` char(20) DEFAULT NULL COMMENT '项目行业:基本',
   `sc_pro_trade_ot` char(20) DEFAULT NULL COMMENT '项目行业:其他',
+  `sc_pro_trade_ot_name` char(20) DEFAULT NULL COMMENT '项目行业:其他行业的名称',
 	`sc_cus_name` char(50) DEFAULT NULL COMMENT '客户名称',
 	`sc_cus_type` char(1) DEFAULT NULL COMMENT '客户类型',
 	`sc_cus_t_1` char(1) NOT NULL DEFAULT '0' COMMENT '客户类别1',

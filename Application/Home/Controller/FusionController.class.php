@@ -767,6 +767,87 @@ class FusionController extends Controller {
         }
         return $newluokuan;
     }
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //多项目管理
+    public function ajaxGetDxmgl(){
+        $response = array();
+        //
+        $fgs                   = I('fgs');
+        $sc_zb_flag            = I('sc_zb_flag');
+        $zb_time_beg           = I('zb_time_beg');
+        $zb_time_end           = I('zb_time_end');
+        $xmwg_khys_sj_time_beg = I('xmwg_khys_sj_time_beg');
+        $xmwg_khys_sj_time_end = I('xmwg_khys_sj_time_end');
+        $sc_cus_t_2            = I('sc_cus_t_2');
+        $sc_invest_type        = I('sc_invest_type');
+        $xm_mj_beg             = I('xm_mj_beg');
+        $xm_mj_end             = I('xm_mj_end');
+        $hetong_amt_beg        = I('hetong_amt_beg');
+        $hetong_amt_end        = I('hetong_amt_end');
+        $sc_pro_trade_base     = I('sc_pro_trade_base');
 
+        $cond = array();
+        if(TRUE ) {
+            $sarr = I('param.');
+            foreach( $sarr as $k=>$v) {
+                switch ($k) {
+                    case 'fgs':
+                    case 'sc_zb_flag':
+                    case 'sc_cus_t_2':
+                    case 'sc_invest_type':
+                    case 'sc_pro_trade_base':
+                        if("all" != $v){
+                            $cond[$k] = $v;
+                        }
+                        break;
+                }
+            }
+        }
+        $where_str = "";
+        foreach($cond as $k=>$v){
+            $where_str .= " $k = '$v' and ";
+        }
+        $cond['sc_zb_time']            = array('between',array($zb_time_beg,$zb_time_end));
+        $cond['gc_xmwg_khys_sj_time'] = array('between',array($xmwg_khys_sj_time_beg,$xmwg_khys_sj_time_end));
+        $cond['ys_xm_mj']              = array('between',array($xm_mj_beg,$xm_mj_end));
+        $cond['ys_hetong_amt']         = array('between',array($hetong_amt_beg,$hetong_amt_end));
+        $where_str .= " sc_zb_time between '$zb_time_beg' and '$zb_time_end' and ";
+        $where_str .= " gc_xmwg_khys_sj_time between '$xmwg_khys_sj_time_beg' and '$xmwg_khys_sj_time_end' and ";
+        $where_str .= " ys_xm_mj between $xm_mj_beg and $xm_mj_end and ";
+        $where_str .= " ys_hetong_amt between $hetong_amt_beg and $hetong_amt_end ";
+
+        $sql_1 = "SELECT sc_pro_trade_base,count(sc_pro_trade_base) as it_count FROM `jb_project` WHERE $where_str group by sc_pro_trade_base ";
+        $list = M()->query($sql_1);
+        //图形1
+        $hy_arr = USER_FUN_GET_TRADE_NAME();
+        $data = array();
+        if(!empty($list)){
+            foreach($list as $r){
+                $item = array();
+                $item['label'] = $hy_arr[$r['sc_pro_trade_base']];
+                $item['value'] = $r["it_count"];;
+                $item["tooltext"] = $item['label'] . " : " .  $item['value'];
+                $data[] = $item;
+            }
+        }
+        $response["hyfb"] = $data;
+        //
+        $sql_2 = "SELECT sc_pro_type,count(sc_pro_type) as it_count FROM `jb_project` WHERE $where_str group by sc_pro_type ";
+        $list = M()->query($sql_2);
+        //图形1
+        $plx_arr = USER_FUN_GET_PROJECT_TYPE_NAME();
+        $data = array();
+        if(!empty($list)){
+            foreach($list as $r){
+                $item = array();
+                $item['label'] = $plx_arr[$r['sc_pro_type']];
+                $item['value'] = $r["it_count"];;
+                $item["tooltext"] = $item['label'] . " : " .  $item['value'];
+                $data[] = $item;
+            }
+        }
+        $response["lbfb"] = $data;
+        $this->ajaxReturn($response);
+    }
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 }
