@@ -229,6 +229,15 @@ class ProjectController extends Controller {
                 }
             }
         }
+/*        //单独设置gl ht ,目前由客户端设置，服务器不用设置
+        foreach($all_user_arr as &$tmp){
+            if($tmp["pro_id"] == $search_pro_id
+                && ($tmp["department"] == "gl" || $tmp["department"] == "ht")){
+                $tmp["checked"] = true;
+                $tmp["chkDisabled"] = true;
+            }
+        }*/
+        trace($all_user_arr);
         $this->ajaxReturn($all_user_arr);
     }
     public function projectsearch(){

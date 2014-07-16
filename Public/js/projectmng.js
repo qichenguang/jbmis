@@ -1,5 +1,4 @@
 $(document).ready(function(){
-
     function getAllZtreeCheckToUL(){
         var treeObj = $.fn.zTree.getZTreeObj("privilegeTree");
         var nodes = treeObj.getCheckedNodes(true);
@@ -17,7 +16,8 @@ $(document).ready(function(){
             selectedMulti: false
         },
         check: {
-            enable: true
+            enable: true,
+            chkDisabledInherit: true
         },
         data: {
             simpleData: {
@@ -40,9 +40,27 @@ $(document).ready(function(){
                 v += nodes[i].pro_id + "," + nodes[i].department + "," + nodes[i].user_id + "|";
             }
         }
-        $("#pro2user_all_str").attr("value",v);
+        var nodes2 = treeObj.getNodes();
+        var result = "";
+        for (var i = 0; i < nodes2.length; i++) {
+            result = getAllChildrenNodes(nodes2[i],result);
+        }
+        $("#pro2user_all_str").attr("value",v + result);
         //
         getAllZtreeCheckToUL();
+    }
+    function getAllChildrenNodes(treeNode,result){
+        if (treeNode.isParent) {
+            var childrenNodes = treeNode.children;
+            if (childrenNodes) {
+                for (var i = 0; i < childrenNodes.length; i++) {
+                    if(childrenNodes[i].id > 100 && (childrenNodes[i].department == "gl" || childrenNodes[i].department == "ht"))
+                    result += childrenNodes[i].pro_id + "," + childrenNodes[i].department + "," + childrenNodes[i].user_id + "|";
+                    result = getAllChildrenNodes(childrenNodes[i], result);
+                }
+            }
+        }
+        return result;
     }
     function initProIdZtree(pro_id){
         $.ajax({
@@ -56,6 +74,21 @@ $(document).ready(function(){
                 for (var i = 0; i < nodes.length; i++) {
                     treeObj.checkNode(nodes[i], true, true);
                 }
+                var nodes2 = treeObj.getNodes();
+                for (var i = 0; i < nodes2.length; i++) {
+                    //console.log(nodes2[i]);
+                    if(nodes2[i].name == "管理部" || nodes2[i].name == "合同管理部"){
+                        treeObj.checkNode(nodes2[i], true, true);
+                        nodes2[i].chkDisabled = true;
+                        var nodes3 = nodes2[i].children;
+                        for(var j=0;j<nodes3.length;j++){
+                            //console.log(nodes3[j]);
+                            treeObj.checkNode(nodes3[j], true, true);
+                            nodes3[j].chkDisabled = true;
+                        }
+                    }
+                }
+                ztree_onCheck();
                 //
                 $("#privilegeDiv #pro2user_pro_id").val(pro_id);
                 $("#privilegeDiv").show();
@@ -158,7 +191,6 @@ $(document).ready(function(){
             $("#privilegeDiv").hide();
         }
     });
-
     //导航栏配置和CRUD函数
     jQuery("#projectmnglist").jqGrid('navGrid','#pprojectmnglist',
         {view:false,search:false}, //导航栏 按钮 是否显示 options
@@ -225,7 +257,6 @@ $(document).ready(function(){
         {closeOnEscape:true}, // search options
         {height:250,jqModal:false,closeOnEscape:true} // view options
     );
-
     //其他配置
     jQuery("#projectmnglist").jqGrid('gridResize',{minWidth:350,maxWidth:1000,minHeight:80, maxHeight:350});
     jQuery("#projectmnglist").jqGrid('sortableRows');
