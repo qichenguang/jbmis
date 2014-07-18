@@ -1,9 +1,9 @@
 <script type="text/javascript">
     $(document).ready(function() {
-        function calcMydNum(name){
+        function calcMydNum(propname,propval){
             var all = 0;
             var over_b = 0;
-            $("#module_khbyd [jb_myd_select=" + name).each(function(){
+            $("#module_khbyd [" + propname + "=" + propval + "]").each(function(){
                 var cur = $(this).val();
                 if(cur == "A" || cur == "B"){
                     over_b++;
@@ -11,18 +11,29 @@
                 all++;
             });
             var rate = Math.round((over_b/all) * 10000)/100 + "%";
-            $("#" + name + "_rate_all").text(rate);
+            if("jb_myd_select" == propname){
+                $("#" + propval + "_" + propval + "_rate_all").text(rate);
+            }else{
+                $("#sh_" + propval + "_rate_all").text(rate);
+            }
         }
 
         $("#module_khbyd [jb_myd_select]").on('change',function(e){
             var attr = $(this).attr("jb_myd_select");
-            calcMydNum(attr);
+            calcMydNum("jb_myd_select",attr);
         });
-        calcMydNum("qq");
-        calcMydNum("sj");
-        calcMydNum("sg");
-        calcMydNum("sh");
-
+        $("#module_khbyd [jb_sh_myd_select]").on('change',function(e){
+            var attr = $(this).attr("jb_sh_myd_select");
+            calcMydNum("jb_sh_myd_select",attr);
+        });
+        calcMydNum("jb_myd_select","qq");
+        calcMydNum("jb_myd_select","sj");
+        calcMydNum("jb_myd_select","sg");
+        calcMydNum("jb_sh_myd_select","sh");
+        calcMydNum("jb_sh_myd_select","sj");
+        calcMydNum("jb_sh_myd_select","sg");
+        calcMydNum("jb_sh_myd_select","zx");
+        //--------------------------------------------------------------------------------------------------------------
 
     });
 </script>
@@ -32,10 +43,11 @@
         <table jb_table="bordered">
             <thead>
                 <tr>
-                    <th></th>
+                    <th>总体</th>
                     <th>满意度</th>
                     <th>说明</th>
                 </tr>
+            </thead>
                 <tr>
                     <td>总体服务满意度</td>
                     <td>
@@ -84,15 +96,11 @@
                         <textarea id="sh_zt_gc_myd_desc" name="sh_zt_gc_myd_desc"  jb_field="jb_single_save" ></textarea>
                     </td>
                 </tr>
-            </thead>
-        </table>
-        <br>
         <volist name="myd_list" id="vo" >
-        <table jb_table="bordered">
             <thead>
                 <tr>
                     <th>{$vo.name}满意度平均值</th>
-                    <th><span id="{$vo.sx}_rate_all"></span></th>
+                    <th><span id="{$vo.sx}_{$vo.lx}_rate_all"></span></th>
                     <th></th>
                 </tr>
                <tr>
@@ -160,7 +168,7 @@
                     <tr>
                         <td>{$key}. {$sub}</td>
                         <td>
-                            <select id="sh_{$vo.lx}_myd_{$key}" name="sh_{$vo.lx}_myd_{$key}"  jb_myd_select="{$vo.lx}" jb_field="jb_single_save" >
+                            <select id="sh_{$vo.lx}_myd_{$key}" name="sh_{$vo.lx}_myd_{$key}"  jb_sh_myd_select="{$vo.lx}" jb_field="jb_single_save" >
                                 <option value="" selected="selected">请选择</option>
                                 <option value="A">优</option>
                                 <option value="B">良</option>
@@ -175,7 +183,8 @@
                     </tr>
                 </if>
             </volist>
-        </table>
+
         </volist>
+        </table>
     </div>
 </div>

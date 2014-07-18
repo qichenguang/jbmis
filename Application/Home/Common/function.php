@@ -183,7 +183,10 @@ function USER_FUN_GET_MYD_LIST_NAME(){
     $st = array(
         array(
             'sx' => 'qq',
+            'lx' => 'qq',
             'name'=> "前期沟通",
+            'prev'=> "sc_qq_myd_",
+            'lx_base'=> 20,
             'item' => array(
                 1=>"市场人员与客户沟通的技巧和方式已达到良好的客户体验",
                 2=>"市场人员对客户的诉求反馈的及时性和准确性",
@@ -193,7 +196,10 @@ function USER_FUN_GET_MYD_LIST_NAME(){
         ),
         array(
             'sx' => 'sj',
+            'lx' => 'sj',
             'name'=> "设计阶段",
+            'prev'=> "sc_sj_myd_",
+            'lx_base'=> 30,
             'item' => array(
                 1=>"装修设计是否满足您的功能需求",
                 2=>"机电.消防及空调的功能设计满意度(如适用)",
@@ -204,7 +210,10 @@ function USER_FUN_GET_MYD_LIST_NAME(){
         ),
         array(
             'sx' => 'sg',
+            'lx' => 'sg',
             'name'=>"施工阶段",
+            'prev'=> "sc_sj_myd_",
+            'lx_base'=> 40,
             'item' => array(
                 1=>"装修质量满意度",
                 2=>"机电,消防及空调设备的施工质量满意(如适用)",
@@ -220,6 +229,8 @@ function USER_FUN_GET_MYD_LIST_NAME(){
             'sx' => 'sh',
             'lx' => 'sh',
             'name'=>"售后服务内容",
+            'prev'=> "sh_sh_myd_",
+            'lx_base'=> 50,
             'item' => array(
                 1=>"维修响应时间是否及时",
                 2=>"维修人员上门维修服务态度",
@@ -232,6 +243,8 @@ function USER_FUN_GET_MYD_LIST_NAME(){
             'sx' => 'sh',
             'lx' => 'sj',
             'name'=>"项目设计服务内容",
+            'prev'=> "sh_sj_myd_",
+            'lx_base'=> 60,
             'item' => array(
                 1=>"设计是否满足您的功能需求",
                 2=>"机电,电讯,消防及空调的功能设计是否满足您的功能需求",
@@ -243,6 +256,8 @@ function USER_FUN_GET_MYD_LIST_NAME(){
             'sx' => 'sh',
             'lx' => 'sg',
             'name'=>"项目施工服务内容",
+            'prev'=> "sh_sg_myd_",
+            'lx_base'=> 70,
             'item' => array(
                 1=>"装修质量整体满意度",
                 2=>"机电,电讯,消防及空调设备的施工质量满意度",
@@ -252,6 +267,8 @@ function USER_FUN_GET_MYD_LIST_NAME(){
             'sx' => 'sh',
             'lx' => 'zx',
             'name'=>"装修细节服务内容",
+            'prev'=> "sh_zx_myd_",
+            'lx_base'=> 80,
             'item' => array(
                 1=>"墙面材料使用情况满意度",
                 2=>"地面材料使用情况满意度",

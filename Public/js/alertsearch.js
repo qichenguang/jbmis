@@ -39,7 +39,7 @@ $(document).ready(function(){
                     name:"msg",
                     index:"msg",
                     width:300,
-                    align:"right",
+                    align:"center",
                     sortable:true,
                     editable:true, edittype:"text",
                     editrules:{required:true},

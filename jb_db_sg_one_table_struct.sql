@@ -29,9 +29,14 @@ DROP TABLE IF EXISTS `jb_alert`;
 CREATE TABLE `jb_alert` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `pro_id` char(20) NOT NULL COMMENT '项目ID',
+  `fgs` char(2) DEFAULT NULL COMMENT '分公司',
   `depsx` char(20) DEFAULT NULL COMMENT '部门列表',
-  `msg` char(50) DEFAULT NULL COMMENT '报警信息',
-	`alert_time` datetime DEFAULT NULL COMMENT '报警日期',
+  `alert_msg` char(50) DEFAULT NULL COMMENT '报警信息',
+  `lx` tinyint(4) DEFAULT NULL COMMENT '报警信息类型',
+  `msg_md5` char(50) DEFAULT NULL COMMENT '报警信息唯一码',
+	`alert_time` datetime DEFAULT NULL COMMENT '生成报警日期',
+	`alert_day_num` tinyint(4) DEFAULT NULL COMMENT '报警持续天数',
+	`alert_last_day` datetime DEFAULT NULL COMMENT '报警截止日期',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=30 DEFAULT CHARSET=utf8 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC COMMENT='报警表';
 
