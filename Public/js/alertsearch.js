@@ -5,7 +5,7 @@ $(document).ready(function(){
         var caption_str = "报警";
         var search_url = '/index.php/Home/Alert/ajaxAlertSearch';
         var save_url = '/index.php/Home/Alert/ajaxAlertSave';
-        var colNames = ['ID','项目ID','信息','部门','日前'];
+        var colNames = ['ID','项目ID','项目名称','信息','部门','日期'];
 
         var $aletcommgridobj = jQuery(domTableId).jqGrid({
             url: search_url,
@@ -15,7 +15,7 @@ $(document).ready(function(){
             colNames: colNames,
             colModel:[
                 {name:'id',index:'id',
-                    width:20,align:"right",
+                    width:10,align:"right",
                     sortable:true,
                     editable:false,
                     readonly:true,
@@ -25,28 +25,41 @@ $(document).ready(function(){
                 {
                     name:"pro_id",
                     index:"pro_id",
-                    width:50,
+                    width:20,
                     align:"right",
                     sortable:true,
                     editable:true, edittype:"text",
                     editrules:{required:true},
                     editoptions:{
-                        size:"50"
+                        size:"20"
                     },
                     formoptions:{rowpos:2, label: "项目ID", elmprefix:"(*)"}
                 },
                 {
-                    name:"msg",
-                    index:"msg",
-                    width:300,
+                    name:"pro_name",
+                    index:"pro_name",
+                    width:30,
                     align:"center",
                     sortable:true,
                     editable:true, edittype:"text",
                     editrules:{required:true},
                     editoptions:{
-                        size:"300"
+                        size:"30"
                     },
-                    formoptions:{rowpos:3, label: "信息", elmprefix:"(*)"}
+                    formoptions:{rowpos:3, label: "项目名称", elmprefix:"(*)"}
+                },
+                {
+                    name:"msg",
+                    index:"msg",
+                    width:150,
+                    align:"center",
+                    sortable:true,
+                    editable:true, edittype:"text",
+                    editrules:{required:true},
+                    editoptions:{
+                        size:"150"
+                    },
+                    formoptions:{rowpos:4, label: "信息", elmprefix:"(*)"}
                 },
                 {
                     name:"depsx",
@@ -59,7 +72,7 @@ $(document).ready(function(){
                     editoptions:{
                         size:"20"
                     },
-                    formoptions:{rowpos:4, label: "部门", elmprefix:"(*)"}
+                    formoptions:{rowpos:5, label: "部门", elmprefix:"(*)"}
                 },
                 {
                     name:"alert_time",
@@ -72,7 +85,7 @@ $(document).ready(function(){
                     editoptions:{
                         size:"20"
                     },
-                    formoptions:{rowpos:5, label: "日前", elmprefix:"(*)"}
+                    formoptions:{rowpos:6, label: "日期", elmprefix:"(*)"}
                 }
             ],
             hiddengrid: false,

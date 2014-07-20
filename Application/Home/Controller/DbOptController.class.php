@@ -3,8 +3,7 @@ namespace Home\Controller;
 use Think\Controller;
 class DbOptController extends Controller {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    public function ajaxGetCbglAllZje(){
-        $pro_id = I('pro_id');
+    public function getCbglAllZje($pro_id){
         //
         $Data = M("project");
         $cond['pro_id'] = $pro_id;
@@ -14,23 +13,32 @@ class DbOptController extends Controller {
         //fb dwbj sjcb
         $fb_lx_arr = USER_FUN_GET_FBS_TYPE_NAME();
         $fb_dwbj_all = 0.0;
+        $fb_nkje_all = 0.0;
         $fb_sjcb_all = 0.0;
         foreach($fb_lx_arr as $fb_lx => $fb_lx_name){
+            //--------------------------------------
             $key_dwbj = "ys_" . $fb_lx . "_dwbj";
             $dwbj = $project_rec[$key_dwbj];
-            //
             if(!empty($dwbj)){
                 if(floatval($dwbj) > 0.01 ){
                     $fb_dwbj_all += floatval($dwbj);
                 }
             }
-            //
+            //---------------------------------------
             $key_sjcb = "ys_" . $fb_lx . "_sjcb";
             $sjcb = $project_rec[$key_sjcb];
             //
             if(!empty($sjcb)){
                 if(floatval($sjcb) > 0.01 ){
                     $fb_sjcb_all += floatval($sjcb);
+                }
+            }
+            //--------------------------------------
+            $key_nkje = "ys_" . $fb_lx . "_nkje";
+            $nkje = $project_rec[$key_nkje];
+            if(!empty($nkje)){
+                if(floatval($nkje) > 0.01 ){
+                    $fb_nkje_all += floatval($nkje);
                 }
             }
         }
@@ -60,6 +68,7 @@ class DbOptController extends Controller {
         //fb end--------------------------------------------------------------------------------------------------------
         //cg beg--------------------------------------------------------------------------------------------------------
         $cg_dwbj_all = $project_rec['ys_cg_all_dwbj'];
+        $cg_nkje_all = $project_rec['ys_cg_all_nkje'];
         //cg self vo
         $cg_sjcb_all = 0.0;
         $cg_self_vo_all = 0.0;
@@ -88,29 +97,54 @@ class DbOptController extends Controller {
         //qq beg--------------------------------------------------------------------------------------------------------
         $qq_dwbj_all = $project_rec['ys_qq_dwbj'];
         $qq_custom_all_vo = $project_rec['ys_qq_customer_vo'];
+        $qq_nkje_all = $project_rec['ys_qq_nkje'];
         //qq end--------------------------------------------------------------------------------------------------------
         //rg beg--------------------------------------------------------------------------------------------------------
         $rg_dwbj_all = $project_rec['ys_rg_dwbj'];
         $rg_custom_all_vo = 0.0;
+        $rg_nkje_all = $project_rec['ys_rg_nkje'];
         $rg_sjcb_all = $_SESSION['all_zjrgcb'];
         $rg_self_vo_all = 0.0;
         //rg end--------------------------------------------------------------------------------------------------------
         //qt beg--------------------------------------------------------------------------------------------------------
         $qt_dwbj_all = $project_rec['ys_qt_dwbj'];
         $qt_custom_all_vo = $project_rec['ys_qt_customer_vo'];
+        $qt_nkje_all = $project_rec['ys_qt_nkje'];
         $qt_sjcb_all = $project_rec['ys_qt_sjcb'];
         $qt_self_vo_all = $project_rec['ys_qt_vo'];
         //qt end--------------------------------------------------------------------------------------------------------
-        $responce = array();
-        $responce['dwbj'] = $fb_dwbj_all + $cg_dwbj_all + $qq_dwbj_all + $rg_dwbj_all + $qt_dwbj_all;
-        $responce['customer_vo'] = $fb_custom_vo_all + $cg_custom_vo_all + $qq_custom_all_vo + $rg_custom_all_vo + $qt_custom_all_vo;
-        $responce['sjcb'] = $fb_sjcb_all + $cg_sjcb_all + $qq_sjcb_all + $rg_sjcb_all + $qt_sjcb_all;
-        $responce['self_vo'] = $fb_self_vo_all + $cg_self_vo_all + $qq_self_vo_all + $rg_self_vo_all + $qt_self_vo_all;
-        $responce['fb_sjcb'] = $fb_sjcb_all;
-        $responce['fb_self_vo'] = $fb_self_vo_all;
-        $responce['cg_sjcb'] = $cg_sjcb_all;
-        $responce['cg_self_vo'] = $cg_self_vo_all;
-        $this->ajaxReturn($responce);
+        $response = array();
+        //
+        $response['dwbj'] = $fb_dwbj_all + $cg_dwbj_all + $qq_dwbj_all + $rg_dwbj_all + $qt_dwbj_all;
+        $response['customer_vo'] = $fb_custom_vo_all + $cg_custom_vo_all + $qq_custom_all_vo + $rg_custom_all_vo + $qt_custom_all_vo;
+        $response['nkje'] = $fb_nkje_all + $cg_nkje_all + $qq_nkje_all + $rg_nkje_all + $qt_nkje_all;
+        $response['sjcb'] = $fb_sjcb_all + $cg_sjcb_all + $qq_sjcb_all + $rg_sjcb_all + $qt_sjcb_all;
+        $response['self_vo'] = $fb_self_vo_all + $cg_self_vo_all + $qq_self_vo_all + $rg_self_vo_all + $qt_self_vo_all;
+        //
+        $response['fb_sjcb'] = $fb_sjcb_all;
+        $response['fb_self_vo'] = $fb_self_vo_all;
+        //
+        $response['cg_dwbj'] = $cg_dwbj_all;
+        $response['cg_custom_vo'] = $cg_custom_vo_all;
+        $response['cg_nkje'] = $cg_nkje_all;
+        $response['cg_sjcb'] = $cg_sjcb_all;
+        $response['cg_self_vo'] = $cg_self_vo_all;
+        //
+        $response['qq_dwbj'] = $qq_dwbj_all;
+        $response['qq_custom_vo'] = $qq_custom_all_vo;
+        $response['qq_nkje'] = $qq_nkje_all;
+        $response['qq_sjcb'] = $qq_sjcb_all;
+        $response['qq_self_vo'] = $qq_self_vo_all;
+        //
+        return $response;
+    }
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    public function ajaxGetCbglAllZje(){
+        $pro_id = I('pro_id');
+        //
+        $response = $this->getCbglAllZje($pro_id);
+        //
+        $this->ajaxReturn($response);
     }
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     public function ajaxGetAllVOJe(){

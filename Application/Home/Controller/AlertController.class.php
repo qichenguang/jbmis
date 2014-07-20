@@ -74,7 +74,7 @@ class AlertController extends Controller {
             foreach($list as $item){
                 $responce["rows"][$i]['id']=$item["id"];
                 $responce["rows"][$i]['cell'] = array($item['id'],
-                    $item['pro_id'],$item['alert_msg'],$item['depsx'],$item['alert_time'],);
+                    $item['pro_id'],$item['pro_name'],$item['alert_msg'],$item['depsx'],$item['alert_time'],);
                 $i++;
             }
         }
@@ -91,13 +91,15 @@ class AlertController extends Controller {
         $alert_arr = array();
         foreach($project_liset as $item){
             //over time
-            $alert_arr = $this->find_alert_time($item);
+/*            $alert_arr = $this->find_alert_time($item);
+            $zjl_alert_arr = $this->find_alert_zjl_time($item);
+            $alert_arr = array_merge($alert_arr,$zjl_alert_arr);
             trace($alert_arr,"alert_arr");
             //Low Myd
-            $myd_alert_all = $this->getCommLowMyd($item,$alert_arr);
-            $alert_arr = array_merge($alert_arr,$myd_alert_all);
+            $myd_alert_all = $this->find_alert_low_myd($item);
+            $alert_arr = array_merge($alert_arr,$myd_alert_all);*/
             //成本管理
-            //$this->getCommCbglLowRate($item,$alert_arr);
+            $alert_arr = $this->find_alert_cbgl_low_rate($item);
             //----------------------------------------------------------------------------------------------------------
             //报警信息 插入 Alet 表
             $cond = array();
@@ -125,6 +127,8 @@ class AlertController extends Controller {
                 $alert_last_day = date ( "Y-m-d", $recordtime );
                 //
                 $condition["alert_last_day"] = $alert_last_day;
+                //
+                $condition["pro_name"] = $item["sc_pro_name"];
                 //inset
                 $result  = $Alert->add($condition);
             }
@@ -235,7 +239,55 @@ class AlertController extends Controller {
         return $alert_all_time_arr;
     }
     //------------------------------------------------------------------------------------------------------------------
-    private function getCommLowMyd($project_rec){
+    private function find_alert_zjl_time($rec){
+        $alert_all_time_arr = array();
+        //
+        $ZJL_SKYJ = M("zjl_skyj");
+        $cond["pro_id"] = $rec["pro_id"];
+        $list = $ZJL_SKYJ->where($cond)->select();
+        $sfk_time = "";
+        $jgk_time = "";
+        if(!empty($list)){
+            foreach($list as $cur){
+                if($cur["sk_bs"] == "0.1"){
+                    $sfk_time = $cur["sk_time"];
+                }
+                if($cur["sk_bs"] == "20"){
+                    $jgk_time = $cur["sk_time"];
+                }
+            }
+        }
+        //
+        $b_str = date("Y-m-d");
+        $b_time_src = strtotime($b_str);
+        if($sfk_time != ""){
+            $a_time_src = strtotime($sfk_time);
+            if($b_time_src == $a_time_src){
+                $alert_array = array(
+                    'lx' => 12,
+                    'alert_dep' => array('gc','ht','sc'),
+                    'alert_msg' => "首付款预计到账时间($b_str) 为今天",
+                    'alert_day_num' => 1,
+                );
+                $alert_all_time_arr[] = $alert_array;
+            }
+        }
+        if($jgk_time != ""){
+            $a_time_src = strtotime($jgk_time);
+            if($b_time_src == $a_time_src){
+                $alert_array = array(
+                    'lx' => 13,
+                    'alert_dep' => array('gc','ht','sc'),
+                    'alert_msg' => "竣工款预计到账时间($b_str) 为今天",
+                    'alert_day_num' => 1,
+                );
+                $alert_all_time_arr[] = $alert_array;
+            }
+        }
+        return $alert_all_time_arr;
+    }
+    //------------------------------------------------------------------------------------------------------------------
+    private function find_alert_low_myd($project_rec){
         $myd_alert_all = array();
         $myd_list_all = USER_FUN_GET_MYD_LIST_NAME();
         foreach($myd_list_all as $myd_list_item){
@@ -282,8 +334,16 @@ class AlertController extends Controller {
     }
     //------------------------------------------------------------------------------------------------------------------
     //成本管理
-    private function getCommCbglLowRate($item,$alert_arr){
+    private function find_alert_cbgl_low_rate($item){
+        $cbgl_alert_all = array();
+        //
+        $DBOPT = A('DbOpt');
+        $response = $DBOPT->getCbglAllZje($item['pro_id']);
+        //
+        trace($response);
+        //
         $fb_lx_arr = USER_FUN_GET_FBS_TYPE_NAME();
+        $fb_lx_val_arr = USER_FUN_GET_FBS_LX_VALUE();
         //1.任一分包横轴项目实际发生成本大于内控金额
         foreach($fb_lx_arr as $fb_lx => $fb_lx_name){
             $key_sjcb = "ys_" . $fb_lx . "_sjcb";
@@ -293,40 +353,55 @@ class AlertController extends Controller {
             if(!empty($sjcb) && !empty($nkje)){
                 if(floatval($sjcb) > 0.01 && floatval($nkje) > 0.01){
                     if(floatval($sjcb) > floatval($nkje)){
-                        $msg = "$fb_lx_name 实际发生成本($sjcb) 大于内控金额($nkje)";
+                        $alert_msg = "分包:$fb_lx_name 实际发生成本($sjcb) 大于内控金额($nkje)";
                         //工程部；合同管理；预算部
                         $cur_arr = array(
-                            "title" => $msg,
-                            'dep' => array('gc','ht','ys'),
+                            'lx' => intval($fb_lx_val_arr[$fb_lx]) + 100,
+                            'alert_dep' => array('gc','ht','ys'),
+                            'alert_msg' => $alert_msg,
+                            'alert_day_num' => 1,
                         );
-                        $alert_arr[] = $cur_arr;
+                        $cbgl_alert_all[] = $cur_arr;
                     }
                 }
             }
         }
         //2.任一采购横轴项目实际发生成本大于内控金额
         if(true){
-            $Data = M("cg_vo");
-            $cond['pro_id'] = $item['pro_id'];
-            $cg_je = $Data->where($cond)->sum('cg_je');
-            $cg_gckc_sjcb = $item["cg_gckc_sjcb"];
-            $cg_gcrgf_sjcb = $item["cg_gcrgf_sjcb"];
-            $ys_cg_all_nkje = $item["ys_cg_all_nkje"];
-            $sjcb = floatval($cg_je) + floatval($cg_gckc_sjcb) + floatval($cg_gcrgf_sjcb);
-            $nkje = floatval($ys_cg_all_nkje);
+            $sjcb = floatval($response['cg_sjcb']);
+            $nkje = floatval($response['cg_nkje']);
             if($sjcb > 0.01 && $nkje > 0.01){
                 if($sjcb > $nkje){
-                    $msg = "采购 实际发生成本($sjcb) 大于内控金额($nkje)";
+                    $alert_msg = "采购: 实际发生成本($sjcb) 大于内控金额($nkje)";
                     //工程部；合同管理；预算部；采购部
                     $cur_arr = array(
-                        "title" => $msg,
-                        'dep' => array('gc','ht','ys','cg'),
+                        'lx' => 111,
+                        'alert_dep' => array('gc','ht','ys','cg'),
+                        'alert_msg' => $alert_msg,
+                        'alert_day_num' => 1,
                     );
-                    $alert_arr[] = $cur_arr;
+                    $cbgl_alert_all[] = $cur_arr;
                 }
             }
         }
         //3.前期横轴项目实际发生成本大于内控金额
+        if(true){
+            $sjcb = floatval($response['qq_sjcb']);
+            $nkje = floatval($response['qq_nkje']);
+            if($sjcb > 0.01 && $nkje > 0.01){
+                if($sjcb > $nkje){
+                    $alert_msg = "前期: 实际发生成本($sjcb) 大于内控金额($nkje)";
+                    //工程部；合同管理；预算部
+                    $cur_arr = array(
+                        'lx' => 112,
+                        'alert_dep' => array('gc','ht','ys'),
+                        'alert_msg' => $alert_msg,
+                        'alert_day_num' => 1,
+                    );
+                    $cbgl_alert_all[] = $cur_arr;
+                }
+            }
+        }
         //4.任一分包横轴项目实际毛利率小于开工毛利率
         foreach($fb_lx_arr as $fb_lx => $fb_lx_name){
             $key_dwbj = "ys_" . $fb_lx . "_dwbj";
@@ -352,61 +427,129 @@ class AlertController extends Controller {
                 $kgmll = (floatval($dwbj) - floatval($nkje))/floatval($dwbj);
                 $sjmll = (floatval($dwbj) + floatval($customer_vo) - floatval($sjcb) - floatval($fb_vo))/(floatval($dwbj) + floatval($customer_vo));
                 if($sjmll < $kgmll){
-                    $msg = "$fb_lx_name 实际毛利率($sjmll) 小于 开工毛利率($kgmll)";
+                    $alert_msg = "分包:$fb_lx_name 实际毛利率($sjmll) 小于 开工毛利率($kgmll)";
                     //工程部；合同管理；预算部
                     $cur_arr = array(
-                        "title" => $msg,
-                        'dep' => array('gc','ht','ys'),
+                        'lx' => intval($fb_lx_val_arr[$fb_lx]) + 120,
+                        'alert_dep' => array('gc','ht','ys'),
+                        'alert_msg' => $alert_msg,
+                        'alert_day_num' => 1,
                     );
-                    $alert_arr[] = $cur_arr;
+                    $cbgl_alert_all[] = $cur_arr;
                 }
             }
         }
         //5.任一采购横轴项目实际毛利率小于开工毛利率
         if(true){
-            //1.
-            $ys_cg_all_dwbj = $item["ys_cg_all_dwbj"];
-            //2.
-            $Data = M("customer_vo");
-            $cond = array();
-            $cond['pro_id'] = $item['pro_id'];
-            $cond['vo_type'] = 'cg';
-            $customer_vo = $Data->where($cond)->sum('vo_je');
-            //3.
-            $Data = M("cg_vo");
-            $cond = array();
-            $cond['pro_id'] = $item['pro_id'];
-            $cgje = $Data->where($cond)->sum('cg_je');
-            $cg_gckc_sjcb = $item["cg_gckc_sjcb"];
-            $cg_gcrgf_sjcb = $item["cg_gcrgf_sjcb"];
-            //4.
-            $vo1_je = $Data->where($cond)->sum('vo1_je');
-            $vo2_je = $Data->where($cond)->sum('vo2_je');
-            $vo3_je = $Data->where($cond)->sum('vo3_je');
-            $cg_gckc_sjcb_vo = $item["cg_gckc_sjcb_vo"];
-            $cg_gcrgf_sjcb_vo = $item["cg_gcrgf_sjcb_vo"];
+            $dwbj = floatval($response['cg_dwbj']);
+            $custom_vo = floatval($response['cg_custom_vo']);
+            $nkje = floatval($response['cg_nkje']);
+            $sjcb = floatval($response['cg_sjcb']);
+            $self_vo = floatval($response['cg_self_vo']);
             //
-            $ys_cg_all_nkje = $item["ys_cg_all_nkje"];
-            //
-            if(floatval($ys_cg_all_dwbj) > 0.01){
-                $kgmll = (floatval($dwbj) - floatval($ys_cg_all_nkje))/floatval($ys_cg_all_nkje);
-                $sjmll = (floatval($dwbj) + floatval($customer_vo)
-                        - (floatval($cgje) + floatval($cg_gckc_sjcb) + floatval($cg_gcrgf_sjcb))
-                        - (floatval($vo1_je) + floatval($vo2_je) + floatval($vo3_je) + floatval($cg_gckc_sjcb_vo) + floatval($cg_gcrgf_sjcb_vo)))
-                    /(floatval($dwbj) + floatval($customer_vo));
-                //
+            if(floatval($dwbj) > 0.01){
+                $kgmll = (floatval($dwbj) - floatval($nkje))/floatval($dwbj);
+                $sjmll = (floatval($dwbj) + floatval($customer_vo) - floatval($sjcb) - floatval($self_vo))/(floatval($dwbj) + floatval($customer_vo));
                 if($sjmll < $kgmll){
-                    $msg = "采购 实际毛利率($sjmll) 小于 开工毛利率($kgmll)";
+                    $alert_msg = "采购: 实际毛利率($sjmll) 小于 开工毛利率($kgmll)";
                     //工程部；合同管理；预算部；采购部
                     $cur_arr = array(
-                        "title" => $msg,
-                        'dep' => array('gc','ht','ys','cg'),
+                        'lx' => 131,
+                        'alert_dep' => array('gc','ht','ys','cg'),
+                        'alert_msg' => $alert_msg,
+                        'alert_day_num' => 1,
                     );
-                    $alert_arr[] = $cur_arr;
+                    $cbgl_alert_all[] = $cur_arr;
                 }
             }
         }
         //6.前期横轴项目实际毛利率小于开工毛利率
-        //7.
+        if(true){
+            $dwbj = floatval($response['qq_dwbj']);
+            $custom_vo = floatval($response['qq_custom_vo']);
+            $nkje = floatval($response['qq_nkje']);
+            $sjcb = floatval($response['qq_sjcb']);
+            $self_vo = floatval($response['qq_self_vo']);
+            //
+            if(floatval($dwbj) > 0.01){
+                $kgmll = (floatval($dwbj) - floatval($nkje))/floatval($dwbj);
+                $sjmll = (floatval($dwbj) + floatval($customer_vo) - floatval($sjcb) - floatval($self_vo))/(floatval($dwbj) + floatval($customer_vo));
+                if($sjmll < $kgmll){
+                    $alert_msg = "前期: 实际毛利率($sjmll) 小于 开工毛利率($kgmll)";
+                    //工程部；合同管理；预算部；
+                    $cur_arr = array(
+                        'lx' => 132,
+                        'alert_dep' => array('gc','ht','ys'),
+                        'alert_msg' => $alert_msg,
+                        'alert_day_num' => 1,
+                    );
+                    $cbgl_alert_all[] = $cur_arr;
+                }
+            }
+        }
+        //7.总开工毛利率小于投标毛利率
+        if(true){
+            $dwbj = floatval($response['dwbj']);
+            $nkje = floatval($response['nkje']);
+            //
+            if(floatval($dwbj) > 0.01){
+                $kgmll = (floatval($dwbj) - floatval($nkje))/floatval($dwbj);
+                $tbmll = floatval($item["ys_tb_mll"])/(100.00);
+                if($kgmll < $tbmll){
+                    $alert_msg = "总开工毛利率($kgmll) 小于 投标毛利率($tbmll)";
+                    //工程部；合同管理；预算部；采购部；管理部
+                    $cur_arr = array(
+                        'lx' => 141,
+                        'alert_dep' => array('gc','ht','ys','cg','gl'),
+                        'alert_msg' => $alert_msg,
+                        'alert_day_num' => 1,
+                    );
+                    $cbgl_alert_all[] = $cur_arr;
+                }
+            }
+        }
+        //8.总实际成本大于总内控
+        if(true){
+            $sjcb = floatval($response['sjcb']);
+            $nkje = floatval($response['nkje']);
+            if($sjcb > 0.01 && $nkje > 0.01){
+                if($sjcb > $nkje){
+                    $alert_msg = "总实际发生成本($sjcb) 大于 总内控金额($nkje)";
+                    //工程部；合同管理；预算部；采购部；管理部
+                    $cur_arr = array(
+                        'lx' => 142,
+                        'alert_dep' => array('gc','ht','ys','cg','gl'),
+                        'alert_msg' => $alert_msg,
+                        'alert_day_num' => 1,
+                    );
+                    $cbgl_alert_all[] = $cur_arr;
+                }
+            }
+        }
+        //9.总实际毛利率小于总开工毛利率
+        if(true){
+            $dwbj = floatval($response['dwbj']);
+            $custom_vo = floatval($response['custom_vo']);
+            $nkje = floatval($response['nkje']);
+            $sjcb = floatval($response['sjcb']);
+            $self_vo = floatval($response['self_vo']);
+            //
+            if(floatval($dwbj) > 0.01){
+                $kgmll = (floatval($dwbj) - floatval($nkje))/floatval($dwbj);
+                $sjmll = (floatval($dwbj) + floatval($customer_vo) - floatval($sjcb) - floatval($self_vo))/(floatval($dwbj) + floatval($customer_vo));
+                if($sjmll < $kgmll){
+                    $alert_msg = "总实际毛利率($sjmll) 小于 总开工毛利率($kgmll)";
+                    //工程部；合同管理；预算部；采购部；管理部
+                    $cur_arr = array(
+                        'lx' => 143,
+                        'alert_dep' => array('gc','ht','ys','cg','gl'),
+                        'alert_msg' => $alert_msg,
+                        'alert_day_num' => 1,
+                    );
+                    $cbgl_alert_all[] = $cur_arr;
+                }
+            }
+        }
+        return $cbgl_alert_all;
     }
 }

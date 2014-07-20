@@ -319,6 +319,19 @@ function USER_FUN_GET_FBS_TYPE_NAME(){
     );
     return $vo;
 }
+function USER_FUN_GET_FBS_LX_VALUE(){
+    $vo = array(
+        'zx'=> 1,
+        'dq' => 2,
+        'kt' => 3,
+        'xf' => 4,
+        'jps' => 5,
+        'it' => 6,
+        'sec' => 7,
+        'av' => 8,
+    );
+    return $vo;
+}
 function USER_FUN_GET_QQ_TYPE_NAME(){
     $vo = array(
         'A' => "物业管理费用",
