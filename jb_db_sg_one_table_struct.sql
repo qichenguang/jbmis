@@ -29,6 +29,7 @@ DROP TABLE IF EXISTS `jb_alert`;
 CREATE TABLE `jb_alert` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `pro_id` char(20) NOT NULL COMMENT '项目ID',
+  `pro_name` char(50) NOT NULL COMMENT '项目名称',
   `fgs` char(2) DEFAULT NULL COMMENT '分公司',
   `depsx` char(20) DEFAULT NULL COMMENT '部门列表',
   `alert_msg` char(50) DEFAULT NULL COMMENT '报警信息',
